@@ -21,7 +21,9 @@ export async function middleware(request: Request) {
   if (pathname.startsWith('/api')) {
     if (
       pathname.startsWith('/api/auth') ||
-      pathname.startsWith('/api/shared')
+      pathname.startsWith('/api/shared') ||
+      pathname.startsWith('/api/site-icon') ||
+      pathname.startsWith('/api/site-logo')
     ) {
       return NextResponse.next()
     }

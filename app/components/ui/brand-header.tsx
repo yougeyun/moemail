@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { ExternalLink, Mail } from "lucide-react"
-import { LogoMark } from "@/components/ui/logo-mark"
+import { useBranding } from "@/components/brand/brand-provider"
 
 interface BrandHeaderProps {
   title?: string
@@ -18,6 +18,7 @@ export function BrandHeader({
   ctaText,
 }: BrandHeaderProps) {
   const t = useTranslations("emails.shared.brand")
+  const { siteName, logo } = useBranding()
 
   const displayTitle = title || t("title")
   const displaySubtitle = subtitle || t("subtitle")
@@ -32,8 +33,15 @@ export function BrandHeader({
           rel="noopener noreferrer"
           className="group flex items-center gap-3 transition-opacity hover:opacity-85"
         >
-          <LogoMark size={44} />
-          <span className="text-2xl font-bold text-foreground">MoeMail</span>
+          {logo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={logo}
+              alt=""
+              className="h-11 w-11 rounded-lg object-contain"
+            />
+          ) : null}
+          <span className="text-2xl font-bold text-foreground">{siteName}</span>
         </Link>
       </div>
 

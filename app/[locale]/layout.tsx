@@ -6,8 +6,12 @@ import type { Metadata, Viewport } from "next"
 import { FloatMenu } from "@/components/float-menu"
 import { ThemeProvider } from "@/components/theme/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
+import { BrandProvider } from "@/components/brand/brand-provider"
+import { getSiteBranding } from "@/lib/site-config"
 import { cn } from "@/lib/utils"
 import "../globals.css"
+import "../../templates/neon-night/styles/template.css"
+import "../../templates/classic-clean-blue/styles/template.css"
 import { Providers } from "../providers"
 
 export const runtime = "edge"
@@ -43,6 +47,7 @@ export async function generateMetadata({
   const { locale: localeFromParams } = await params
   const locale = localeFromParams as Locale
   const t = await getTranslations({ locale, namespace: "metadata" })
+  const branding = await getSiteBranding()
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://moemail.app"
   
@@ -53,9 +58,9 @@ export async function generateMetadata({
   })
 
   return {
-    title: t("title"),
-    description: t("description"),
-    keywords: t("keywords"),
+    title: branding.siteTitle || t("title"),
+    description: branding.siteDescription || t("description"),
+    keywords: branding.siteKeywords || t("keywords"),
     authors: [{ name: "SoftMoe Studio" }],
     creator: "SoftMoe Studio",
     publisher: "SoftMoe Studio",
@@ -86,7 +91,8 @@ export async function generateMetadata({
     },
     manifest: '/manifest.json',
     icons: [
-      { rel: 'apple-touch-icon', url: '/icons/icon-192x192.png' },
+      { rel: 'icon', url: '/api/site-icon?size=32' },
+      { rel: 'apple-touch-icon', url: '/api/site-icon?size=192' },
     ],
   }
 }
@@ -105,14 +111,15 @@ export default async function LocaleLayout({
   }
 
   const messages = await getMessages(locale)
+  const branding = await getSiteBranding()
 
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
-        <meta name="application-name" content="MoeMail" />
+        <meta name="application-name" content={branding.siteName} />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="MoeMail" />
+        <meta name="apple-mobile-web-app-title" content={branding.siteName} />
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
@@ -122,6 +129,7 @@ export default async function LocaleLayout({
           "bg-background text-foreground",
           "transition-colors duration-300"
         )}
+        data-template={branding.activeTemplate}
       >
         <ThemeProvider
           attribute="class"
@@ -131,10 +139,12 @@ export default async function LocaleLayout({
           storageKey="temp-mail-theme"
         >
           <Providers>
-            <NextIntlClientProvider locale={locale} messages={messages}>
-              {children}
-              <FloatMenu />
-            </NextIntlClientProvider>
+            <BrandProvider value={branding}>
+              <NextIntlClientProvider locale={locale} messages={messages}>
+                {children}
+                <FloatMenu />
+              </NextIntlClientProvider>
+            </BrandProvider>
           </Providers>
           <Toaster />
         </ThemeProvider>

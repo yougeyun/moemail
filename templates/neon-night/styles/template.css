@@ -1,0 +1,65 @@
+body[data-template="neon-night"] {
+  --background: 221 54% 5%;
+  --foreground: 220 40% 94%;
+  --card: 219 52% 9%;
+  --card-foreground: 220 40% 94%;
+  --popover: 219 52% 9%;
+  --popover-foreground: 220 40% 94%;
+  --primary: 189 84% 53%;
+  --primary-foreground: 220 60% 5%;
+  --secondary: 293 88% 73%;
+  --secondary-foreground: 280 50% 8%;
+  --muted: 218 40% 13%;
+  --muted-foreground: 218 22% 60%;
+  --accent: 218 40% 14%;
+  --accent-foreground: 220 40% 94%;
+  --destructive: 0 72% 58%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 212 35% 17%;
+  --input: 212 35% 17%;
+  --ring: 189 84% 53%;
+  --radius: 0.875rem;
+  --brand-red: #22d3ee;
+  --brand-jade: #e879f9;
+  --brand-gold: #a3e635;
+  --brand-ink: #e5eaf2;
+}
+
+body[data-template="neon-night"] .app-bg {
+  background-color: hsl(var(--background));
+  background-image:
+    radial-gradient(1100px 560px at 85% -10%, hsl(var(--primary) / 0.1), transparent 60%),
+    radial-gradient(900px 520px at 5% 110%, hsl(var(--secondary) / 0.08), transparent 60%);
+}
+
+body[data-template="neon-night"] .neon-panel,
+body[data-template="neon-night"] .panel,
+body[data-template="neon-night"] .panel-card {
+  background: color-mix(in srgb, hsl(var(--card)) 82%, transparent);
+  border: 1px solid hsl(var(--primary) / 0.24);
+  box-shadow:
+    0 0 24px hsl(var(--primary) / 0.08),
+    0 12px 32px hsl(222 47% 4% / 0.18);
+  backdrop-filter: blur(10px);
+}
+
+body[data-template="neon-night"] .neon-glow {
+  box-shadow:
+    0 0 0 1px hsl(var(--primary) / 0.18),
+    0 0 18px hsl(var(--primary) / 0.3),
+    0 8px 24px hsl(222 47% 4% / 0.2);
+}
+
+body[data-template="neon-night"] .text-gradient-neon {
+  background: linear-gradient(92deg, hsl(var(--foreground)), var(--brand-red) 55%, var(--brand-jade));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+body[data-template="neon-night"] .text-gradient-brand {
+  background: linear-gradient(92deg, var(--brand-red), var(--brand-jade));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

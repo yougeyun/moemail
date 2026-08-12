@@ -23,6 +23,9 @@
       }
     ],
     "paths": {
+      "@/templates/*": [
+        "./templates/*"
+      ],
       "@/*": [
         "./app/*"
       ]

@@ -1,0 +1,52 @@
+body[data-template="classic-clean-blue"] {
+  --background: 213 40% 97%;
+  --foreground: 220 26% 14%;
+  --card: 0 0% 100%;
+  --card-foreground: 220 26% 14%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 26% 14%;
+  --primary: 217 91% 53%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 200 82% 42%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 214 32% 93%;
+  --muted-foreground: 220 12% 42%;
+  --accent: 214 45% 95%;
+  --accent-foreground: 220 26% 14%;
+  --destructive: 0 72% 50%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 218 28% 88%;
+  --input: 218 28% 88%;
+  --ring: 217 91% 53%;
+  --radius: 0.625rem;
+  --brand-red: #2563eb;
+  --brand-jade: #0ea5e9;
+  --brand-gold: #f59e0b;
+  --brand-ink: #1f2937;
+}
+
+body[data-template="classic-clean-blue"] .app-bg {
+  background-color: hsl(var(--background));
+  background-image: none;
+}
+
+body[data-template="classic-clean-blue"] .neon-panel,
+body[data-template="classic-clean-blue"] .panel,
+body[data-template="classic-clean-blue"] .panel-card {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 1px 2px hsl(220 30% 20% / 0.04);
+  backdrop-filter: none;
+}
+
+body[data-template="classic-clean-blue"] .neon-glow {
+  box-shadow: 0 1px 2px hsl(220 30% 20% / 0.06);
+}
+
+body[data-template="classic-clean-blue"] .text-gradient-neon,
+body[data-template="classic-clean-blue"] .text-gradient-brand {
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  color: hsl(var(--foreground));
+}

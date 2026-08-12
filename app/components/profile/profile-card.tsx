@@ -14,6 +14,8 @@ import { useRolePermission } from "@/hooks/use-role-permission"
 import { PERMISSIONS } from "@/lib/permissions"
 import { WebsiteConfigPanel } from "./website-config-panel"
 import { ApiKeyPanel } from "./api-key-panel"
+import { BrandSettingsPanel } from "./brand-settings-panel"
+import { TemplateManagerPanel } from "./template-manager-panel"
 
 interface ProfileCardProps {
   user: User
@@ -148,6 +150,8 @@ export function ProfileCard({ user }: ProfileCardProps) {
       )}
 
       {canManageConfig && <WebsiteConfigPanel />}
+      {canManageConfig && <BrandSettingsPanel />}
+      {canManageConfig && <TemplateManagerPanel />}
       {canManageConfig && <EmailServiceConfig />}
       {canPromote && <PromotePanel />}
       {canManageWebhook && <ApiKeyPanel />}
