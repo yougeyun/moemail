@@ -173,7 +173,7 @@ export function SharedEmailPageClient({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="app-bg min-h-screen">
       <div className="container mx-auto p-4 max-w-7xl">
         <BrandHeader
           title={email.address}
@@ -193,7 +193,7 @@ export function SharedEmailPageClient({
 
         {/* 桌面端双栏布局 */}
         <div className="hidden lg:grid grid-cols-2 gap-4 h-[calc(100vh-280px)] mt-6">
-          <div className="border-2 border-primary/20 bg-background rounded-lg overflow-hidden">
+          <div className="rounded-2xl border border-primary/20 bg-card/70 backdrop-blur overflow-hidden shadow-[0_0_24px_hsl(var(--primary)/0.06)]">
             <SharedMessageList
               messages={messages.map(msg => ({
                 ...msg,
@@ -235,7 +235,7 @@ export function SharedEmailPageClient({
             />
           </div>
 
-          <div className="border-2 border-primary/20 bg-background rounded-lg overflow-hidden">
+          <div className="rounded-2xl border border-primary/20 bg-card/70 backdrop-blur overflow-hidden shadow-[0_0_24px_hsl(var(--primary)/0.06)]">
             <SharedMessageDetail
               message={selectedMessage ? {
                 ...selectedMessage,
@@ -276,7 +276,7 @@ export function SharedEmailPageClient({
 
         {/* 移动端单栏布局 */}
         <div className="lg:hidden h-[calc(100vh-260px)] mt-6">
-          <div className="border-2 border-primary/20 bg-background rounded-lg overflow-hidden h-full flex flex-col">
+          <div className="rounded-2xl border border-primary/20 bg-card/70 backdrop-blur overflow-hidden h-full flex flex-col shadow-[0_0_24px_hsl(var(--primary)/0.06)]">
             {!selectedMessage ? (
               // 消息列表视图
               <SharedMessageList

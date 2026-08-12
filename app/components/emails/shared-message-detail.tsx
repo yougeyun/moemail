@@ -96,8 +96,8 @@ export function SharedMessageDetail({
                 ::-webkit-scrollbar-thumb {
                   background: ${
                     theme === "dark"
-                      ? "rgba(130, 109, 217, 0.3)"
-                      : "rgba(130, 109, 217, 0.2)"
+                      ? "rgba(34, 211, 238, 0.3)"
+                      : "rgba(8, 145, 178, 0.2)"
                   };
                   border-radius: 9999px;
                   transition: background-color 0.2s;
@@ -105,16 +105,16 @@ export function SharedMessageDetail({
                 ::-webkit-scrollbar-thumb:hover {
                   background: ${
                     theme === "dark"
-                      ? "rgba(130, 109, 217, 0.5)"
-                      : "rgba(130, 109, 217, 0.4)"
+                      ? "rgba(34, 211, 238, 0.5)"
+                      : "rgba(8, 145, 178, 0.4)"
                   };
                 }
                 * {
                   scrollbar-width: thin;
                   scrollbar-color: ${
                     theme === "dark"
-                      ? "rgba(130, 109, 217, 0.3) transparent"
-                      : "rgba(130, 109, 217, 0.2) transparent"
+                      ? "rgba(34, 211, 238, 0.3) transparent"
+                      : "rgba(8, 145, 178, 0.2) transparent"
                   };
                 }
               </style>
@@ -157,14 +157,14 @@ export function SharedMessageDetail({
     return (
       <div className="flex items-center justify-center h-32">
         <Loader2 className="w-5 h-5 animate-spin text-primary/60" />
-        <span className="ml-2 text-sm text-gray-500">{t.loading}</span>
+        <span className="ml-2 text-sm text-muted-foreground">{t.loading}</span>
       </div>
     )
   }
 
   if (!message) {
     return (
-      <div className="flex items-center justify-center h-32 text-gray-500">
+      <div className="flex items-center justify-center h-32 text-muted-foreground">
         {t.selectMessage}
       </div>
     )
@@ -172,11 +172,11 @@ export function SharedMessageDetail({
 
   return (
     <div className="h-full flex flex-col">
-      <div className="p-4 space-y-3 border-b border-primary/20">
+      <div className="p-4 space-y-3 border-b border-primary/15">
         <div className="flex items-start justify-between gap-2">
           <h3 className="text-base font-bold flex-1">{message.subject}</h3>
         </div>
-        <div className="text-xs text-gray-500 space-y-1">
+        <div className="text-xs text-muted-foreground space-y-1">
           {message.from_address && (
             <p>
               {t.from}: {message.from_address}
@@ -197,7 +197,7 @@ export function SharedMessageDetail({
       </div>
 
       {message.html && message.content && (
-        <div className="border-b border-primary/20 p-2">
+        <div className="border-b border-primary/15 p-2">
           <RadioGroup
             value={viewMode}
             onValueChange={(value) => setViewMode(value as ViewMode)}
@@ -231,7 +231,7 @@ export function SharedMessageDetail({
             {message.content}
           </div>
         ) : (
-          <div className="flex items-center justify-center h-32 text-gray-500 text-sm">
+          <div className="flex items-center justify-center h-32 text-muted-foreground text-sm">
             {t.selectMessage}
           </div>
         )}

@@ -21,7 +21,7 @@ export function FloatingLanguageSwitcher() {
           <Button
             variant="outline"
             size="icon"
-            className="bg-white dark:bg-background rounded-full shadow-lg group relative border-primary/20 hover:border-primary/40 transition-all"
+            className="bg-background/85 backdrop-blur rounded-full shadow-lg group relative border-primary/30 hover:border-primary/55 hover:neon-glow transition-all"
             aria-label="Switch language"
           >
             <Languages className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />

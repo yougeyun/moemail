@@ -54,3 +54,11 @@ wrangler.email.json
 
 # brainstorm visual companion artifacts
 .superpowers/
+
+# local planning and verification artifacts
+task_plan.md
+findings.md
+progress.md
+screenshots/
+.next-dev.log
+.next-dev.err.log

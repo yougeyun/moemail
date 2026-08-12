@@ -99,7 +99,7 @@ export function WebsiteConfigPanel() {
   }
 
   return (
-    <div className="bg-background rounded-lg border-2 border-primary/20 p-6">
+    <div className="rounded-2xl border border-primary/20 bg-card/70 p-6 backdrop-blur shadow-[0_0_24px_hsl(var(--primary)/0.06)]">
       <div className="flex items-center gap-2 mb-6">
         <Settings className="w-5 h-5 text-primary" />
         <h2 className="text-lg font-semibold">{t("title")}</h2>

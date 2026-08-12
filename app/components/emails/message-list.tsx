@@ -209,7 +209,7 @@ export function MessageList({ email, messageType, onMessageSelect, selectedMessa
   return (
   <>
     <div className="h-full flex flex-col">
-      <div className="p-2 flex justify-between items-center border-b border-primary/20">
+      <div className="p-2 flex justify-between items-center border-b border-primary/15">
         <Button
           variant="ghost"
           size="icon"
@@ -219,30 +219,30 @@ export function MessageList({ email, messageType, onMessageSelect, selectedMessa
         >
           <RefreshCw className="h-4 w-4" />
         </Button>
-        <span className="text-xs text-gray-500">
+        <span className="text-xs text-muted-foreground">
           {total > 0 ? `${total} ${t("messageCount")}` : t("noMessages")}
         </span>
       </div>
 
       <div className="flex-1 overflow-auto" onScroll={handleScroll}>
         {loading ? (
-          <div className="p-4 text-center text-sm text-gray-500">{t("loading")}</div>
+          <div className="p-4 text-center text-sm text-muted-foreground">{t("loading")}</div>
         ) : messages.length > 0 ? (
-          <div className="divide-y divide-primary/10">
+          <div className="space-y-1 p-1.5">
             {messages.map(message => (
               <div
                 key={message.id}
                 onClick={() => onMessageSelect(message.id, messageType)}
                 className={cn(
-                  "p-3 hover:bg-primary/5 cursor-pointer group",
-                  selectedMessageId === message.id && "bg-primary/10"
+                  "rounded-xl p-3 hover:bg-primary/5 cursor-pointer group border border-transparent",
+                  selectedMessageId === message.id && "bg-secondary/10 border-secondary/30 shadow-[0_0_16px_hsl(var(--secondary)/0.12)]"
                 )}
               >
                 <div className="flex items-start gap-3">
-                  <Mail className="w-4 h-4 text-primary/60 mt-1" />
+                  <Mail className={cn("w-4 h-4 mt-1 shrink-0", selectedMessageId === message.id ? "text-secondary" : "text-primary/60")} />
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-sm truncate">{message.subject}</p>
-                    <div className="mt-1 flex items-center gap-2 text-xs text-gray-500">
+                    <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
                       <span className="truncate">
                         {message.from_address || message.to_address || ''}
                       </span>
@@ -283,13 +283,13 @@ export function MessageList({ email, messageType, onMessageSelect, selectedMessa
               </div>
             ))}
             {loadingMore && (
-              <div className="text-center text-sm text-gray-500 py-2">
+              <div className="text-center text-sm text-muted-foreground py-2">
                 {t("loadingMore")}
               </div>
             )}
           </div>
         ) : (
-          <div className="p-4 text-center text-sm text-gray-500">
+          <div className="p-4 text-center text-sm text-muted-foreground">
             {t("noMessages")}
           </div>
         )}

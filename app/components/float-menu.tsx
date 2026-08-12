@@ -28,8 +28,8 @@ export function FloatMenu() {
             <Button
               variant="outline"
               size="icon"
-              className="bg-white dark:bg-background rounded-full shadow-lg group relative border-primary/20"
-              onClick={() => window.open("https://github.com/beilunyang/moemail", "_blank")}
+              className="bg-background/85 backdrop-blur rounded-full shadow-lg group relative border-primary/30 hover:border-primary/55 hover:neon-glow transition-all"
+              onClick={() => window.open("https://github.com/yougeyun/moemail", "_blank")}
             >
               <Github 
                 className="w-4 h-4 transition-all duration-300 text-primary group-hover:scale-110"

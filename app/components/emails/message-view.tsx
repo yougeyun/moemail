@@ -125,22 +125,22 @@ export function MessageView({ emailId, messageId, messageType = 'received' }: Me
                 }
                 ::-webkit-scrollbar-thumb {
                   background: ${theme === 'dark'
-                    ? 'rgba(130, 109, 217, 0.3)'
-                    : 'rgba(130, 109, 217, 0.2)'};
+                    ? 'rgba(34, 211, 238, 0.3)'
+                    : 'rgba(8, 145, 178, 0.2)'};
                   border-radius: 9999px;
                   transition: background-color 0.2s;
                 }
                 ::-webkit-scrollbar-thumb:hover {
                   background: ${theme === 'dark'
-                    ? 'rgba(130, 109, 217, 0.5)'
-                    : 'rgba(130, 109, 217, 0.4)'};
+                    ? 'rgba(34, 211, 238, 0.5)'
+                    : 'rgba(8, 145, 178, 0.4)'};
                 }
                 /* Firefox 滚动条 */
                 * {
                   scrollbar-width: thin;
                   scrollbar-color: ${theme === 'dark'
-                    ? 'rgba(130, 109, 217, 0.3) transparent'
-                    : 'rgba(130, 109, 217, 0.2) transparent'};
+                    ? 'rgba(34, 211, 238, 0.3) transparent'
+                    : 'rgba(8, 145, 178, 0.2) transparent'};
                 }
               </style>
             </head>
@@ -186,7 +186,7 @@ export function MessageView({ emailId, messageId, messageType = 'received' }: Me
     return (
       <div className="flex items-center justify-center h-32">
         <Loader2 className="w-5 h-5 animate-spin text-primary/60" />
-        <span className="ml-2 text-sm text-gray-500">{t("loading")}</span>
+        <span className="ml-2 text-sm text-muted-foreground">{t("loading")}</span>
       </div>
     )
   }
@@ -209,7 +209,7 @@ export function MessageView({ emailId, messageId, messageType = 'received' }: Me
 
   return (
     <div className="h-full flex flex-col">
-      <div className="p-4 space-y-3 border-b border-primary/20">
+      <div className="p-4 space-y-3 border-b border-primary/15">
         <div className="flex items-start justify-between gap-2">
           <h3 className="text-base font-bold flex-1">{message.subject}</h3>
           <ShareMessageDialog 
@@ -218,12 +218,12 @@ export function MessageView({ emailId, messageId, messageType = 'received' }: Me
             messageSubject={message.subject}
             trigger={
               <button className="p-1.5 hover:bg-primary/10 rounded-md transition-colors">
-                <Share2 className="h-4 w-4 text-gray-500" />
+                <Share2 className="h-4 w-4 text-muted-foreground" />
               </button>
             }
           />
         </div>
-        <div className="text-xs text-gray-500 space-y-1">
+        <div className="text-xs text-muted-foreground space-y-1">
           {message.from_address && (
             <p>{t("from")}: {message.from_address}</p>
           )}
@@ -235,7 +235,7 @@ export function MessageView({ emailId, messageId, messageType = 'received' }: Me
       </div>
       
       {message.html && message.content && (
-        <div className="border-b border-primary/20 p-2">
+        <div className="border-b border-primary/15 p-2">
           <RadioGroup
             value={viewMode}
             onValueChange={(value) => setViewMode(value as ViewMode)}

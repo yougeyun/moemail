@@ -25,8 +25,8 @@ export function ThreeColumnLayout() {
   const { copyToClipboard } = useCopy()
   const { canSend: canSendEmails } = useSendPermission()
 
-  const columnClass = "border-2 border-primary/20 bg-background rounded-lg overflow-hidden flex flex-col"
-  const headerClass = "p-2 border-b-2 border-primary/20 flex items-center justify-between shrink-0"
+  const columnClass = "rounded-2xl border border-primary/20 bg-card/70 backdrop-blur overflow-hidden flex flex-col shadow-[0_0_24px_hsl(var(--primary)/0.06)]"
+  const headerClass = "p-3 border-b border-primary/15 flex items-center justify-between shrink-0"
   const titleClass = "text-sm font-bold px-2 w-full overflow-hidden"
 
   // 移动端视图逻辑

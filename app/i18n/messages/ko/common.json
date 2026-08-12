@@ -10,6 +10,7 @@
   },
   "nav": {
     "home": "홈",
+    "mailbox": "메일함",
     "login": "로그인",
     "profile": "프로필",
     "logout": "로그아웃",

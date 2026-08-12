@@ -1,18 +1,18 @@
 {
-  "title": "MoeMail",
-  "subtitle": "Cute Temporary Email Service",
+  "title": "Temp Mail, Sailing Into the Neon Night",
+  "subtitle": "Create once, receive in real time. Privacy and speed, together.",
   "features": {
     "privacy": {
       "title": "Privacy Protection",
       "description": "Protect your real email address"
     },
     "instant": {
-      "title": "Email Sharing",
-      "description": "Share your mailbox with others"
+      "title": "Real-time Inbox",
+      "description": "New messages arrive automatically"
     },
     "expiry": {
-      "title": "Auto Expiry",
-      "description": "Automatically expires when due"
+      "title": "Flexible Expiry",
+      "description": "From 1 hour to permanent"
     },
     "openapi": {
       "title": "Open API",
@@ -24,4 +24,3 @@
     "getStarted": "Get Started"
   }
 }
-

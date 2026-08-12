@@ -25,7 +25,8 @@ export default async function MoePage({
   const hasPermission = await checkPermission(PERMISSIONS.MANAGE_EMAIL)
 
   return (
-    <div className="bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 h-screen">
+    <div className="app-bg relative h-screen">
+      <div className="absolute inset-0 -z-10 bg-grid-neon opacity-40" />
       <div className="container mx-auto h-full px-4 lg:px-8 max-w-[1600px]">
         <Header />
         <main className="h-full">

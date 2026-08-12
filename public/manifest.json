@@ -1,11 +1,11 @@
 {
   "name": "MoeMail",
   "short_name": "MoeMail",
-  "description": "萌萌哒临时邮箱服务",
+  "description": "萌系霓虹临时邮箱服务，实时收信，隐私保护，开放 API。",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#826DD9",
+  "background_color": "#0B1220",
+  "theme_color": "#22D3EE",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",
@@ -20,4 +20,4 @@
       "purpose": "any maskable"
     }
   ]
-} 
+}

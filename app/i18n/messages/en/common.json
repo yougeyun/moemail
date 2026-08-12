@@ -10,6 +10,7 @@
   },
   "nav": {
     "home": "Home",
+    "mailbox": "Mailbox",
     "login": "Login",
     "profile": "Profile",
     "logout": "Logout",
