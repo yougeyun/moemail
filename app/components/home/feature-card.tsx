@@ -6,16 +6,16 @@ interface FeatureCardProps {
 
 export function FeatureCard({ icon, title, description }: FeatureCardProps) {
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-primary/20 bg-card/70 p-4 backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-[0_0_22px_hsl(var(--primary)/0.14)]">
-      <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-primary/10 blur-2xl transition-opacity opacity-0 group-hover:opacity-100" />
-      <div className="relative flex items-center gap-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-primary/25 bg-primary/10 text-primary shadow-[0_0_14px_hsl(var(--primary)/0.18)]">
+    <div className="group relative overflow-hidden rounded-xl border border-border/80 bg-card/85 p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-md">
+      <div className="absolute -right-10 -top-10 h-24 w-24 rounded-full bg-primary/10 blur-2xl transition-opacity opacity-0 group-hover:opacity-100" />
+      <div className="relative">
+        <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary transition-colors group-hover:bg-primary/15">
           {icon}
         </div>
-        <div className="min-w-0 text-left">
-          <h3 className="truncate text-sm font-bold tracking-wide">{title}</h3>
-          <p className="truncate text-xs text-muted-foreground">{description}</p>
-        </div>
+        <h3 className="text-base font-semibold text-foreground">{title}</h3>
+        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+          {description}
+        </p>
       </div>
     </div>
   )

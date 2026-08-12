@@ -27,7 +27,7 @@ export default async function MoePage({
   return (
     <div className="app-bg relative h-screen">
       <div className="absolute inset-0 -z-10 bg-grid-neon opacity-40" />
-      <div className="container mx-auto h-full px-4 lg:px-8 max-w-[1600px]">
+      <div className="container mx-auto h-full max-w-[1440px] px-4 lg:px-8">
         <Header />
         <main className="h-full">
           <ThreeColumnLayout />

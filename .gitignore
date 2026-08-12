@@ -62,4 +62,6 @@ progress.md
 screenshots/
 .next-dev.log
 .next-dev.err.log
+.next-dev*.log
+.next-dev*.err.log
 pnpm-workspace.yaml

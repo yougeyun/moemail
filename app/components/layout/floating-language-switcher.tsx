@@ -21,10 +21,10 @@ export function FloatingLanguageSwitcher() {
           <Button
             variant="outline"
             size="icon"
-            className="bg-background/85 backdrop-blur rounded-full shadow-lg group relative border-primary/30 hover:border-primary/55 hover:neon-glow transition-all"
+            className="bg-background/90 backdrop-blur rounded-full shadow-lg group relative border-border hover:border-border hover:shadow-md transition-all"
             aria-label="Switch language"
           >
-            <Languages className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
+            <Languages className="h-5 w-5 text-foreground group-hover:scale-110 transition-transform" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" side="top" className="mb-2">

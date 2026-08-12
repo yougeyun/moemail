@@ -3,9 +3,9 @@ const previewMessages = [
     id: "gh",
     initials: "GH",
     from: "GitHub",
-    subject: "Your verification code is 482913",
+    subject: "您的验证码是 482913",
     time: "09:41",
-    tone: "from-cyan-400 to-fuchsia-400",
+    tone: "from-rose-500 to-amber-500",
   },
   {
     id: "md",
@@ -13,48 +13,48 @@ const previewMessages = [
     from: "MoeDaily",
     subject: "欢迎加入萌系星球",
     time: "08:22",
-    tone: "from-fuchsia-400 to-cyan-400",
+    tone: "from-emerald-500 to-teal-500",
   },
   {
     id: "nl",
-    initials: "NL",
-    from: "NeonList",
-    subject: "今晚的霓虹电波已上线",
+    initials: "云笺",
+    from: "云笺周刊",
+    subject: "今晚的精选内容已上线",
     time: "昨天",
-    tone: "from-lime-400 to-cyan-400",
+    tone: "from-amber-500 to-rose-500",
   },
 ] as const
 
 export function LiveInboxPreview() {
   return (
-    <div className="relative">
-      <div className="absolute -inset-3 rounded-[28px] bg-gradient-to-br from-primary/25 via-secondary/20 to-lime-400/15 blur-2xl" />
-      <div className="relative overflow-hidden rounded-3xl border border-primary/25 bg-background/85 shadow-2xl backdrop-blur-xl">
-        <div className="flex items-center justify-between border-b border-primary/15 px-5 py-3">
-          <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-lime-400 shadow-[0_0_10px_rgba(163,230,53,0.8)]" />
-            <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-              Live Inbox
+    <div className="relative mx-auto max-w-md">
+      <div className="absolute -inset-3 -z-10 rounded-2xl bg-gradient-to-br from-primary/10 via-transparent to-secondary/10 blur-2xl" />
+      <div className="panel relative overflow-hidden">
+        <div className="flex items-center justify-between border-b border-border/80 bg-card/70 px-5 py-3.5">
+          <div className="flex items-center gap-2.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-secondary shadow-[0_0_8px_hsl(var(--secondary)/0.55)]" />
+            <span className="text-xs font-semibold tracking-normal text-foreground">
+              实时收件箱
             </span>
           </div>
-          <span className="rounded-full border border-secondary/35 bg-secondary/10 px-3 py-1 text-[11px] font-semibold text-secondary">
-            3 New
+          <span className="rounded-full border border-primary/20 bg-primary/10 px-2.5 py-0.5 text-[11px] font-medium text-primary">
+            3 封新邮件
           </span>
         </div>
 
-        <div className="divide-y divide-primary/10">
+        <div className="divide-y divide-border/70">
           {previewMessages.map((message) => (
             <div
               key={message.id}
-              className="flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-primary/5"
+              className="flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-accent/50"
             >
               <div
-                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${message.tone} text-xs font-extrabold text-background shadow-lg`}
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${message.tone} text-xs font-bold text-white shadow-sm`}
               >
                 {message.initials}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="truncate text-sm font-semibold">{message.from}</div>
+                <div className="truncate text-sm font-medium text-foreground">{message.from}</div>
                 <div className="truncate text-xs text-muted-foreground">
                   {message.subject}
                 </div>
@@ -66,10 +66,13 @@ export function LiveInboxPreview() {
           ))}
         </div>
 
-        <div className="border-t border-primary/15 px-5 py-3">
+        <div className="border-t border-border/80 bg-card/60 px-5 py-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">实时收信 · 隐私保护</span>
-            <span className="font-mono text-xs text-primary">● ONLINE</span>
+            <span className="text-xs text-muted-foreground">实时监听中 · 到期自动失效</span>
+            <span className="flex items-center gap-1.5 text-xs font-medium text-secondary">
+              <span className="h-1.5 w-1.5 rounded-full bg-secondary" />
+              在线
+            </span>
           </div>
         </div>
       </div>

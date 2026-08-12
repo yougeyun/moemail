@@ -41,7 +41,7 @@ export function SharedMessagePageClient({ message }: SharedMessagePageClientProp
         />
 
         <div className="mt-6">
-          <div className="rounded-2xl border border-primary/20 bg-card/70 backdrop-blur overflow-hidden h-[calc(100vh-260px)] lg:h-[calc(100vh-280px)] shadow-[0_0_24px_hsl(var(--primary)/0.06)]">
+          <div className="panel overflow-hidden h-[calc(100vh-260px)] lg:h-[calc(100vh-280px)]">
             <SharedMessageDetail
               message={{
                 ...message,

@@ -25,9 +25,9 @@ export function ThreeColumnLayout() {
   const { copyToClipboard } = useCopy()
   const { canSend: canSendEmails } = useSendPermission()
 
-  const columnClass = "rounded-2xl border border-primary/20 bg-card/70 backdrop-blur overflow-hidden flex flex-col shadow-[0_0_24px_hsl(var(--primary)/0.06)]"
-  const headerClass = "p-3 border-b border-primary/15 flex items-center justify-between shrink-0"
-  const titleClass = "text-sm font-bold px-2 w-full overflow-hidden"
+  const columnClass = "panel overflow-hidden flex flex-col min-h-0"
+  const headerClass = "px-4 py-3 border-b border-border/80 bg-card/60 flex items-center justify-between shrink-0"
+  const titleClass = "text-sm font-semibold w-full overflow-hidden"
 
   // 移动端视图逻辑
   const getMobileView = () => {
@@ -54,7 +54,7 @@ export function ThreeColumnLayout() {
   return (
     <div className="pb-5 pt-20 h-full flex flex-col">
       {/* 桌面端三栏布局 */}
-      <div className="hidden lg:grid grid-cols-12 gap-4 h-full min-h-0">
+      <div className="hidden h-full min-h-0 grid-cols-12 gap-3 lg:grid">
         <div className={cn("col-span-3", columnClass)}>
           <div className={headerClass}>
             <h2 className={titleClass}>{t("myEmails")}</h2>

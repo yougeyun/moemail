@@ -59,8 +59,26 @@ const config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ['var(--font-zpix)'],
-        zpix: ['var(--font-zpix)'],
+        sans: [
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"Segoe UI"',
+          '"PingFang SC"',
+          '"Hiragino Sans GB"',
+          '"Microsoft YaHei"',
+          '"HarmonyOS Sans SC"',
+          '"Noto Sans CJK SC"',
+          '"Source Han Sans SC"',
+          'sans-serif',
+        ],
+        display: [
+          '"Noto Serif SC"',
+          '"Source Han Serif SC"',
+          '"Songti SC"',
+          '"STSong"',
+          '"SimSun"',
+          'serif',
+        ],
       },
       keyframes: {
         "accordion-down": {

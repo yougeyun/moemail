@@ -209,7 +209,7 @@ export function MessageList({ email, messageType, onMessageSelect, selectedMessa
   return (
   <>
     <div className="h-full flex flex-col">
-      <div className="p-2 flex justify-between items-center border-b border-primary/15">
+      <div className="flex items-center justify-between border-b border-border/80 px-3 py-2">
         <Button
           variant="ghost"
           size="icon"
@@ -219,7 +219,7 @@ export function MessageList({ email, messageType, onMessageSelect, selectedMessa
         >
           <RefreshCw className="h-4 w-4" />
         </Button>
-        <span className="text-xs text-muted-foreground">
+        <span className="rounded-full bg-muted/70 px-2.5 py-0.5 text-xs text-muted-foreground">
           {total > 0 ? `${total} ${t("messageCount")}` : t("noMessages")}
         </span>
       </div>
@@ -234,12 +234,12 @@ export function MessageList({ email, messageType, onMessageSelect, selectedMessa
                 key={message.id}
                 onClick={() => onMessageSelect(message.id, messageType)}
                 className={cn(
-                  "rounded-xl p-3 hover:bg-primary/5 cursor-pointer group border border-transparent",
-                  selectedMessageId === message.id && "bg-secondary/10 border-secondary/30 shadow-[0_0_16px_hsl(var(--secondary)/0.12)]"
+                  "group cursor-pointer rounded-lg border border-transparent p-3 transition-colors hover:bg-accent/60",
+                  selectedMessageId === message.id && "border-secondary/25 bg-secondary/10"
                 )}
               >
                 <div className="flex items-start gap-3">
-                  <Mail className={cn("w-4 h-4 mt-1 shrink-0", selectedMessageId === message.id ? "text-secondary" : "text-primary/60")} />
+                  <Mail className={cn("w-4 h-4 mt-1 shrink-0", selectedMessageId === message.id ? "text-secondary" : "text-muted-foreground")} />
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-sm truncate">{message.subject}</p>
                     <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
-import { Zap, Eye, EyeOff } from "lucide-react"
+import { Zap, Eye, EyeOff, Gem, Sword } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
@@ -87,7 +87,7 @@ export function EmailServiceConfig() {
   }
 
   return (
-    <div className="rounded-2xl border border-primary/20 bg-card/70 p-6 backdrop-blur shadow-[0_0_24px_hsl(var(--primary)/0.06)]">
+    <div className="panel-card">
       <div className="flex items-center gap-2 mb-6">
         <Zap className="w-5 h-5 text-primary" />
         <h2 className="text-lg font-semibold">{t("title")}</h2>
@@ -147,26 +147,26 @@ export function EmailServiceConfig() {
                 {t("roleLimits")}
               </Label>
               <div className="space-y-4">
-                <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg text-sm">
-                  <p className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <div className="rounded-lg border border-secondary/25 bg-secondary/10 p-4 text-sm">
+                  <p className="mb-3 flex items-center gap-2 font-semibold text-secondary">
+                    <div className="h-2 w-2 rounded-full bg-secondary"></div>
                     {t("fixedRoleLimits")}
                   </p>
-                  <div className="space-y-2 text-blue-800">
+                  <div className="space-y-2 text-muted-foreground">
                     <div className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                      <div className="h-1.5 w-1.5 rounded-full bg-emerald-500"></div>
                       <span><strong>{tCard("roles.EMPEROR")}</strong> - {t("emperorLimit")}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
+                      <div className="h-1.5 w-1.5 rounded-full bg-primary"></div>
                       <span><strong>{tCard("roles.CIVILIAN")}</strong> - {t("civilianLimit")}</span>
                     </div>
                   </div>
                 </div>
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                    <p className="text-sm font-medium text-gray-900">{t("configRoleLabel")}</p>
+                    <div className="h-2 w-2 rounded-full bg-amber-500"></div>
+                    <p className="text-sm font-medium text-foreground">{t("configRoleLabel")}</p>
                   </div>
                   {[
                     { value: "duke", label: tCard("roles.DUKE"), key: "duke" as const },
@@ -181,7 +181,7 @@ export function EmailServiceConfig() {
                         className={`group relative p-4 border-2 rounded-xl transition-all duration-200 ${
                           isEnabled
                             ? 'border-primary/30 bg-primary/5 shadow-sm' 
-                            : 'border-gray-200 hover:border-primary/20 hover:shadow-sm'
+                            : 'border-border hover:border-primary/25 hover:shadow-sm'
                         }`}
                       >
                         <div className="flex items-center justify-between">
@@ -206,9 +206,11 @@ export function EmailServiceConfig() {
                                 htmlFor={`role-${role.value}`} 
                                 className="text-base font-semibold cursor-pointer select-none flex items-center gap-2"
                               >
-                                <span className="text-2xl">
-                                  {role.value === 'duke' ? '🏰' : '⚔️'}
-                                </span>
+                                {role.value === 'duke' ? (
+                                  <Gem className="h-5 w-5 text-primary" />
+                                ) : (
+                                  <Sword className="h-5 w-5 text-primary" />
+                                )}
                                 {role.label}
                               </Label>
                               <p className="text-xs text-muted-foreground mt-1">
@@ -218,7 +220,7 @@ export function EmailServiceConfig() {
                           </div>
                           <div className="flex items-center space-x-3">
                             <div className="text-right">
-                              <Label className="text-xs font-medium text-gray-600 block mb-1">{t("dailyLimit")}</Label>
+                              <Label className="mb-1 block text-xs font-medium text-muted-foreground">{t("dailyLimit")}</Label>
                               <div className="flex items-center space-x-2">
                                 <Input
                                   type="number"

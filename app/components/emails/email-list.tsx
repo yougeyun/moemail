@@ -163,7 +163,7 @@ export function EmailList({ onEmailSelect, selectedEmailId }: EmailListProps) {
   return (
     <>
       <div className="flex flex-col h-full">
-        <div className="p-2 flex justify-between items-center border-b border-primary/15">
+        <div className="flex items-center justify-between border-b border-border/80 px-3 py-2">
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
@@ -174,7 +174,7 @@ export function EmailList({ onEmailSelect, selectedEmailId }: EmailListProps) {
             >
               <RefreshCw className="h-4 w-4" />
             </Button>
-            <span className="text-xs text-muted-foreground">
+            <span className="rounded-full bg-muted/70 px-2.5 py-0.5 text-xs text-muted-foreground">
               {role === ROLES.EMPEROR ? (
                 t("emailCountUnlimited", { count: total })
               ) : (
@@ -193,13 +193,14 @@ export function EmailList({ onEmailSelect, selectedEmailId }: EmailListProps) {
               {emails.map(email => (
                 <div
                   key={email.id}
-                  className={cn("flex items-center gap-2 p-2.5 rounded-xl cursor-pointer text-sm group border border-transparent",
-                    "hover:bg-primary/5 hover:border-primary/15",
-                    selectedEmailId === email.id && "bg-primary/10 border-primary/30 shadow-[0_0_16px_hsl(var(--primary)/0.12)]"
+                  className={cn(
+                    "group flex cursor-pointer items-center gap-3 rounded-lg border border-transparent px-3 py-2.5 text-sm transition-colors",
+                    "hover:bg-accent/60 hover:border-border/70",
+                    selectedEmailId === email.id && "border-primary/25 bg-primary/5"
                   )}
                   onClick={() => onEmailSelect(email)}
                 >
-                  <Mail className={cn("h-4 w-4 shrink-0", selectedEmailId === email.id ? "text-primary" : "text-primary/60")} />
+                  <Mail className={cn("h-4 w-4 shrink-0", selectedEmailId === email.id ? "text-primary" : "text-muted-foreground")} />
                   <div className="truncate flex-1">
                     <div className="font-medium truncate">{email.address}</div>
                     <div className="text-xs text-muted-foreground">

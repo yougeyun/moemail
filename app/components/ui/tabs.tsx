@@ -13,7 +13,7 @@ const TabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      "inline-flex h-10 items-center justify-center rounded-full bg-muted/80 p-1 text-muted-foreground",
+      "inline-flex h-10 items-center justify-center rounded-lg bg-muted/70 p-1 text-muted-foreground",
       className
     )}
     {...props}
@@ -28,7 +28,7 @@ const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "inline-flex items-center justify-center whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm",
+      "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm",
       className
     )}
     {...props}
@@ -97,13 +97,13 @@ const SlidingTabsList = React.forwardRef<
     <TabsPrimitive.List
       ref={combinedRef}
       className={cn(
-        "relative flex w-full bg-muted/80 rounded-full p-1 h-auto",
+        "relative flex w-full bg-muted/70 rounded-lg p-1 h-auto",
         className
       )}
       {...props}
     >
       <div 
-        className="absolute top-1 bottom-1 bg-primary rounded-full neon-glow transition-all duration-300 ease-in-out"
+        className="absolute top-1 bottom-1 bg-primary rounded-md shadow-sm transition-all duration-300 ease-in-out"
         style={{
           width: tabWidth,
           left: slidePosition
@@ -122,7 +122,7 @@ const SlidingTabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "relative z-10 flex-1 h-8 gap-2 flex items-center justify-center text-sm font-medium transition-colors duration-200 rounded-full px-3 py-2 data-[state=active]:text-primary-foreground data-[state=active]:bg-transparent data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+      "relative z-10 flex-1 h-8 gap-2 flex items-center justify-center text-sm font-medium transition-colors duration-200 rounded-md px-3 py-2 data-[state=active]:text-primary-foreground data-[state=active]:bg-transparent data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
       className
     )}
     {...props}

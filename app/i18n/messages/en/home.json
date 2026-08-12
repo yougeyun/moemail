@@ -1,18 +1,19 @@
 {
-  "title": "Temp Mail, Sailing Into the Neon Night",
-  "subtitle": "Create once, receive in real time. Privacy and speed, together.",
+  "title": "Temp Mail That Keeps Your Real Inbox Private",
+  "subtitle": "Create once, receive in real time. No phone number needed.",
+  "badge": "Privacy First · Real-time Delivery",
   "features": {
     "privacy": {
       "title": "Privacy Protection",
-      "description": "Protect your real email address"
+      "description": "Keep spam away from your real inbox"
     },
     "instant": {
       "title": "Real-time Inbox",
-      "description": "New messages arrive automatically"
+      "description": "New messages arrive without refreshing"
     },
     "expiry": {
       "title": "Flexible Expiry",
-      "description": "From 1 hour to permanent"
+      "description": "From 1 hour to permanent, always manageable"
     },
     "openapi": {
       "title": "Open API",

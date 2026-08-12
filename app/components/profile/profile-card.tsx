@@ -71,8 +71,8 @@ export function ProfileCard({ user }: ProfileCardProps) {
   const canManageConfig = checkPermission(PERMISSIONS.MANAGE_CONFIG)
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div className="rounded-2xl border border-primary/20 bg-card/70 p-6 backdrop-blur shadow-[0_0_24px_hsl(var(--primary)/0.06)]">
+    <div className="mx-auto max-w-3xl space-y-6">
+      <div className="panel-card">
         <div className="flex items-center gap-6">
           <div className="relative">
             {user.image && (
@@ -81,13 +81,13 @@ export function ProfileCard({ user }: ProfileCardProps) {
                 alt={user.name || tAuth("userAvatar")}
                 width={80}
                 height={80}
-                className="rounded-full ring-2 ring-primary/20"
+                className="rounded-2xl ring-2 ring-border"
               />
             )}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold truncate">{user.name}</h2>
+              <h2 className="truncate text-2xl font-bold">{user.name}</h2>
               {!!user?.providers?.length && (
                 <div className="flex gap-2">
                   {user.providers.map((provider) => {
@@ -136,9 +136,11 @@ export function ProfileCard({ user }: ProfileCardProps) {
       </div>
 
       {canManageWebhook && (
-      <div className="rounded-2xl border border-primary/20 bg-card/70 p-6 backdrop-blur shadow-[0_0_24px_hsl(var(--primary)/0.06)]">
-          <div className="flex items-center gap-2 mb-6">
-            <Settings className="w-5 h-5 text-primary" />
+      <div className="panel-card">
+          <div className="mb-6 flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <Settings className="h-5 w-5" />
+            </div>
             <h2 className="text-lg font-semibold">{tWebhook("title")}</h2>
           </div>
           <WebhookConfig />

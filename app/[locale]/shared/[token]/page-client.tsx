@@ -193,7 +193,7 @@ export function SharedEmailPageClient({
 
         {/* 桌面端双栏布局 */}
         <div className="hidden lg:grid grid-cols-2 gap-4 h-[calc(100vh-280px)] mt-6">
-          <div className="rounded-2xl border border-primary/20 bg-card/70 backdrop-blur overflow-hidden shadow-[0_0_24px_hsl(var(--primary)/0.06)]">
+          <div className="panel overflow-hidden">
             <SharedMessageList
               messages={messages.map(msg => ({
                 ...msg,
@@ -235,7 +235,7 @@ export function SharedEmailPageClient({
             />
           </div>
 
-          <div className="rounded-2xl border border-primary/20 bg-card/70 backdrop-blur overflow-hidden shadow-[0_0_24px_hsl(var(--primary)/0.06)]">
+          <div className="panel overflow-hidden">
             <SharedMessageDetail
               message={selectedMessage ? {
                 ...selectedMessage,
@@ -276,7 +276,7 @@ export function SharedEmailPageClient({
 
         {/* 移动端单栏布局 */}
         <div className="lg:hidden h-[calc(100vh-260px)] mt-6">
-          <div className="rounded-2xl border border-primary/20 bg-card/70 backdrop-blur overflow-hidden h-full flex flex-col shadow-[0_0_24px_hsl(var(--primary)/0.06)]">
+          <div className="panel flex h-full flex-col overflow-hidden">
             {!selectedMessage ? (
               // 消息列表视图
               <SharedMessageList
@@ -321,7 +321,7 @@ export function SharedEmailPageClient({
             ) : (
               // 消息详情视图
               <>
-                <div className="p-2 border-b-2 border-primary/20 flex items-center justify-between shrink-0">
+                <div className="flex shrink-0 items-center justify-between border-b border-border/80 px-4 py-3">
                   <button
                     onClick={() => setSelectedMessage(null)}
                     className="text-sm text-primary"

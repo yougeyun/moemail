@@ -1,18 +1,19 @@
 {
-  "title": "臨時郵箱，向霓虹深處航行",
-  "subtitle": "一次建立，即時收信，隱私與速度並存",
+  "title": "臨時信箱，讓收信更安心",
+  "subtitle": "一次建立，即時收信；無需手機號，保護真實信箱地址。",
+  "badge": "私隱保護 · 即時收信",
   "features": {
     "privacy": {
-      "title": "隱私保護",
-      "description": "保護您的真實郵箱地址"
+      "title": "私隱保護",
+      "description": "隔離垃圾郵件，保護真實信箱地址"
     },
     "instant": {
       "title": "即時收信",
-      "description": "新郵件自動送達，無需重新整理"
+      "description": "新郵件自動送達，無需手動整理"
     },
     "expiry": {
       "title": "靈活期限",
-      "description": "1 小時到永久有效"
+      "description": "1 小時到永久，隨時可管理"
     },
     "openapi": {
       "title": "開放 API",
@@ -20,7 +21,7 @@
     }
   },
   "actions": {
-    "enterMailbox": "進入郵箱",
+    "enterMailbox": "進入信箱",
     "getStarted": "開始使用"
   }
 }

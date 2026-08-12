@@ -22,6 +22,7 @@ import {
 import { Github, Loader2, KeyRound, User2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Turnstile } from "@/components/auth/turnstile"
+import { Logo } from "@/components/ui/logo"
 
 interface TurnstileConfigProps {
   enabled: boolean
@@ -205,18 +206,21 @@ export function LoginForm({ turnstile }: LoginFormProps) {
   }
 
   return (
-    <Card className="w-[95%] max-w-lg border-primary/25 neon-glow">
-      <CardHeader className="space-y-2">
-        <CardTitle className="text-gradient-neon text-2xl text-center">
+    <Card className="w-[95%] max-w-md panel overflow-hidden shadow-xl">
+      <CardHeader className="space-y-2 border-b border-border/70 bg-card/60 px-7 pb-6 pt-8">
+        <div className="flex justify-center pb-1">
+          <Logo />
+        </div>
+        <CardTitle className="text-center text-2xl text-foreground">
           {t("title")}
         </CardTitle>
-        <CardDescription className="text-center">
+        <CardDescription className="text-center leading-relaxed">
           {t("subtitle")}
         </CardDescription>
       </CardHeader>
-      <CardContent className="px-6">
+      <CardContent className="px-7 pb-8 pt-6">
         <Tabs value={activeTab} className="w-full" onValueChange={handleTabChange}>
-          <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsList className="mb-6 grid w-full grid-cols-2 rounded-lg bg-muted/70 p-1">
             <TabsTrigger value="login">{t("tabs.login")}</TabsTrigger>
             <TabsTrigger value="register">{t("tabs.register")}</TabsTrigger>
           </TabsList>
@@ -225,12 +229,12 @@ export function LoginForm({ turnstile }: LoginFormProps) {
               <div className="space-y-3">
                 <div className="space-y-1.5">
                   <div className="relative">
-                    <div className="absolute left-2.5 top-2 text-muted-foreground">
+                    <div className="absolute left-3 top-2.5 text-muted-foreground">
                       <User2 className="h-5 w-5" />
                     </div>
                     <Input
                       className={cn(
-                        "h-9 pl-9 pr-3",
+                        "h-10 pl-10 pr-4",
                         errors.username && "border-destructive focus-visible:ring-destructive"
                       )}
                       placeholder={t("fields.username")}
@@ -248,12 +252,12 @@ export function LoginForm({ turnstile }: LoginFormProps) {
                 </div>
                 <div className="space-y-1.5">
                   <div className="relative">
-                    <div className="absolute left-2.5 top-2 text-muted-foreground">
+                    <div className="absolute left-3 top-2.5 text-muted-foreground">
                       <KeyRound className="h-5 w-5" />
                     </div>
                     <Input
                       className={cn(
-                        "h-9 pl-9 pr-3",
+                        "h-10 pl-10 pr-4",
                         errors.password && "border-destructive focus-visible:ring-destructive"
                       )}
                       type="password"
@@ -333,12 +337,12 @@ export function LoginForm({ turnstile }: LoginFormProps) {
               <div className="space-y-3">
                 <div className="space-y-1.5">
                   <div className="relative">
-                    <div className="absolute left-2.5 top-2 text-muted-foreground">
+                    <div className="absolute left-3 top-2.5 text-muted-foreground">
                       <User2 className="h-5 w-5" />
                     </div>
                     <Input
                       className={cn(
-                        "h-9 pl-9 pr-3",
+                        "h-10 pl-10 pr-4",
                         errors.username && "border-destructive focus-visible:ring-destructive"
                       )}
                       placeholder={t("fields.username")}
@@ -356,12 +360,12 @@ export function LoginForm({ turnstile }: LoginFormProps) {
                 </div>
                 <div className="space-y-1.5">
                   <div className="relative">
-                    <div className="absolute left-2.5 top-2 text-muted-foreground">
+                    <div className="absolute left-3 top-2.5 text-muted-foreground">
                       <KeyRound className="h-5 w-5" />
                     </div>
                     <Input
                       className={cn(
-                        "h-9 pl-9 pr-3",
+                        "h-10 pl-10 pr-4",
                         errors.password && "border-destructive focus-visible:ring-destructive"
                       )}
                       type="password"
@@ -380,12 +384,12 @@ export function LoginForm({ turnstile }: LoginFormProps) {
                 </div>
                 <div className="space-y-1.5">
                   <div className="relative">
-                    <div className="absolute left-2.5 top-2 text-muted-foreground">
+                    <div className="absolute left-3 top-2.5 text-muted-foreground">
                       <KeyRound className="h-5 w-5" />
                     </div>
                     <Input
                       className={cn(
-                        "h-9 pl-9 pr-3",
+                        "h-10 pl-10 pr-4",
                         errors.confirmPassword && "border-destructive focus-visible:ring-destructive"
                       )}
                       type="password"

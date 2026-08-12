@@ -22,9 +22,9 @@ export default async function ProfilePage({
   return (
     <div className="app-bg relative min-h-screen">
       <div className="absolute inset-0 -z-10 bg-grid-neon opacity-40" />
-      <div className="container mx-auto px-4 lg:px-8 max-w-[1600px]">
+      <div className="container mx-auto px-4 lg:px-8 max-w-[1080px]">
         <Header />
-        <main className="pt-20 pb-5">
+        <main className="pb-10 pt-8">
           <ProfileCard user={session.user} />
         </main>
       </div>

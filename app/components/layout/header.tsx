@@ -7,6 +7,14 @@ import { SignButton } from "@/components/auth/sign-button"
 import { ThemeToggle } from "@/components/theme/theme-toggle"
 import { LanguageSwitcher } from "@/components/layout/language-switcher"
 import { Logo } from "@/components/ui/logo"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export function Header() {
@@ -26,20 +34,20 @@ export function Header() {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 h-16 border-b bg-background/75 backdrop-blur-xl">
-      <div className="container mx-auto h-full px-4 lg:px-8 max-w-[1600px]">
-        <div className="h-full flex items-center justify-between gap-3">
+    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-xl">
+      <div className="container mx-auto h-16 max-w-[1440px] px-4 lg:px-8">
+        <div className="flex h-full items-center justify-between gap-3">
           <Logo />
 
-          <nav className="hidden md:flex items-center gap-1 rounded-full border border-border/70 bg-background/60 p-1">
+          <nav className="hidden items-center gap-1 rounded-full border border-border/70 bg-card/70 p-1 md:flex">
             {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "px-4 py-1.5 text-sm rounded-full transition-all",
+                  "rounded-full px-4 py-1.5 text-sm transition-colors",
                   isActive(link.href, link.exact)
-                    ? "bg-primary text-primary-foreground neon-glow"
+                    ? "bg-primary/10 font-medium text-primary"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
@@ -48,10 +56,42 @@ export function Header() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-x-1.5 sm:gap-x-3">
+          <div className="flex items-center gap-1.5 sm:gap-2.5">
             <LanguageSwitcher />
             <ThemeToggle />
-            <SignButton />
+            <div className="hidden sm:block">
+              <SignButton />
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="md:hidden"
+                  aria-label="菜单"
+                >
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-44">
+                {links.map((link) => (
+                  <DropdownMenuItem key={link.href} asChild>
+                    <Link
+                      href={link.href}
+                      className={cn(
+                        isActive(link.href, link.exact) && "bg-accent text-foreground"
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+                <div className="my-1 h-px bg-border" />
+                <div className="px-2 py-1">
+                  <SignButton />
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>

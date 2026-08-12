@@ -1,18 +1,19 @@
 {
-  "title": "임시 메일, 네온 속으로 항해하다",
-  "subtitle": "한 번 만들면 실시간 수신. 프라이버시와 속도를 동시에",
+  "title": "임시 메일, 더 안심되는 수신",
+  "subtitle": "한 번 만들면 실시간 수신. 실제 이메일 주소를 보호합니다.",
+  "badge": "프라이버시 보호 · 실시간 수신",
   "features": {
     "privacy": {
       "title": "개인정보 보호",
-      "description": "실제 이메일 주소 보호"
+      "description": "스팸으로부터 실제 이메일 주소 보호"
     },
     "instant": {
       "title": "실시간 수신",
-      "description": "새 메일이 자동으로 도착합니다"
+      "description": "새 메일이 자동으로 도착하며 새로고침 불필요"
     },
     "expiry": {
       "title": "유연한 유효기간",
-      "description": "1시간부터 영구까지"
+      "description": "1시간부터 영구까지, 언제든 관리 가능"
     },
     "openapi": {
       "title": "Open API",

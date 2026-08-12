@@ -101,7 +101,7 @@ export function MessageView({ emailId, messageId, messageType = 'received' }: Me
                   margin: 0;
                   padding: 0;
                   min-height: 100%;
-                  font-family: system-ui, -apple-system, sans-serif;
+                  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
                   color: ${theme === 'dark' ? '#fff' : '#000'};
                   background: ${theme === 'dark' ? '#1a1a1a' : '#fff'};
                 }
@@ -113,7 +113,7 @@ export function MessageView({ emailId, messageId, messageType = 'received' }: Me
                   height: auto;
                 }
                 a {
-                  color: #2563eb;
+                  color: ${theme === 'dark' ? '#e58a72' : '#b3452f'};
                 }
                 /* 滚动条样式 */
                 ::-webkit-scrollbar {
@@ -125,22 +125,22 @@ export function MessageView({ emailId, messageId, messageType = 'received' }: Me
                 }
                 ::-webkit-scrollbar-thumb {
                   background: ${theme === 'dark'
-                    ? 'rgba(34, 211, 238, 0.3)'
-                    : 'rgba(8, 145, 178, 0.2)'};
+                    ? 'rgba(224, 101, 74, 0.35)'
+                    : 'rgba(194, 69, 47, 0.22)'};
                   border-radius: 9999px;
                   transition: background-color 0.2s;
                 }
                 ::-webkit-scrollbar-thumb:hover {
                   background: ${theme === 'dark'
-                    ? 'rgba(34, 211, 238, 0.5)'
-                    : 'rgba(8, 145, 178, 0.4)'};
+                    ? 'rgba(224, 101, 74, 0.55)'
+                    : 'rgba(194, 69, 47, 0.4)'};
                 }
                 /* Firefox 滚动条 */
                 * {
                   scrollbar-width: thin;
                   scrollbar-color: ${theme === 'dark'
-                    ? 'rgba(34, 211, 238, 0.3) transparent'
-                    : 'rgba(8, 145, 178, 0.2) transparent'};
+                    ? 'rgba(224, 101, 74, 0.35) transparent'
+                    : 'rgba(194, 69, 47, 0.22) transparent'};
                 }
               </style>
             </head>
@@ -209,7 +209,7 @@ export function MessageView({ emailId, messageId, messageType = 'received' }: Me
 
   return (
     <div className="h-full flex flex-col">
-      <div className="p-4 space-y-3 border-b border-primary/15">
+      <div className="space-y-3 border-b border-border/80 p-4">
         <div className="flex items-start justify-between gap-2">
           <h3 className="text-base font-bold flex-1">{message.subject}</h3>
           <ShareMessageDialog 
@@ -217,7 +217,7 @@ export function MessageView({ emailId, messageId, messageType = 'received' }: Me
             messageId={message.id} 
             messageSubject={message.subject}
             trigger={
-              <button className="p-1.5 hover:bg-primary/10 rounded-md transition-colors">
+              <button className="rounded-md p-1.5 transition-colors hover:bg-accent">
                 <Share2 className="h-4 w-4 text-muted-foreground" />
               </button>
             }
@@ -235,7 +235,7 @@ export function MessageView({ emailId, messageId, messageType = 'received' }: Me
       </div>
       
       {message.html && message.content && (
-        <div className="border-b border-primary/15 p-2">
+        <div className="border-b border-border/80 p-2">
           <RadioGroup
             value={viewMode}
             onValueChange={(value) => setViewMode(value as ViewMode)}

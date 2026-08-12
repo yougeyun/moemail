@@ -1,18 +1,19 @@
 {
-  "title": "临时邮箱，向霓虹深处航行",
-  "subtitle": "一次创建，实时收信，隐私与速度并存",
+  "title": "临时邮箱，让收信更安心",
+  "subtitle": "一次创建，实时收信；无需手机号，保护真实邮箱地址。",
+  "badge": "隐私保护 · 实时收信",
   "features": {
     "privacy": {
       "title": "隐私保护",
-      "description": "保护您的真实邮箱地址"
+      "description": "隔离垃圾邮件，保护真实邮箱地址"
     },
     "instant": {
       "title": "实时收信",
-      "description": "新邮件自动送达，无需刷新"
+      "description": "新邮件自动送达，无需手动刷新"
     },
     "expiry": {
       "title": "灵活期限",
-      "description": "1 小时到永久有效"
+      "description": "1 小时到永久，随时可管理"
     },
     "openapi": {
       "title": "开放 API",

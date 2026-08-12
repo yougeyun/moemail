@@ -22,9 +22,9 @@ export default async function LoginPage({
   const turnstile = await getTurnstileConfig()
 
   return (
-    <div className="app-bg relative min-h-screen flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 -z-10 bg-grid-neon opacity-50" />
-      <div className="absolute left-1/2 top-1/2 -z-10 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-3xl" />
+    <div className="app-bg relative flex min-h-screen items-center justify-center overflow-hidden">
+      <div className="absolute inset-0 -z-10 bg-grid-neon opacity-60" />
+      <div className="absolute inset-x-0 top-0 -z-10 h-64 bg-gradient-to-b from-primary/10 to-transparent" />
       <LoginForm turnstile={{ enabled: turnstile.enabled, siteKey: turnstile.siteKey }} />
     </div>
   )
