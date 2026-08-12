@@ -24,7 +24,7 @@ export default async function ClassicCleanBlueHomePage({
 
         <main className="flex min-h-[calc(100vh-4rem)] items-center py-6">
           <div className="w-full">
-            <div className="grid items-center gap-10 lg:grid-cols-[1fr_1fr]">
+            <div className="grid items-center gap-6 lg:grid-cols-[1fr_1fr]">
               <div>
                 <div className="mb-4 inline-flex items-center gap-2 rounded-md bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
                   <span className="h-1.5 w-1.5 rounded-full bg-primary" />
@@ -44,7 +44,7 @@ export default async function ClassicCleanBlueHomePage({
               <LiveInboxPreview />
             </div>
 
-            <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
+                <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
               <FeatureCard
                 icon={<Shield className="h-5 w-5" />}
                 title={t("features.privacy.title")}

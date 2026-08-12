@@ -30,7 +30,7 @@ export function LiveInboxPreview() {
     <div className="relative mx-auto max-w-md">
       <div className="absolute -inset-3 -z-10 rounded-2xl bg-gradient-to-br from-primary/10 via-transparent to-secondary/10 blur-2xl" />
       <div className="panel relative overflow-hidden">
-        <div className="flex items-center justify-between border-b border-border/80 bg-card/70 px-5 py-3.5">
+        <div className="flex items-center justify-between border-b border-border/80 bg-card/70 px-5 py-3">
           <div className="flex items-center gap-2.5">
             <span className="h-2.5 w-2.5 rounded-full bg-secondary shadow-[0_0_8px_hsl(var(--secondary)/0.55)]" />
             <span className="text-xs font-semibold tracking-normal text-foreground">
@@ -46,7 +46,7 @@ export function LiveInboxPreview() {
           {previewMessages.map((message) => (
             <div
               key={message.id}
-              className="flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-accent/50"
+              className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-accent/50"
             >
               <div
                 className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${message.tone} text-xs font-bold text-white shadow-sm`}

@@ -22,18 +22,18 @@ export default async function NeonNightHomePage({
       <div className="container mx-auto max-w-[1280px] px-4 lg:px-8">
         <Header />
 
-        <main className="relative flex min-h-[calc(100vh-4rem)] items-center py-6">
+        <main className="relative flex py-4">
           <div className="absolute inset-0 -z-10 bg-grid-neon opacity-60" />
           <div className="absolute inset-x-0 top-20 -z-10 h-56 bg-gradient-to-b from-primary/10 to-transparent blur-2xl" />
 
-          <div className="grid w-full items-center gap-10 py-6 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="grid w-full items-center gap-6 py-4 lg:grid-cols-[1.05fr_0.95fr]">
             <div className="text-center lg:text-left">
               <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3.5 py-1.5 text-xs font-semibold text-primary">
                 <span className="h-1.5 w-1.5 rounded-full bg-lime-400 shadow-[0_0_8px_rgba(163,230,53,0.8)]" />
                 {t("badge")}
               </div>
 
-              <h1 className="text-3xl font-extrabold leading-tight tracking-wide text-foreground sm:text-4xl lg:text-[2.5rem]">
+              <h1 className="text-3xl font-extrabold leading-snug tracking-wide text-foreground sm:text-4xl lg:text-4xl">
                 <span className="text-gradient-neon">{t("title")}</span>
               </h1>
 
@@ -50,7 +50,7 @@ export default async function NeonNightHomePage({
           </div>
         </main>
 
-        <section className="pb-8">
+        <section className="pb-6">
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             <FeatureCard
               icon={<Shield className="h-5 w-5" />}
