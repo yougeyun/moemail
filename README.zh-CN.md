@@ -1,6 +1,6 @@
 <p align="center">
-  <img src="public/icons/icon-192x192.png" alt="MoeMail Logo" width="100" height="100">
-  <h1 align="center">MoeMail</h1>
+  <img src="public/icons/icon-192x192.png" alt="mail.59pk.net Logo" width="100" height="100">
+  <h1 align="center">mail.59pk.net</h1>
 </p>
 
 <p align="center">
@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <a href="https://www.producthunt.com/products/moemail?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-moemail" target="_blank" rel="noopener noreferrer"><img alt="MoeMail - OpenAPI‑first temp email, hosted &amp; ready | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1078475&amp;theme=light&amp;t=1770964043604"></a>
+  <a href="https://www.producthunt.com/products/moemail?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-moemail" target="_blank" rel="noopener noreferrer"><img alt="mail.59pk.net - OpenAPI‑first temp email, hosted &amp; ready | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1078475&amp;theme=light&amp;t=1770964043604"></a>
 </p>
 
 <p align="center">
@@ -41,7 +41,7 @@
 </p>
 
 ## 在线演示
-[https://moemail.app](https://moemail.app)
+[https://mail.59pk.net](https://mail.59pk.net)
 
 ![首页](https://pic.otaku.ren/20241209/AQADwsUxG9k1uVZ-.jpg "首页")
 
@@ -51,7 +51,7 @@
 ![个人中心](https://pic.otaku.ren/20241227/AQADVsIxG7OzcFd-.jpg "个人中心")
 
 ## 文档
-**完整文档**: [https://docs.moemail.app](https://docs.moemail.app)
+**完整文档**: [https://mail.59pk.net](https://mail.59pk.net)
 
 文档站点包含详细的使用指南、API 文档、部署教程等完整信息。
 
@@ -182,7 +182,7 @@ pnpm dlx tsx ./scripts/deploy/index.ts
    - `AUTH_GITHUB_ID`: GitHub OAuth App ID
    - `AUTH_GITHUB_SECRET`: GitHub OAuth App Secret
    - `AUTH_SECRET`: NextAuth Secret，用来加密 session，请设置一个随机字符串
-   - `CUSTOM_DOMAIN`: 网站自定义域名，用于访问 MoeMail (可选， 如果不填, 则会使用 Cloudflare Pages 默认域名)
+   - `CUSTOM_DOMAIN`: 网站自定义域名，用于访问 mail.59pk.net (可选， 如果不填, 则会使用 Cloudflare Pages 默认域名)
    - `PROJECT_NAME`: Pages 项目名 （可选，如果不填，则为 moemail） 
    - `DATABASE_NAME`: D1 数据库名称 (可选，如果不填，则为 moemail-db)
    - `KV_NAMESPACE_NAME`: Cloudflare KV namespace 名称，用于存储网站配置 （可选，如果不填，则为 moemail-kv）
@@ -214,7 +214,7 @@ pnpm dlx tsx ./scripts/deploy/index.ts
 
 ## 邮箱域名配置
 
-在 MoeMail 个人中心页面，可以配置网站的邮箱域名，支持多域名配置，多个域名用逗号分隔
+在 mail.59pk.net 个人中心页面，可以配置网站的邮箱域名，支持多域名配置，多个域名用逗号分隔
 ![邮箱域名配置](https://pic.otaku.ren/20241227/AQAD88AxG67zeVd-.jpg "邮箱域名配置")
 
 ### Cloudflare 邮件路由配置
@@ -309,7 +309,7 @@ pnpm dlx tsx ./scripts/deploy/index.ts
 
 ## 发件功能
 
-MoeMail 支持使用临时邮箱发送邮件，基于 [Resend](https://resend.com/) 服务。
+mail.59pk.net 支持使用临时邮箱发送邮件，基于 [Resend](https://resend.com/) 服务。
 
 ### 功能特性
 
@@ -336,7 +336,7 @@ MoeMail 支持使用临时邮箱发送邮件，基于 [Resend](https://resend.co
    - 复制 API Key 供后续配置使用
 
 2. **配置发件服务**
-   - 皇帝角色登录 MoeMail
+   - 皇帝角色登录 mail.59pk.net
    - 进入个人中心页面
    - 在"Resend 发件服务配置"部分：
      - 启用发件服务开关
@@ -394,7 +394,7 @@ X-Webhook-Event: new_message
   "content": "邮件文本内容",
   "html": "邮件HTML内容",
   "receivedAt": "2024-01-01T12:00:00.000Z",
-  "toAddress": "your-email@moemail.app"
+  "toAddress": "your-email@mail.59pk.net"
 }
 ```
 
@@ -445,7 +445,7 @@ GET /api/config
 ```json
 {
   "defaultRole": "CIVILIAN",
-  "emailDomains": "moemail.app,example.com",
+  "emailDomains": "mail.59pk.net,example.com",
   "adminContact": "admin@example.com",
   "maxEmails": "10"
 }
@@ -464,7 +464,7 @@ Content-Type: application/json
 {
   "name": "test",
   "expiryTime": 3600000,
-  "domain": "moemail.app"
+  "domain": "mail.59pk.net"
 }
 ```
 参数说明：
@@ -476,7 +476,7 @@ Content-Type: application/json
 ```json
 {
   "id": "email-uuid-123",
-  "email": "test@moemail.app"
+  "email": "test@mail.59pk.net"
 }
 ```
 响应字段说明：
@@ -496,7 +496,7 @@ GET /api/emails?cursor=xxx
   "emails": [
     {
       "id": "email-uuid-123",
-      "address": "test@moemail.app",
+      "address": "test@mail.59pk.net",
       "createdAt": "2024-01-01T12:00:00.000Z",
       "expiresAt": "2024-01-02T12:00:00.000Z",
       "userId": "user-uuid-456"
@@ -748,7 +748,7 @@ curl -X POST https://your-domain.com/api/emails/generate \
   -d '{
     "name": "test",
     "expiryTime": 3600000,
-    "domain": "moemail.app"
+    "domain": "mail.59pk.net"
   }'
 ```
 
@@ -790,7 +790,7 @@ console.log('分享链接:', `https://your-domain.com/shared/message/${data.toke
 
 ## CLI 工具
 
-MoeMail 提供了专为 AI Agent 设计的命令行工具，用于自动化邮箱工作流。
+mail.59pk.net 提供了专为 AI Agent 设计的命令行工具，用于自动化邮箱工作流。
 
 ### 安装
 
@@ -802,11 +802,11 @@ npm i -g @moemail/cli
 
 ```bash
 # 配置 API 地址和密钥
-moemail config set api-url https://moemail.app
+moemail config set api-url https://mail.59pk.net
 moemail config set api-key YOUR_API_KEY
 
 # 创建临时邮箱
-moemail create --domain moemail.app --expiry 1h --json
+moemail create --domain mail.59pk.net --expiry 1h --json
 
 # 列出邮箱
 moemail list --json
@@ -836,7 +836,7 @@ AI Agent 仅需 3 次调用即可完成验证流程：
 
 ```bash
 # 1. 创建邮箱
-EMAIL=$(moemail create --domain moemail.app --expiry 1h --json)
+EMAIL=$(moemail create --domain mail.59pk.net --expiry 1h --json)
 EMAIL_ID=$(echo $EMAIL | jq -r '.id')
 ADDRESS=$(echo $EMAIL | jq -r '.address')
 
@@ -852,7 +852,7 @@ CONTENT=$(moemail read --email-id $EMAIL_ID --message-id $MSG_ID --json)
 
 ## MCP 服务器
 
-MoeMail 同时提供 [MCP](https://modelcontextprotocol.io) 服务器，让任意支持 MCP 的客户端
+mail.59pk.net 同时提供 [MCP](https://modelcontextprotocol.io) 服务器，让任意支持 MCP 的客户端
 （Claude Desktop、Cursor、Cline 等）无需调用 CLI 即可原生使用临时邮箱工具。
 
 ### 工具
@@ -881,7 +881,7 @@ MoeMail 同时提供 [MCP](https://modelcontextprotocol.io) 服务器，让任�
       "args": ["-y", "@moemail/mcp"],
       "env": {
         "MOEMAIL_API_KEY": "你的_API_KEY",
-        "MOEMAIL_API_URL": "https://moemail.app"
+        "MOEMAIL_API_URL": "https://mail.59pk.net"
       }
     }
   }
@@ -908,7 +908,7 @@ MoeMail 同时提供 [MCP](https://modelcontextprotocol.io) 服务器，让任�
 - `DATABASE_ID`: D1 数据库 ID (可选, 如果不填, 则会自动通过 Cloudflare API 获取)
 - `KV_NAMESPACE_NAME`: Cloudflare KV namespace 名称，用于存储网站配置
 - `KV_NAMESPACE_ID`: Cloudflare KV namespace ID，用于存储网站配置 （可选， 如果不填, 则会自动通过 Cloudflare API 获取）
-- `CUSTOM_DOMAIN`: 网站自定义域名, 如：moemail.app (可选， 如果不填, 则会使用 Cloudflare Pages 默认域名)
+- `CUSTOM_DOMAIN`: 网站自定义域名, 如：mail.59pk.net (可选， 如果不填, 则会使用 Cloudflare Pages 默认域名)
 - `PROJECT_NAME`: Pages 项目名 （可选，如果不填，则为 moemail） 
 
 ## Github OAuth App 配置
@@ -956,7 +956,7 @@ MoeMail 同时提供 [MCP](https://modelcontextprotocol.io) 服务器，让任�
       关注公众号，了解更多项目进展以及AI，区块链，独立开发资讯
     </td>
     <td>
-      添加微信，备注 "MoeMail" 拉你进微信交流群
+      添加微信，备注 "mail.59pk.net" 拉你进微信交流群
     </td>
   </tr>
 </table>

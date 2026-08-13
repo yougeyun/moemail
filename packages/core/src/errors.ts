@@ -34,7 +34,7 @@ export class AuthError extends ApiError {
 }
 
 /**
- * 403 — request rejected for permission reasons. On a MoeMail Pro server this
+ * 403 — request rejected for permission reasons. On a mail.59pk.net Pro server this
  * covers: no OpenAPI permission, domain requires a higher role, or permanent
  * mailbox requires Duke. The server message is passed through verbatim.
  */
@@ -46,7 +46,7 @@ export class PermissionError extends ApiError {
 }
 
 /**
- * 429 — monthly OpenAPI call quota exceeded (MoeMail Pro). Carries the quota
+ * 429 — monthly OpenAPI call quota exceeded (mail.59pk.net Pro). Carries the quota
  * figures from the response body when present.
  */
 export class QuotaError extends ApiError {

@@ -1,6 +1,6 @@
 {
-  "name": "MoeMail",
-  "short_name": "MoeMail",
+  "name": "mail.59pk.net",
+  "short_name": "mail.59pk.net",
   "description": "临时邮箱服务，实时收信，隐私保护，开放 API。",
   "start_url": "/",
   "display": "standalone",

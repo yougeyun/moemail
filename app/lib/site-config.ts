@@ -21,7 +21,7 @@ export interface SiteBranding {
   activeTemplate: string
 }
 
-export const DEFAULT_SITE_NAME = "MoeMail"
+export const DEFAULT_SITE_NAME = "mail.59pk.net"
 
 function getEnv(): CloudflareEnv | null {
   try {

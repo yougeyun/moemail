@@ -61,7 +61,7 @@ export async function GET() {
     }
   }
 
-  const domains = (emailDomains || "moemail.app")
+  const domains = (emailDomains || "mail.59pk.net")
     .split(",")
     .map((domain) => domain.trim())
     .filter(Boolean)
@@ -145,7 +145,7 @@ export async function GET() {
 
   return Response.json({
     defaultRole: defaultRole || ROLES.CIVILIAN,
-    emailDomains: emailDomains || "moemail.app",
+    emailDomains: emailDomains || "mail.59pk.net",
     adminContact: adminContact || "",
     maxEmails: maxEmails || EMAIL_CONFIG.MAX_ACTIVE_EMAILS.toString(),
     initialPoints: initialPoints ? Number(initialPoints) : 0,
@@ -230,7 +230,7 @@ export async function POST(request: Request) {
   ])
 
   const finalDefaultRole = defaultRole ?? currentValues[0] ?? ROLES.CIVILIAN
-  const finalEmailDomains = emailDomains ?? currentValues[1] ?? "moemail.app"
+  const finalEmailDomains = emailDomains ?? currentValues[1] ?? "mail.59pk.net"
   const finalAdminContact = adminContact ?? currentValues[2] ?? ""
   const finalMaxEmails = maxEmails ?? currentValues[3] ?? EMAIL_CONFIG.MAX_ACTIVE_EMAILS.toString()
   const finalInitialPoints = initialPoints ?? Number(currentValues[4] || 0)

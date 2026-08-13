@@ -1,7 +1,7 @@
 
 <p align="center">
-  <img src="public/icons/icon-192x192.png" alt="MoeMail Logo" width="100" height="100">
-  <h1 align="center">MoeMail</h1>
+  <img src="public/icons/icon-192x192.png" alt="mail.59pk.net Logo" width="100" height="100">
+  <h1 align="center">mail.59pk.net</h1>
 </p>
 
 <p align="center">
@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="https://www.producthunt.com/products/moemail?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-moemail" target="_blank" rel="noopener noreferrer"><img alt="MoeMail - OpenAPI‑first temp email, hosted &amp; ready | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1078475&amp;theme=light&amp;t=1770964043604"></a>
+  <a href="https://www.producthunt.com/products/moemail?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-moemail" target="_blank" rel="noopener noreferrer"><img alt="mail.59pk.net - OpenAPI‑first temp email, hosted &amp; ready | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1078475&amp;theme=light&amp;t=1770964043604"></a>
 </p>
 
 <p align="center">
@@ -42,7 +42,7 @@
 </p>
 
 ## Live Demo
-[https://moemail.app](https://moemail.app)
+[https://mail.59pk.net](https://mail.59pk.net)
 
 ![Home](https://pic.otaku.ren/20241209/AQADwsUxG9k1uVZ-.jpg "Home")
 
@@ -51,7 +51,7 @@
 ![Profile](https://pic.otaku.ren/20241227/AQADVsIxG7OzcFd-.jpg "Profile")
 
 ## Documentation
-**Full Documentation**: [https://docs.moemail.app](https://docs.moemail.app)
+**Full Documentation**: [https://mail.59pk.net](https://mail.59pk.net)
 
 The documentation site contains detailed usage guides, API documentation, deployment tutorials, and other complete information.
 
@@ -215,7 +215,7 @@ This project supports automated deployment using GitHub Actions. It supports the
 
 ## Email Domain Configuration
 
-In the MoeMail User Profile page, you can configure the site's email domains. Supports multiple domain configurations, separated by commas.
+In the mail.59pk.net User Profile page, you can configure the site's email domains. Supports multiple domain configurations, separated by commas.
 ![Email Domain Configuration](https://pic.otaku.ren/20241227/AQAD88AxG67zeVd-.jpg "Email Domain Configuration")
 
 ### Cloudflare Email Routing Configuration
@@ -310,7 +310,7 @@ System settings are stored in Cloudflare KV, including:
 
 ## Sending Emails
 
-MoeMail supports sending emails using temporary addresses, based on [Resend](https://resend.com/) service.
+mail.59pk.net supports sending emails using temporary addresses, based on [Resend](https://resend.com/) service.
 
 ### Features
 
@@ -395,7 +395,7 @@ X-Webhook-Event: new_message
   "content": "Email Text Content",
   "html": "Email HTML Content",
   "receivedAt": "2024-01-01T12:00:00.000Z",
-  "toAddress": "your-email@moemail.app"
+  "toAddress": "your-email@mail.59pk.net"
 }
 ```
 
@@ -446,7 +446,7 @@ Response:
 ```json
 {
   "defaultRole": "CIVILIAN",
-  "emailDomains": "moemail.app,example.com",
+  "emailDomains": "mail.59pk.net,example.com",
   "adminContact": "admin@example.com",
   "maxEmails": "10"
 }
@@ -460,7 +460,7 @@ Content-Type: application/json
 {
   "name": "test",
   "expiryTime": 3600000,
-  "domain": "moemail.app"
+  "domain": "mail.59pk.net"
 }
 ```
 Params:
@@ -472,7 +472,7 @@ Response:
 ```json
 {
   "id": "email-uuid-123",
-  "email": "test@moemail.app"
+  "email": "test@mail.59pk.net"
 }
 ```
 
@@ -538,7 +538,7 @@ DELETE /api/emails/{emailId}/messages/{messageId}/share/{shareId}
 
 ## CLI Tool
 
-MoeMail provides an agent-first CLI tool for AI agents and automation workflows.
+mail.59pk.net provides an agent-first CLI tool for AI agents and automation workflows.
 
 ### Install
 
@@ -550,11 +550,11 @@ npm i -g @moemail/cli
 
 ```bash
 # Configure API endpoint and key
-moemail config set api-url https://moemail.app
+moemail config set api-url https://mail.59pk.net
 moemail config set api-key YOUR_API_KEY
 
 # Create temporary email
-moemail create --domain moemail.app --expiry 1h --json
+moemail create --domain mail.59pk.net --expiry 1h --json
 
 # List mailboxes
 moemail list --json
@@ -584,7 +584,7 @@ A typical AI agent verification flow in 3 tool calls:
 
 ```bash
 # 1. Create mailbox
-EMAIL=$(moemail create --domain moemail.app --expiry 1h --json)
+EMAIL=$(moemail create --domain mail.59pk.net --expiry 1h --json)
 EMAIL_ID=$(echo $EMAIL | jq -r '.id')
 ADDRESS=$(echo $EMAIL | jq -r '.address')
 
@@ -598,7 +598,7 @@ CONTENT=$(moemail read --email-id $EMAIL_ID --message-id $MSG_ID --json)
 
 ### AI Agent Skill
 
-Install the built-in skill so AI agents (Claude Code, Codex, etc.) automatically know how to use MoeMail:
+Install the built-in skill so AI agents (Claude Code, Codex, etc.) automatically know how to use mail.59pk.net:
 
 ```bash
 # Auto-detect installed agent platforms and install
@@ -613,7 +613,7 @@ For full documentation, see [packages/cli/README.md](packages/cli/README.md).
 
 ## MCP Server
 
-MoeMail also ships an [MCP](https://modelcontextprotocol.io) server, so any
+mail.59pk.net also ships an [MCP](https://modelcontextprotocol.io) server, so any
 MCP-capable client (Claude Desktop, Cursor, Cline, …) gets native temporary-email
 tools without shelling out to the CLI.
 
@@ -643,7 +643,7 @@ Credentials are passed via environment variables:
       "args": ["-y", "@moemail/mcp"],
       "env": {
         "MOEMAIL_API_KEY": "YOUR_API_KEY",
-        "MOEMAIL_API_URL": "https://moemail.app"
+        "MOEMAIL_API_URL": "https://mail.59pk.net"
       }
     }
   }
@@ -714,7 +714,7 @@ Welcome to submit Pull Requests or Issues to help improve this project.
       Follow official account for more project updates, AI, Blockchain, and Indie Dev news.
     </td>
     <td>
-      Add WeChat, remark "MoeMail" to join the WeChat community group.
+      Add WeChat, remark "mail.59pk.net" to join the WeChat community group.
     </td>
   </tr>
 </table>

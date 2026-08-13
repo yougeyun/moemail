@@ -70,11 +70,11 @@ function installTo(platform: Platform, content: string): boolean {
 export function registerSkillCommand(program: Command) {
   const skill = program
     .command("skill")
-    .description("Manage MoeMail AI agent skill");
+    .description("Manage mail.59pk.net AI agent skill");
 
   skill
     .command("install")
-    .description("Install MoeMail skill to AI agent platforms")
+    .description("Install mail.59pk.net skill to AI agent platforms")
     .option(
       "--platform <platform>",
       "target platform: claude, codex, all (default: auto-detect)"

@@ -1,14 +1,14 @@
-# MoeMail
+# mail.59pk.net
 
 > Temporary email service with CLI tool for AI Agents
 
-MoeMail provides disposable email addresses. Install the CLI for programmatic access:
+mail.59pk.net provides disposable email addresses. Install the CLI for programmatic access:
 
 ## CLI Tool
 
 Install: npm i -g @moemail/cli
 
-Setup: moemail config set api-url https://moemail.app && moemail config set api-key YOUR_KEY
+Setup: moemail config set api-url https://mail.59pk.net && moemail config set api-key YOUR_KEY
 
 Commands:
 - moemail create --domain <domain> --expiry <1h|24h|3d|permanent> --json

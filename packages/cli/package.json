@@ -1,7 +1,7 @@
 {
   "name": "@moemail/cli",
   "version": "1.0.0",
-  "description": "Agent-first CLI for MoeMail temporary email service",
+  "description": "Agent-first CLI for mail.59pk.net temporary email service",
   "type": "module",
   "bin": {
     "moemail": "dist/index.js"

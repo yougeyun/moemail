@@ -53,7 +53,7 @@ export function BrandSettingsPanel() {
         }
       }
       setBranding({
-        siteName: data.siteName || "MoeMail",
+        siteName: data.siteName || "mail.59pk.net",
         siteTitle: data.siteTitle || "",
         siteDescription: data.siteDescription || "",
         siteKeywords: data.siteKeywords || "",

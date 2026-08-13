@@ -130,7 +130,7 @@ export function EmailList({ onEmailSelect, selectedEmailId }: EmailListProps) {
       const url = URL.createObjectURL(blob)
       const link = document.createElement("a")
       link.href = url
-      link.download = "moemail-emails.csv"
+      link.download = "mail-59pk-emails.csv"
       link.click()
       URL.revokeObjectURL(url)
     } catch {

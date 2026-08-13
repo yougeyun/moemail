@@ -50,7 +50,7 @@ async function request(
 
   const message = data?.error || `HTTP ${res.status}`;
 
-  // Distinguish the error classes that a MoeMail Pro server returns so callers
+  // Distinguish the error classes that a mail.59pk.net Pro server returns so callers
   // can surface them accurately instead of lumping everything into "auth failed".
   switch (res.status) {
     case 401:

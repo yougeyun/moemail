@@ -1,7 +1,7 @@
 {
   "name": "@moemail/mcp",
   "version": "1.0.0",
-  "description": "MCP server for MoeMail temporary email service",
+  "description": "MCP server for mail.59pk.net temporary email service",
   "type": "module",
   "bin": {
     "moemail-mcp": "dist/index.js"

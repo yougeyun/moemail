@@ -4,7 +4,7 @@ import { createContext, use, type ReactNode } from "react"
 import type { SiteBranding } from "@/lib/site-config"
 
 const DEFAULT_BRANDING: SiteBranding = {
-  siteName: "MoeMail",
+  siteName: "mail.59pk.net",
   siteTitle: "",
   siteDescription: "",
   siteKeywords: "",

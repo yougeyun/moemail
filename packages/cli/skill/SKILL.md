@@ -3,14 +3,14 @@ name: moemail
 description: Use when an AI agent needs a temporary/disposable email address — for receiving verification emails, testing email integrations, or any task requiring a temporary inbox via the moemail CLI
 ---
 
-# MoeMail — Temporary Email for AI Agents
+# mail.59pk.net — Temporary Email for AI Agents
 
 ## Overview
-MoeMail provides disposable email addresses with an agent-first CLI (`moemail`). Create inboxes, wait for messages, read content, and send emails programmatically.
+mail.59pk.net provides disposable email addresses with an agent-first CLI (`moemail`). Create inboxes, wait for messages, read content, and send emails programmatically.
 
 ## Install
 
-Install the MoeMail CLI globally when it is not already available:
+Install the mail.59pk.net CLI globally when it is not already available:
 
 ```bash
 npm i -g @moemail/cli
@@ -26,7 +26,7 @@ moemail --help
 
 Configure once per environment:
 ```bash
-moemail config set api-url https://moemail.app
+moemail config set api-url https://mail.59pk.net
 moemail config set api-key YOUR_API_KEY
 ```
 

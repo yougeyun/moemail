@@ -28,7 +28,7 @@ export function BrandHeader({
     <div className="space-y-5 text-center lg:pb-4">
       <div className="flex justify-center pt-2">
         <Link
-          href="https://moemail.app"
+          href="https://mail.59pk.net"
           target="_blank"
           rel="noopener noreferrer"
           className="group flex items-center gap-3 transition-opacity hover:opacity-85"
@@ -56,7 +56,7 @@ export function BrandHeader({
 
       <div className="flex justify-center">
         <Button asChild size="lg" className="gap-2 px-7">
-          <Link href="https://moemail.app" target="_blank" rel="noopener noreferrer">
+          <Link href="https://mail.59pk.net" target="_blank" rel="noopener noreferrer">
             <Mail className="h-4 w-4" />
             {displayCtaText}
             <ExternalLink className="h-3.5 w-3.5" />

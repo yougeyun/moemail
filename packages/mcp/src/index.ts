@@ -14,7 +14,7 @@ async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   // stdout is reserved for the MCP protocol; log to stderr only.
-  console.error("MoeMail MCP server running on stdio");
+  console.error("mail.59pk.net MCP server running on stdio");
 }
 
 main().catch((err) => {

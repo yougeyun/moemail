@@ -1,6 +1,6 @@
-# MoeMail CLI
+# mail.59pk.net CLI
 
-Agent-first CLI for MoeMail temporary email service
+Agent-first CLI for mail.59pk.net temporary email service
 
 ## Install
 
@@ -12,7 +12,7 @@ npm i -g @moemail/cli
 
 ### 1. Configure endpoint and API key
 ```bash
-moemail config set api-url https://moemail.app
+moemail config set api-url https://mail.59pk.net
 moemail config set api-key YOUR_API_KEY
 ```
 
@@ -49,7 +49,7 @@ The CLI is designed to support agent-first automation. Here's a typical workflow
 
 ```bash
 # Create temporary email and extract details
-EMAIL=$(moemail create --domain moemail.app --expiry 1h --json)
+EMAIL=$(moemail create --domain mail.59pk.net --expiry 1h --json)
 EMAIL_ID=$(echo $EMAIL | jq -r '.id')
 ADDRESS=$(echo $EMAIL | jq -r '.address')
 
@@ -70,7 +70,7 @@ moemail delete --email-id $EMAIL_ID
 
 ## AI Agent Skill
 
-The CLI ships with a built-in skill file that teaches AI agents how to use MoeMail. Install it to your agent platform:
+The CLI ships with a built-in skill file that teaches AI agents how to use mail.59pk.net. Install it to your agent platform:
 
 ```bash
 # Auto-detect installed platforms (Claude Code, Codex)
@@ -84,7 +84,7 @@ moemail skill install --platform codex
 moemail skill install --platform all
 ```
 
-After installation, AI agents will automatically know how to create temporary emails, wait for messages, and read content using the MoeMail CLI.
+After installation, AI agents will automatically know how to create temporary emails, wait for messages, and read content using the mail.59pk.net CLI.
 
 ## JSON Output
 

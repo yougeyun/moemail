@@ -35,7 +35,7 @@ export async function GET() {
     const db = createDb()
     const env = getRequestContext().env
     const domainString = await env.SITE_CONFIG.get("EMAIL_DOMAINS")
-    const availableDomains = (domainString || "moemail.app")
+    const availableDomains = (domainString || "mail.59pk.net")
       .split(",")
       .map((domain) => domain.trim())
       .filter(Boolean)
