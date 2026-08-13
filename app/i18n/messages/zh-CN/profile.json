@@ -238,7 +238,6 @@
     "duration": "购买时长",
     "permanent": "永久",
     "daysValue": "{days} 天",
-    "daysValue": "{days} 天",
     "paymentMethod": "支付方式",
     "methodPoints": "积分支付",
     "methodWechat": "微信支付",
@@ -304,5 +303,39 @@
     "orderConfirmFailed": "确认订单失败",
     "pendingOrdersHint": "支付回调自动验签配置完成后将自动到账，当前可手动确认",
     "permanent": "永久"
+  },
+  "activationCode": {
+    "title": "激活码兑换",
+    "emailQuota": "已兑换邮箱额度：{count}",
+    "sendQuota": "已兑换发件次数：{count}",
+    "code": "激活码",
+    "codePlaceholder": "请输入激活码",
+    "redeem": "兑换",
+    "redeeming": "兑换中...",
+    "redeemSuccess": "兑换成功",
+    "redeemFailed": "兑换失败"
+  },
+  "activationCodeManager": {
+    "title": "激活码管理",
+    "count": "生成数量",
+    "emailQuota": "可兑换邮箱数",
+    "sendQuota": "可兑换发件数",
+    "prefix": "前缀",
+    "prefixPlaceholder": "可选",
+    "expiresInDays": "有效期（天）",
+    "generate": "批量生成",
+    "generating": "生成中...",
+    "generateSuccess": "激活码生成成功",
+    "generateFailed": "生成失败",
+    "loadFailed": "加载激活码失败",
+    "generatedTitle": "本次生成的激活码",
+    "historyTitle": "激活码历史",
+    "empty": "暂无激活码",
+    "emailQuotaShort": "邮箱 {count}",
+    "sendQuotaShort": "发件 {count}",
+    "used": "已使用：{user}",
+    "unused": "未使用",
+    "copied": "已复制到剪贴板",
+    "copyFailed": "复制失败"
   }
 }

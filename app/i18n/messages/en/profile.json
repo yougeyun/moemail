@@ -238,7 +238,6 @@
     "duration": "Duration",
     "permanent": "Permanent",
     "daysValue": "{days} days",
-    "daysValue": "{days} days",
     "paymentMethod": "Payment Method",
     "methodPoints": "Points",
     "methodWechat": "WeChat Pay",
@@ -304,5 +303,39 @@
     "orderConfirmFailed": "Failed to confirm order",
     "pendingOrdersHint": "Automatic activation works after callback verification is configured. Manual confirmation is available now.",
     "permanent": "Permanent"
+  },
+  "activationCode": {
+    "title": "Activation Code",
+    "emailQuota": "Email quota: {count}",
+    "sendQuota": "Send quota: {count}",
+    "code": "Code",
+    "codePlaceholder": "Enter activation code",
+    "redeem": "Redeem",
+    "redeeming": "Redeeming...",
+    "redeemSuccess": "Redeemed successfully",
+    "redeemFailed": "Failed to redeem"
+  },
+  "activationCodeManager": {
+    "title": "Activation Code Manager",
+    "count": "Count",
+    "emailQuota": "Email Quota",
+    "sendQuota": "Send Quota",
+    "prefix": "Prefix",
+    "prefixPlaceholder": "Optional",
+    "expiresInDays": "Valid Days",
+    "generate": "Batch Generate",
+    "generating": "Generating...",
+    "generateSuccess": "Activation codes generated",
+    "generateFailed": "Failed to generate",
+    "loadFailed": "Failed to load codes",
+    "generatedTitle": "Generated Codes",
+    "historyTitle": "History",
+    "empty": "No activation codes",
+    "emailQuotaShort": "Emails {count}",
+    "sendQuotaShort": "Sends {count}",
+    "used": "Used by: {user}",
+    "unused": "Unused",
+    "copied": "Copied to clipboard",
+    "copyFailed": "Copy failed"
   }
 }

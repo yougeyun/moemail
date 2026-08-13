@@ -20,6 +20,8 @@ import { RoleManagerPanel } from "./role-manager-panel"
 import { ROLE_ICON_MAP } from "./role-ui"
 import { MembershipShopPanel } from "./membership-shop-panel"
 import { PaymentSettingsPanel } from "./payment-settings-panel"
+import { ActivationCodePanel } from "./activation-code-panel"
+import { ActivationCodeManagerPanel } from "./activation-code-manager-panel"
 
 interface ProfileCardProps {
   user: User
@@ -150,6 +152,7 @@ export function ProfileCard({ user }: ProfileCardProps) {
       </div>
 
       <MembershipShopPanel />
+      <ActivationCodePanel />
 
       {canManageWebhook && (
       <div className="panel-card">
@@ -167,6 +170,7 @@ export function ProfileCard({ user }: ProfileCardProps) {
       {canManageConfig && <BrandSettingsPanel />}
       {canManageConfig && <TemplateManagerPanel />}
       {canManageConfig && <PaymentSettingsPanel />}
+      {canManageConfig && <ActivationCodeManagerPanel />}
       {canManageConfig && <EmailServiceConfig />}
       {canManageRoles && <RoleManagerPanel />}
       {canPromote && <PromotePanel />}

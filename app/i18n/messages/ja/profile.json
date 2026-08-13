@@ -238,7 +238,6 @@
     "duration": "購入期間",
     "permanent": "永久",
     "daysValue": "{days} 日",
-    "daysValue": "{days} 日",
     "paymentMethod": "支払い方法",
     "methodPoints": "ポイント",
     "methodWechat": "WeChat Pay",
@@ -304,5 +303,39 @@
     "orderConfirmFailed": "注文の確認に失敗しました",
     "pendingOrdersHint": "コールバック検証を設定すると自動で有効化されます。現在は手動確認できます",
     "permanent": "永久"
+  },
+  "activationCode": {
+    "title": "アクティベーションコード",
+    "emailQuota": "メール枠：{count}",
+    "sendQuota": "送信回数：{count}",
+    "code": "コード",
+    "codePlaceholder": "コードを入力",
+    "redeem": "交換",
+    "redeeming": "交換中...",
+    "redeemSuccess": "交換しました",
+    "redeemFailed": "交換に失敗しました"
+  },
+  "activationCodeManager": {
+    "title": "コード管理",
+    "count": "生成数",
+    "emailQuota": "メール数",
+    "sendQuota": "送信回数",
+    "prefix": "プレフィックス",
+    "prefixPlaceholder": "任意",
+    "expiresInDays": "有効日数",
+    "generate": "一括生成",
+    "generating": "生成中...",
+    "generateSuccess": "コードを生成しました",
+    "generateFailed": "生成に失敗しました",
+    "loadFailed": "コードの読み込みに失敗しました",
+    "generatedTitle": "生成されたコード",
+    "historyTitle": "履歴",
+    "empty": "コードがありません",
+    "emailQuotaShort": "メール {count}",
+    "sendQuotaShort": "送信 {count}",
+    "used": "使用済み：{user}",
+    "unused": "未使用",
+    "copied": "コピーしました",
+    "copyFailed": "コピーに失敗しました"
   }
 }

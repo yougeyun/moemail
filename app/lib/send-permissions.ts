@@ -1,6 +1,6 @@
 import { createDb } from "@/lib/db"
-import { messages, emails } from "@/lib/schema"
-import { eq, and, gte } from "drizzle-orm"
+import { messages, emails, users } from "@/lib/schema"
+import { eq, and, gte, sql } from "drizzle-orm"
 import { getRequestContext } from "@cloudflare/next-on-pages"
 import { EMAIL_CONFIG } from "@/config"
 import { getActiveUserRole } from "@/lib/role-access"
@@ -17,6 +17,7 @@ export async function checkSendPermission(
 ): Promise<SendPermissionResult> {
   try {
     const env = getRequestContext().env
+    const db = createDb()
     const enabled = await env.SITE_CONFIG.get("EMAIL_SERVICE_ENABLED")
 
     if (enabled !== "true") {
@@ -26,27 +27,16 @@ export async function checkSendPermission(
       }
     }
 
+    const user = await db.query.users.findFirst({
+      where: eq(users.id, userId),
+    })
     const userDailyLimit = await getUserDailyLimit(userId)
-    
-    if (userDailyLimit === -1) {
-      return {
-        canSend: false,
-        error: "您的角色没有发件权限"
-      }
-    }
 
-    if (skipDailyLimitCheck || userDailyLimit === 0) {
-      return {
-        canSend: true
-      }
-    }
-    
-    const db = createDb()
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-    
-    const sentToday = await db
-      .select()
+
+    const sentTodayRows = await db
+      .select({ count: sql<number>`count(*)` })
       .from(messages)
       .innerJoin(emails, eq(messages.emailId, emails.id))
       .where(
@@ -56,10 +46,71 @@ export async function checkSendPermission(
           gte(messages.receivedAt, today)
         )
       )
+    const sentToday = Number(sentTodayRows[0].count)
 
-    const remainingEmails = Math.max(0, userDailyLimit - sentToday.length)
-    
-    if (sentToday.length >= userDailyLimit) {
+    const redeemedSendQuota = user?.redeemedSendQuota ?? 0
+
+    if (redeemedSendQuota <= 0) {
+      if (userDailyLimit === -1) {
+        return {
+          canSend: false,
+          error: "您的角色没有发件权限，请使用激活码兑换发件次数"
+        }
+      }
+
+      if (skipDailyLimitCheck || userDailyLimit === 0) {
+        return {
+          canSend: true
+        }
+      }
+
+      const remainingEmails = Math.max(0, userDailyLimit - sentToday)
+      if (sentToday >= userDailyLimit) {
+        return {
+          canSend: false,
+          error: `您今天已达到发件限制 (${userDailyLimit} 封)，请明天再试`,
+          remainingEmails: 0
+        }
+      }
+
+      return {
+        canSend: true,
+        remainingEmails
+      }
+    }
+
+    const totalSentRows = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(messages)
+      .innerJoin(emails, eq(messages.emailId, emails.id))
+      .where(
+        and(
+          eq(emails.userId, userId),
+          eq(messages.type, "sent")
+        )
+      )
+    const totalSent = Number(totalSentRows[0].count)
+    const remainingQuota = Math.max(0, redeemedSendQuota - totalSent)
+
+    if (remainingQuota <= 0) {
+      return {
+        canSend: false,
+        error: "激活码兑换的发件次数已用完",
+        remainingEmails: 0
+      }
+    }
+
+    if (skipDailyLimitCheck || userDailyLimit === -1 || userDailyLimit === 0) {
+      return {
+        canSend: true,
+        remainingEmails: remainingQuota
+      }
+    }
+
+    const remainingDaily = Math.max(0, userDailyLimit - sentToday)
+    const remainingEmails = Math.min(remainingQuota, remainingDaily)
+
+    if (remainingEmails <= 0) {
       return {
         canSend: false,
         error: `您今天已达到发件限制 (${userDailyLimit} 封)，请明天再试`,

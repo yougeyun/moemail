@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { nanoid } from "nanoid"
 import { createDb } from "@/lib/db"
-import { emails } from "@/lib/schema"
+import { emails, users } from "@/lib/schema"
 import { eq, and, gt, sql } from "drizzle-orm"
 import { EXPIRY_OPTIONS } from "@/types/email"
 import { EMAIL_CONFIG } from "@/config"
@@ -20,15 +20,19 @@ export async function POST(request: Request) {
   const userId = await getUserId()
   const userRoleRecord = await getActiveUserRole(db, userId!)
   const userRole = userRoleRecord?.role
+  const userRecord = await db.query.users.findFirst({
+    where: eq(users.id, userId!),
+  })
 
   try {
     if (userRole?.name !== ROLES.EMPEROR) {
       const globalMaxEmails = Number(await env.SITE_CONFIG.get("MAX_EMAILS"))
       const maxEmails =
-        userRole?.maxEmails ??
-        (Number.isFinite(globalMaxEmails) && globalMaxEmails > 0
-          ? globalMaxEmails
-          : EMAIL_CONFIG.MAX_ACTIVE_EMAILS)
+        (userRole?.maxEmails ??
+          (Number.isFinite(globalMaxEmails) && globalMaxEmails > 0
+            ? globalMaxEmails
+            : EMAIL_CONFIG.MAX_ACTIVE_EMAILS)) +
+        (userRecord?.redeemedEmailQuota ?? 0)
       const activeEmailsCount = await db
         .select({ count: sql<number>`count(*)` })
         .from(emails)

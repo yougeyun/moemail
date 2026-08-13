@@ -160,10 +160,10 @@ export async function POST(request: Request) {
     icons,
     activeTemplate
   } = await request.json() as { 
-    defaultRole: string,
-    emailDomains: string,
-    adminContact: string,
-    maxEmails: string,
+    defaultRole?: string,
+    emailDomains?: string,
+    adminContact?: string,
+    maxEmails?: string,
     initialPoints?: number,
     siteName?: string,
     siteTitle?: string,
@@ -179,9 +179,50 @@ export async function POST(request: Request) {
     }
   }
   
+  const env = getRequestContext().env
+  const currentValues = await Promise.all([
+    env.SITE_CONFIG.get("DEFAULT_ROLE"),
+    env.SITE_CONFIG.get("EMAIL_DOMAINS"),
+    env.SITE_CONFIG.get("ADMIN_CONTACT"),
+    env.SITE_CONFIG.get("MAX_EMAILS"),
+    env.SITE_CONFIG.get("INITIAL_POINTS"),
+    env.SITE_CONFIG.get("TURNSTILE_ENABLED"),
+    env.SITE_CONFIG.get("TURNSTILE_SITE_KEY"),
+    env.SITE_CONFIG.get("TURNSTILE_SECRET_KEY"),
+    env.SITE_CONFIG.get("SITE_NAME"),
+    env.SITE_CONFIG.get("SITE_TITLE"),
+    env.SITE_CONFIG.get("SITE_DESCRIPTION"),
+    env.SITE_CONFIG.get("SITE_KEYWORDS"),
+    env.SITE_CONFIG.get("SITE_LOGO"),
+    env.SITE_CONFIG.get("SITE_ICONS"),
+    env.SITE_CONFIG.get("ACTIVE_TEMPLATE"),
+  ])
+
+  const finalDefaultRole = defaultRole ?? currentValues[0] ?? ROLES.CIVILIAN
+  const finalEmailDomains = emailDomains ?? currentValues[1] ?? "moemail.app"
+  const finalAdminContact = adminContact ?? currentValues[2] ?? ""
+  const finalMaxEmails = maxEmails ?? currentValues[3] ?? EMAIL_CONFIG.MAX_ACTIVE_EMAILS.toString()
+  const finalInitialPoints = initialPoints ?? Number(currentValues[4] || 0)
+  const finalSiteName = siteName ?? currentValues[8] ?? DEFAULT_SITE_NAME
+  const finalSiteTitle = siteTitle ?? currentValues[9] ?? ""
+  const finalSiteDescription = siteDescription ?? currentValues[10] ?? ""
+  const finalSiteKeywords = siteKeywords ?? currentValues[11] ?? ""
+  const finalSiteLogo = logo ?? currentValues[12] ?? ""
+  const finalActiveTemplate = activeTemplate ?? currentValues[14] ?? "east-paper"
+
+  let currentIcons: Record<string, string> = {}
+  if (currentValues[13]) {
+    try {
+      currentIcons = JSON.parse(currentValues[13])
+    } catch {
+      currentIcons = {}
+    }
+  }
+  const finalIcons = icons ?? currentIcons
+
   const db = createDb()
   const defaultRoleRow = await db.query.roles.findFirst({
-    where: eq(roles.name, defaultRole),
+    where: eq(roles.name, finalDefaultRole),
   })
 
   if (!defaultRoleRow || defaultRoleRow.name === ROLES.EMPEROR) {
@@ -189,44 +230,44 @@ export async function POST(request: Request) {
   }
 
   const turnstileConfig = turnstile ?? {
-    enabled: false,
-    siteKey: "",
-    secretKey: ""
+    enabled: currentValues[5] === "true",
+    siteKey: currentValues[6] || "",
+    secretKey: currentValues[7] || "",
   }
 
   if (turnstileConfig.enabled && (!turnstileConfig.siteKey || !turnstileConfig.secretKey)) {
     return Response.json({ error: "Turnstile 启用时需要提供 Site Key 和 Secret Key" }, { status: 400 })
   }
 
-  const templateId = activeTemplate || "east-paper"
+  const templateId = finalActiveTemplate
   if (!isTemplateId(templateId)) {
     return Response.json({ error: "无效的模板" }, { status: 400 })
   }
 
-  if (logo && logo.length > 2_500_000) {
+  if (finalSiteLogo && finalSiteLogo.length > 2_500_000) {
     return Response.json({ error: "Logo 图片过大" }, { status: 400 })
   }
 
-  const iconPayload = icons && Object.keys(icons).length > 0 ? JSON.stringify(icons) : ""
+  const iconPayload =
+    finalIcons && Object.keys(finalIcons).length > 0 ? JSON.stringify(finalIcons) : ""
   if (iconPayload.length > 4_000_000) {
     return Response.json({ error: "图标数据过大" }, { status: 400 })
   }
 
-  const env = getRequestContext().env
   await Promise.all([
-    env.SITE_CONFIG.put("DEFAULT_ROLE", defaultRole),
-    env.SITE_CONFIG.put("EMAIL_DOMAINS", emailDomains),
-    env.SITE_CONFIG.put("ADMIN_CONTACT", adminContact),
-    env.SITE_CONFIG.put("MAX_EMAILS", maxEmails),
-    env.SITE_CONFIG.put("INITIAL_POINTS", String(Math.max(0, Number(initialPoints) || 0))),
+    env.SITE_CONFIG.put("DEFAULT_ROLE", finalDefaultRole),
+    env.SITE_CONFIG.put("EMAIL_DOMAINS", finalEmailDomains),
+    env.SITE_CONFIG.put("ADMIN_CONTACT", finalAdminContact),
+    env.SITE_CONFIG.put("MAX_EMAILS", finalMaxEmails),
+    env.SITE_CONFIG.put("INITIAL_POINTS", String(Math.max(0, Number(finalInitialPoints) || 0))),
     env.SITE_CONFIG.put("TURNSTILE_ENABLED", turnstileConfig.enabled.toString()),
     env.SITE_CONFIG.put("TURNSTILE_SITE_KEY", turnstileConfig.siteKey),
     env.SITE_CONFIG.put("TURNSTILE_SECRET_KEY", turnstileConfig.secretKey),
-    env.SITE_CONFIG.put("SITE_NAME", siteName || DEFAULT_SITE_NAME),
-    env.SITE_CONFIG.put("SITE_TITLE", siteTitle || ""),
-    env.SITE_CONFIG.put("SITE_DESCRIPTION", siteDescription || ""),
-    env.SITE_CONFIG.put("SITE_KEYWORDS", siteKeywords || ""),
-    env.SITE_CONFIG.put("SITE_LOGO", logo || ""),
+    env.SITE_CONFIG.put("SITE_NAME", finalSiteName || DEFAULT_SITE_NAME),
+    env.SITE_CONFIG.put("SITE_TITLE", finalSiteTitle || ""),
+    env.SITE_CONFIG.put("SITE_DESCRIPTION", finalSiteDescription || ""),
+    env.SITE_CONFIG.put("SITE_KEYWORDS", finalSiteKeywords || ""),
+    env.SITE_CONFIG.put("SITE_LOGO", finalSiteLogo || ""),
     env.SITE_CONFIG.put("SITE_ICONS", iconPayload),
     env.SITE_CONFIG.put("ACTIVE_TEMPLATE", templateId)
   ])

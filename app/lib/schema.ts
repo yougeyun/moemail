@@ -14,6 +14,8 @@ export const users = sqliteTable("user", {
   username: text("username").unique(),
   password: text("password"),
   points: integer("points").notNull().default(0),
+  redeemedEmailQuota: integer("redeemed_email_quota").notNull().default(0),
+  redeemedSendQuota: integer("redeemed_send_quota").notNull().default(0),
 })
 export const accounts = sqliteTable(
   "account",
@@ -159,6 +161,25 @@ export const roleOrders = sqliteTable("role_order", {
 }, (table) => ({
   userIdIdx: index("role_order_user_id_idx").on(table.userId),
   createdAtIdx: index("role_order_created_at_idx").on(table.createdAt),
+}))
+
+export const activationCodes = sqliteTable("activation_code", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  code: text("code").notNull().unique(),
+  emailQuota: integer("email_quota").notNull().default(0),
+  sendQuota: integer("send_quota").notNull().default(0),
+  createdBy: text("created_by")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  usedBy: text("used_by").references(() => users.id, { onDelete: "set null" }),
+  usedAt: integer("used_at", { mode: "timestamp_ms" }),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  expiresAt: integer("expires_at", { mode: "timestamp_ms" }),
+}, (table) => ({
+  codeIdx: index("activation_code_code_idx").on(table.code),
+  usedByIdx: index("activation_code_used_by_idx").on(table.usedBy),
 }))
 
 export const emailShares = sqliteTable('email_share', {

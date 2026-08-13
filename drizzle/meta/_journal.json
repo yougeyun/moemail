@@ -162,6 +162,13 @@
       "when": 1786589792790,
       "tag": "0022_loud_prism",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "6",
+      "when": 1786607148183,
+      "tag": "0023_complete_calypso",
+      "breakpoints": true
     }
   ]
 }
