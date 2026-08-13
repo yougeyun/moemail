@@ -19,7 +19,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-import { Github, Loader2, KeyRound, User2 } from "lucide-react"
+import { KeyRound, Loader2, Mail, User2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Turnstile } from "@/components/auth/turnstile"
 import { Logo } from "@/components/ui/logo"
@@ -34,15 +34,22 @@ interface LoginFormProps {
 }
 
 interface FormErrors {
-  username?: string
+  account?: string
+  email?: string
   password?: string
   confirmPassword?: string
+  code?: string
 }
 
 export function LoginForm({ turnstile }: LoginFormProps) {
-  const [username, setUsername] = useState("")
+  const [account, setAccount] = useState("")
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const [code, setCode] = useState("")
+  const [codeSent, setCodeSent] = useState(false)
+  const [codeMode, setCodeMode] = useState<"code" | "link">("code")
+  const [sendingCode, setSendingCode] = useState(false)
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
   const [turnstileToken, setTurnstileToken] = useState("")
@@ -72,9 +79,12 @@ export function LoginForm({ turnstile }: LoginFormProps) {
   }
 
   const clearForm = () => {
-    setUsername("")
+    setAccount("")
+    setEmail("")
     setPassword("")
     setConfirmPassword("")
+    setCode("")
+    setCodeSent(false)
     setErrors({})
   }
 
@@ -85,22 +95,31 @@ export function LoginForm({ turnstile }: LoginFormProps) {
 
   const validateLoginForm = () => {
     const newErrors: FormErrors = {}
-    if (!username) newErrors.username = t("errors.usernameRequired")
+    if (!account) newErrors.account = t("errors.accountRequired")
     if (!password) newErrors.password = t("errors.passwordRequired")
-    if (username.includes('@')) newErrors.username = t("errors.usernameInvalid")
-    if (password && password.length < 8) newErrors.password = t("errors.passwordTooShort")
+    if (password && password.length < 8) {
+      newErrors.password = t("errors.passwordTooShort")
+    }
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
   const validateRegisterForm = () => {
     const newErrors: FormErrors = {}
-    if (!username) newErrors.username = t("errors.usernameRequired")
+    if (!email) newErrors.email = t("errors.emailRequired")
     if (!password) newErrors.password = t("errors.passwordRequired")
-    if (username.includes('@')) newErrors.username = t("errors.usernameInvalid")
-    if (password && password.length < 8) newErrors.password = t("errors.passwordTooShort")
-    if (!confirmPassword) newErrors.confirmPassword = t("errors.confirmPasswordRequired")
-    if (password !== confirmPassword) newErrors.confirmPassword = t("errors.passwordMismatch")
+    if (password && password.length < 8) {
+      newErrors.password = t("errors.passwordTooShort")
+    }
+    if (!confirmPassword) {
+      newErrors.confirmPassword = t("errors.confirmPasswordRequired")
+    }
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = t("errors.passwordMismatch")
+    }
+    if (codeMode === "code" && !code) {
+      newErrors.code = t("errors.codeRequired")
+    }
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -112,7 +131,7 @@ export function LoginForm({ turnstile }: LoginFormProps) {
     setLoading(true)
     try {
       const result = await signIn("credentials", {
-        username,
+        username: account,
         password,
         turnstileToken,
         redirect: false,
@@ -133,11 +152,56 @@ export function LoginForm({ turnstile }: LoginFormProps) {
     } catch (error) {
       toast({
         title: t("toast.loginFailed"),
-        description: error instanceof Error ? error.message : t("toast.registerFailedDesc"),
+        description: error instanceof Error ? error.message : t("toast.loginFailedDesc"),
         variant: "destructive",
       })
       setLoading(false)
       resetTurnstile()
+    }
+  }
+
+  const handleSendCode = async () => {
+    if (!email) {
+      setErrors({ email: t("errors.emailRequired") })
+      return
+    }
+    if (!ensureTurnstileSolved()) return
+
+    setSendingCode(true)
+    try {
+      const res = await fetch("/api/auth/verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          purpose: "register",
+          turnstileToken,
+        }),
+      })
+      const data = (await res.json()) as {
+        error?: string
+        mode?: "code" | "link"
+      }
+      if (!res.ok) {
+        throw new Error(data.error || t("toast.sendCodeFailed"))
+      }
+      setCodeMode(data.mode || "code")
+      setCodeSent(true)
+      toast({
+        title: t("toast.codeSent"),
+        description:
+          data.mode === "link"
+            ? t("toast.activationSentDesc")
+            : t("toast.codeSentDesc"),
+      })
+    } catch (error) {
+      toast({
+        title: t("toast.sendCodeFailed"),
+        description: error instanceof Error ? error.message : undefined,
+        variant: "destructive",
+      })
+    } finally {
+      setSendingCode(false)
     }
   }
 
@@ -150,25 +214,36 @@ export function LoginForm({ turnstile }: LoginFormProps) {
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password, turnstileToken }),
+        body: JSON.stringify({
+          email,
+          password,
+          code: codeMode === "code" ? code : undefined,
+          turnstileToken,
+        }),
       })
 
-      const data = await response.json() as { error?: string }
+      const data = (await response.json()) as {
+        error?: string
+        verificationRequired?: boolean
+      }
 
       if (!response.ok) {
+        throw new Error(data.error || t("toast.registerFailedDesc"))
+      }
+
+      if (data.verificationRequired) {
         toast({
-          title: t("toast.registerFailed"),
-          description: data.error || t("toast.registerFailedDesc"),
-          variant: "destructive",
+          title: t("toast.activationSent"),
+          description: t("toast.activationSentDesc"),
         })
         setLoading(false)
+        clearForm()
         resetTurnstile()
         return
       }
 
-      // 注册成功后自动登录
       const result = await signIn("credentials", {
-        username,
+        username: email,
         password,
         turnstileToken,
         redirect: false,
@@ -197,14 +272,6 @@ export function LoginForm({ turnstile }: LoginFormProps) {
     }
   }
 
-  const handleGithubLogin = () => {
-    signIn("github", { callbackUrl: "/" })
-  }
-
-  const handleGoogleLogin = () => {
-    signIn("google", { callbackUrl: "/" })
-  }
-
   return (
     <Card className="w-[95%] max-w-md panel overflow-hidden shadow-xl">
       <CardHeader className="space-y-2 border-b border-border/70 bg-card/60 px-7 pb-6 pt-8">
@@ -224,8 +291,8 @@ export function LoginForm({ turnstile }: LoginFormProps) {
             <TabsTrigger value="login">{t("tabs.login")}</TabsTrigger>
             <TabsTrigger value="register">{t("tabs.register")}</TabsTrigger>
           </TabsList>
-          <div className="min-h-[220px]">
-            <TabsContent value="login" className="space-y-4 mt-0">
+          <div className="min-h-[240px]">
+            <TabsContent value="login" className="mt-0 space-y-4">
               <div className="space-y-3">
                 <div className="space-y-1.5">
                   <div className="relative">
@@ -235,19 +302,19 @@ export function LoginForm({ turnstile }: LoginFormProps) {
                     <Input
                       className={cn(
                         "h-10 pl-10 pr-4",
-                        errors.username && "border-destructive focus-visible:ring-destructive"
+                        errors.account && "border-destructive focus-visible:ring-destructive"
                       )}
-                      placeholder={t("fields.username")}
-                      value={username}
+                      placeholder={t("fields.account")}
+                      value={account}
                       onChange={(e) => {
-                        setUsername(e.target.value)
+                        setAccount(e.target.value)
                         setErrors({})
                       }}
                       disabled={loading}
                     />
                   </div>
-                  {errors.username && (
-                    <p className="text-xs text-destructive">{errors.username}</p>
+                  {errors.account && (
+                    <p className="text-xs text-destructive">{errors.account}</p>
                   )}
                 </div>
                 <div className="space-y-1.5">
@@ -276,86 +343,40 @@ export function LoginForm({ turnstile }: LoginFormProps) {
                 </div>
               </div>
 
-              <div className="space-y-3 pt-1">
-                <Button
-                  className="w-full"
-                  onClick={handleLogin}
-                  disabled={loading}
-                >
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {t("actions.login")}
-                </Button>
-
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">
-                      {t("actions.or")}
-                    </span>
-                  </div>
-                </div>
-
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={handleGithubLogin}
-                >
-                  <Github className="mr-2 h-4 w-4" />
-                  {t("actions.githubLogin")}
-                </Button>
-
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={handleGoogleLogin}
-                >
-                  <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-                    <path
-                      fill="currentColor"
-                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                    />
-                    <path
-                      fill="currentColor"
-                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                    />
-                    <path
-                      fill="currentColor"
-                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                    />
-                    <path
-                      fill="currentColor"
-                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                    />
-                  </svg>
-                  {t("actions.googleLogin")}
-                </Button>
-              </div>
+              <Button
+                className="w-full"
+                onClick={handleLogin}
+                disabled={loading}
+              >
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {t("actions.login")}
+              </Button>
             </TabsContent>
-            <TabsContent value="register" className="space-y-4 mt-0">
+
+            <TabsContent value="register" className="mt-0 space-y-4">
               <div className="space-y-3">
                 <div className="space-y-1.5">
                   <div className="relative">
                     <div className="absolute left-3 top-2.5 text-muted-foreground">
-                      <User2 className="h-5 w-5" />
+                      <Mail className="h-5 w-5" />
                     </div>
                     <Input
                       className={cn(
                         "h-10 pl-10 pr-4",
-                        errors.username && "border-destructive focus-visible:ring-destructive"
+                        errors.email && "border-destructive focus-visible:ring-destructive"
                       )}
-                      placeholder={t("fields.username")}
-                      value={username}
+                      type="email"
+                      placeholder={t("fields.email")}
+                      value={email}
                       onChange={(e) => {
-                        setUsername(e.target.value)
+                        setEmail(e.target.value)
                         setErrors({})
                       }}
                       disabled={loading}
                     />
                   </div>
-                  {errors.username && (
-                    <p className="text-xs text-destructive">{errors.username}</p>
+                  {errors.email && (
+                    <p className="text-xs text-destructive">{errors.email}</p>
                   )}
                 </div>
                 <div className="space-y-1.5">
@@ -406,18 +427,50 @@ export function LoginForm({ turnstile }: LoginFormProps) {
                     <p className="text-xs text-destructive">{errors.confirmPassword}</p>
                   )}
                 </div>
+                <div className="space-y-1.5">
+                  <div className="flex gap-2">
+                    <Input
+                      className={cn(
+                        "h-10 flex-1",
+                        errors.code && "border-destructive focus-visible:ring-destructive"
+                      )}
+                      placeholder={t("fields.code")}
+                      value={code}
+                      onChange={(e) => {
+                        setCode(e.target.value)
+                        setErrors({})
+                      }}
+                      disabled={loading || codeMode === "link"}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="h-10 shrink-0"
+                      onClick={handleSendCode}
+                      disabled={sendingCode || !email}
+                    >
+                      {sendingCode ? t("actions.sending") : t("actions.sendCode")}
+                    </Button>
+                  </div>
+                  {errors.code && (
+                    <p className="text-xs text-destructive">{errors.code}</p>
+                  )}
+                  {codeSent && codeMode === "link" && (
+                    <p className="text-xs text-muted-foreground">
+                      {t("toast.activationSentDesc")}
+                    </p>
+                  )}
+                </div>
               </div>
 
-              <div className="space-y-3 pt-1">
-                <Button
-                  className="w-full"
-                  onClick={handleRegister}
-                  disabled={loading}
-                >
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {t("actions.register")}
-                </Button>
-              </div>
+              <Button
+                className="w-full"
+                onClick={handleRegister}
+                disabled={loading || !codeSent}
+              >
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {t("actions.register")}
+              </Button>
             </TabsContent>
           </div>
         </Tabs>

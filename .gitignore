@@ -65,3 +65,6 @@ screenshots/
 .next-dev*.log
 .next-dev*.err.log
 pnpm-workspace.yaml
+
+# local mail relay credentials
+mail-relay/config.php

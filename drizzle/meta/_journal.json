@@ -183,6 +183,13 @@
       "when": 1786612250995,
       "tag": "0025_spicy_squadron_sinister",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "6",
+      "when": 1786663798572,
+      "tag": "0026_sleepy_captain_cross",
+      "breakpoints": true
     }
   ]
 }

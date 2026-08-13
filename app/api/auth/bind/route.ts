@@ -2,8 +2,8 @@ import { NextResponse } from "next/server"
 import { eq } from "drizzle-orm"
 import { createDb } from "@/lib/db"
 import { users } from "@/lib/schema"
-import { registerWithEmail } from "@/lib/auth"
-import { registerSchema } from "@/lib/validation"
+import { bindSchema } from "@/lib/validation"
+import { comparePassword } from "@/lib/utils"
 import { verifyTurnstileToken } from "@/lib/turnstile"
 import { verifyEmailCode, createEmailVerification } from "@/lib/email-verification"
 import { getSystemMailConfig } from "@/lib/system-mail"
@@ -13,7 +13,7 @@ export const runtime = "edge"
 export async function POST(request: Request) {
   try {
     const json = await request.json()
-    const parsed = registerSchema.safeParse(json)
+    const parsed = bindSchema.safeParse(json)
     if (!parsed.success) {
       return NextResponse.json(
         { error: parsed.error.issues[0]?.message || "输入格式不正确" },
@@ -22,7 +22,6 @@ export async function POST(request: Request) {
     }
 
     const { email, password, code, turnstileToken } = parsed.data
-
     const verification = await verifyTurnstileToken(turnstileToken)
     if (!verification.success) {
       return NextResponse.json(
@@ -36,53 +35,65 @@ export async function POST(request: Request) {
       )
     }
 
+    const db = createDb()
     const normalizedEmail = email.trim().toLowerCase()
+    const user = await db.query.users.findFirst({
+      where: eq(users.email, normalizedEmail),
+    })
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "该邮箱尚未注册" },
+        { status: 404 }
+      )
+    }
+
+    const isValid = await comparePassword(password, user.password as string)
+    if (!isValid) {
+      return NextResponse.json(
+        { error: "原账号密码错误" },
+        { status: 403 }
+      )
+    }
+
     const mailConfig = await getSystemMailConfig()
 
-    if (mailConfig.mode === "code") {
-      if (!code) {
-        return NextResponse.json(
-          { error: "请输入邮箱验证码" },
-          { status: 400 }
-        )
-      }
-      await verifyEmailCode({
-        email: normalizedEmail,
-        code,
-        purpose: "register",
-      })
-
-      const user = await registerWithEmail(normalizedEmail, password, {
-        emailVerified: true,
-      })
-      return NextResponse.json({ user })
-    }
-
-    const user = await registerWithEmail(normalizedEmail, password, {
-      emailVerified: false,
-    })
-
-    try {
+    if (mailConfig.mode === "link") {
       await createEmailVerification({
         email: normalizedEmail,
-        purpose: "register",
+        purpose: "bind",
         userId: user.id,
+        meta: JSON.stringify({ bind: true }),
         baseUrl: new URL(request.url).origin,
       })
-    } catch (error) {
-      const db = createDb()
-      await db.delete(users).where(eq(users.id, user.id))
-      throw error
+      return NextResponse.json({
+        success: true,
+        verificationRequired: true,
+      })
     }
 
-    return NextResponse.json({
-      success: true,
-      verificationRequired: true,
+    if (!code) {
+      return NextResponse.json(
+        { error: "请输入邮箱验证码" },
+        { status: 400 }
+      )
+    }
+
+    await verifyEmailCode({
+      email: normalizedEmail,
+      code,
+      purpose: "bind",
     })
+
+    await db
+      .update(users)
+      .set({ emailVerified: new Date() })
+      .where(eq(users.id, user.id))
+
+    return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Failed to register:", error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "注册失败" },
+      { error: error instanceof Error ? error.message : "绑定失败" },
       { status: 500 }
     )
   }

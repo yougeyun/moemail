@@ -201,6 +201,25 @@ export const userEmailQuotas = sqliteTable("user_email_quota", {
   sourceCodeIdIdx: index("user_email_quota_source_code_id_idx").on(table.sourceCodeId),
 }))
 
+export const emailVerifications = sqliteTable("email_verification", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  email: text("email").notNull(),
+  code: text("code"),
+  token: text("token"),
+  purpose: text("purpose").notNull(),
+  userId: text("user_id"),
+  meta: text("meta"),
+  expiresAt: integer("expires_at", { mode: "timestamp_ms" }).notNull(),
+  attempts: integer("attempts").notNull().default(0),
+  usedAt: integer("used_at", { mode: "timestamp_ms" }),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+}, (table) => ({
+  emailIdx: index("email_verification_email_idx").on(table.email),
+  tokenIdx: index("email_verification_token_idx").on(table.token),
+}))
+
 export const emailShares = sqliteTable('email_share', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
   emailId: text('email_id')

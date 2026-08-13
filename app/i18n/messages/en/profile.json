@@ -341,5 +341,28 @@
     "emailExpiryDays": "Email Expiry (Days)",
     "emailExpiry": "Email Expiry",
     "expiryDays": "Expires in {days} days"
+  },
+  "systemMail": {
+    "title": "System Email",
+    "enabled": "Enable system email",
+    "enabledHint": "Used for registration codes and activation emails",
+    "mode": "Verification mode",
+    "modeCode": "Send verification code",
+    "modeLink": "Send activation email",
+    "relayUrl": "Mail relay URL",
+    "relayToken": "Relay token",
+    "relayTokenPlaceholder": "Leave empty to keep current",
+    "fromEmail": "From email",
+    "fromName": "From name",
+    "testEmail": "Test recipient",
+    "save": "Save",
+    "saving": "Saving...",
+    "saveSuccess": "Saved",
+    "saveFailed": "Failed to save",
+    "testSend": "Send test email",
+    "testing": "Sending...",
+    "testSuccess": "Test email sent",
+    "testFailed": "Failed to send test email",
+    "testEmailRequired": "Enter a test recipient"
   }
 }

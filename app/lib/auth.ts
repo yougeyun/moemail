@@ -1,10 +1,8 @@
 import NextAuth from "next-auth"
-import GitHub from "next-auth/providers/github"
-import Google from "next-auth/providers/google"
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import { createDb, Db } from "./db"
 import { accounts, users, roles, userRoles } from "./schema"
-import { eq } from "drizzle-orm"
+import { eq, or } from "drizzle-orm"
 import { getRequestContext } from "@cloudflare/next-on-pages"
 import {
   Permission,
@@ -112,20 +110,10 @@ export const {
     accountsTable: accounts,
   }),
   providers: [
-    GitHub({
-      clientId: process.env.AUTH_GITHUB_ID,
-      clientSecret: process.env.AUTH_GITHUB_SECRET,
-      allowDangerousEmailAccountLinking: true,
-    }),
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
-      allowDangerousEmailAccountLinking: true,
-    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        username: { label: "用户名", type: "text", placeholder: "请输入用户名" },
+        username: { label: "用户名/邮箱", type: "text", placeholder: "请输入用户名或邮箱" },
         password: { label: "密码", type: "password", placeholder: "请输入密码" },
       },
       async authorize(credentials) {
@@ -154,7 +142,10 @@ export const {
         const db = createDb()
 
         const user = await db.query.users.findFirst({
-          where: eq(users.username, parsedCredentials.username),
+          where: or(
+            eq(users.username, parsedCredentials.username),
+            eq(users.email, parsedCredentials.username.toLowerCase())
+          ),
         })
 
         if (!user) {
@@ -273,23 +264,46 @@ export const {
   },
 }))
 
-export async function register(username: string, password: string) {
+export async function registerWithEmail(
+  email: string,
+  password: string,
+  options: { emailVerified?: boolean } = {}
+) {
   const db = createDb()
+  const normalizedEmail = email.trim().toLowerCase()
 
   const existing = await db.query.users.findFirst({
-    where: eq(users.username, username)
+    where: eq(users.email, normalizedEmail),
   })
-
   if (existing) {
-    throw new Error("用户名已存在")
+    throw new Error("该邮箱已注册")
+  }
+
+  const baseUsername =
+    normalizedEmail
+      .split("@")[0]
+      ?.replace(/[^a-zA-Z0-9_-]/g, "_")
+      .slice(0, 16) || "user"
+
+  let username = baseUsername
+  let suffix = 2
+  while (
+    await db.query.users.findFirst({
+      where: eq(users.username, username),
+    })
+  ) {
+    username = `${baseUsername.slice(0, 14)}_${suffix++}`
   }
 
   const hashedPassword = await hashPassword(password)
 
-  const [user] = await db.insert(users)
+  const [user] = await db
+    .insert(users)
     .values({
       username,
+      email: normalizedEmail,
       password: hashedPassword,
+      emailVerified: options.emailVerified ? new Date() : null,
     })
     .returning()
 
