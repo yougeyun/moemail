@@ -7,6 +7,35 @@ import { getUserId } from "@/lib/apiKey";
 
 export const runtime = "edge";
 
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const canManage = await checkPermission(PERMISSIONS.PROMOTE_USER);
+  if (!canManage) {
+    return Response.json({ error: "权限不足" }, { status: 403 });
+  }
+
+  try {
+    const { id: userId } = await params;
+    const { points } = await request.json() as { points?: number };
+
+    if (!Number.isInteger(points) || (points as number) < 0) {
+      return Response.json({ error: "积分必须为非负整数" }, { status: 400 });
+    }
+
+    const db = createDb();
+    await db.update(users)
+      .set({ points })
+      .where(eq(users.id, userId));
+
+    return Response.json({ success: true, points });
+  } catch (error) {
+    console.error("Failed to update user points:", error);
+    return Response.json({ error: "更新积分失败" }, { status: 500 });
+  }
+}
+
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

@@ -141,6 +141,13 @@
       "when": 1786582314658,
       "tag": "0019_thin_spiral",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "6",
+      "when": 1786584424303,
+      "tag": "0020_wild_logan",
+      "breakpoints": true
     }
   ]
 }

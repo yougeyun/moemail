@@ -9,7 +9,8 @@
       "DUKE": "Duke",
       "KNIGHT": "Knight",
       "CIVILIAN": "Civilian"
-    }
+    },
+    "points": "Points: {points}"
   },
   "apiKey": {
     "title": "API Key Management",
@@ -142,7 +143,8 @@
     "enable": "Enable",
     "active": "Active",
     "saveTemplate": "Save Settings",
-    "brandSettings": "Brand Settings"
+    "brandSettings": "Brand Settings",
+    "initialPoints": "Initial Points for New Users"
   },
   "roleManager": {
     "title": "Member Level Management",
@@ -190,7 +192,37 @@
       "manage_roles": "Manage Member Levels",
       "manage_config": "Manage Site Config",
       "manage_api_key": "Manage API Keys"
-    }
+    },
+    "allowedDomains": "Allowed Email Domains",
+    "allowedDomainsPlaceholder": "Separate domains with commas. Leave empty for all.",
+    "allowedDomainsHint": "Members of this level can only create emails on these domains.",
+    "allowedExpiries": "Allowed Email Expiries",
+    "allowedExpiriesHint": "Leave unchecked to allow every expiry option.",
+    "defaultExpiry": "Default Expiry",
+    "defaultExpiryNone": "Follow user choice",
+    "price": "Purchase Price (Points)",
+    "priceHint": "0 means free",
+    "purchasable": "Purchasable",
+    "purchasableHint": "Allow normal members to buy this level in the member shop.",
+    "allowedDomainsLabel": "Domains",
+    "allowedExpiriesLabel": "Expiries"
+  },
+  "shop": {
+    "title": "Member Shop",
+    "currentPoints": "Current points: {points}",
+    "loading": "Loading...",
+    "empty": "No purchasable member levels",
+    "allDomains": "All domains",
+    "addToCart": "Add to Cart",
+    "removeFromCart": "Remove from Cart",
+    "cartCount": "{count} items in cart",
+    "total": "Total",
+    "checkout": "Checkout",
+    "checkingOut": "Purchasing...",
+    "buySuccess": "Purchase complete, member level upgraded",
+    "checkoutFailed": "Purchase failed",
+    "insufficientPoints": "Not enough points",
+    "loadFailed": "Failed to load member shop"
   },
   "promote": {
     "title": "Role Management",
@@ -216,6 +248,11 @@
     "deleteConfirmButton": "Delete",
     "cancel": "Cancel",
     "deleteSuccess": "User deleted successfully",
-    "deleteFailed": "Failed to delete user"
+    "deleteFailed": "Failed to delete user",
+    "points": "Points",
+    "savePoints": "Save Points",
+    "pointsInvalid": "Points must be a non-negative integer",
+    "pointsSaved": "Points updated",
+    "pointsSaveFailed": "Failed to update points"
   }
 }

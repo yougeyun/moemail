@@ -28,11 +28,17 @@ export function CreateDialog({ onEmailCreated }: CreateDialogProps) {
   const [loading, setLoading] = useState(false)
   const [emailName, setEmailName] = useState("")
   const [currentDomain, setCurrentDomain] = useState("")
-  const [expiryTime, setExpiryTime] = useState(EXPIRY_OPTIONS[1].value.toString())
+  const [expiryTime, setExpiryTime] = useState("")
   const { toast } = useToast()
   const { copyToClipboard } = useCopy()
 
   const generateRandomName = () => setEmailName(nanoid(8))
+
+  const allowedDomains =
+    config?.emailRules?.allowedDomains ?? config?.emailDomainsArray ?? []
+  const allowedExpiries =
+    config?.emailRules?.allowedExpiries ??
+    EXPIRY_OPTIONS.map((option) => option.value)
 
   const copyEmailAddress = () => {
     copyToClipboard(`${emailName}@${currentDomain}`)
@@ -89,10 +95,32 @@ export function CreateDialog({ onEmailCreated }: CreateDialogProps) {
   }
 
   useEffect(() => {
-    if ((config?.emailDomainsArray?.length ?? 0) > 0) {
-      setCurrentDomain(config?.emailDomainsArray[0] ?? "")
+    const domains =
+      config?.emailRules?.allowedDomains ?? config?.emailDomainsArray ?? []
+    const expiries =
+      config?.emailRules?.allowedExpiries ??
+      EXPIRY_OPTIONS.map((option) => option.value)
+    const defaultExpiryValue = config?.emailRules?.defaultExpiry
+
+    if (domains.length > 0) {
+      setCurrentDomain((current) =>
+        domains.includes(current) ? current : domains[0]
+      )
+    }
+    if (expiries.length > 0) {
+      const preferred =
+        defaultExpiryValue && expiries.includes(defaultExpiryValue)
+          ? defaultExpiryValue
+          : expiries[0]
+      setExpiryTime(String(preferred))
     }
   }, [config])
+
+  const expiryLabel = (value: number) => {
+    const index = EXPIRY_OPTIONS.findIndex((option) => option.value === value)
+    const labels = [t("oneHour"), t("oneDay"), t("threeDays"), t("permanent")]
+    return labels[index] || String(value)
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -114,13 +142,13 @@ export function CreateDialog({ onEmailCreated }: CreateDialogProps) {
               placeholder={t("namePlaceholder")}
               className="flex-1"
             />
-            {(config?.emailDomainsArray?.length ?? 0) > 1 && (
+            {allowedDomains.length > 1 && (
               <Select value={currentDomain} onValueChange={setCurrentDomain}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {config?.emailDomainsArray?.map(d => (
+                  {allowedDomains.map(d => (
                     <SelectItem key={d} value={d}>@{d}</SelectItem>
                   ))}
                 </SelectContent>
@@ -143,13 +171,14 @@ export function CreateDialog({ onEmailCreated }: CreateDialogProps) {
               onValueChange={setExpiryTime}
               className="flex gap-6"
             >
-              {EXPIRY_OPTIONS.map((option, index) => {
-                const labels = [t("oneHour"), t("oneDay"), t("threeDays"), t("permanent")]
+              {EXPIRY_OPTIONS.filter((option) =>
+                allowedExpiries.includes(option.value)
+              ).map((option) => {
                 return (
                   <div key={option.value} className="flex items-center gap-2">
                     <RadioGroupItem value={option.value.toString()} id={option.value.toString()} />
                     <Label htmlFor={option.value.toString()} className="cursor-pointer text-sm">
-                      {labels[index]}
+                      {expiryLabel(option.value)}
                     </Label>
                   </div>
                 )
@@ -178,7 +207,7 @@ export function CreateDialog({ onEmailCreated }: CreateDialogProps) {
           <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>
             {tCommon("cancel")}
           </Button>
-          <Button onClick={createEmail} disabled={loading}>
+          <Button onClick={createEmail} disabled={loading || !currentDomain || !expiryTime}>
             {loading ? t("creating") : t("create")}
           </Button>
         </div>

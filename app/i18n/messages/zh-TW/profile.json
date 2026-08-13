@@ -9,7 +9,8 @@
       "DUKE": "公爵",
       "KNIGHT": "騎士",
       "CIVILIAN": "平民"
-    }
+    },
+    "points": "積分：{points}"
   },
   "apiKey": {
     "title": "API Key 管理",
@@ -142,7 +143,8 @@
     "enable": "啟用",
     "active": "使用中",
     "saveTemplate": "儲存設定",
-    "brandSettings": "品牌設定"
+    "brandSettings": "品牌設定",
+    "initialPoints": "新使用者初始積分"
   },
   "roleManager": {
     "title": "會員等級管理",
@@ -190,7 +192,37 @@
       "manage_roles": "管理會員等級",
       "manage_config": "管理網站設定",
       "manage_api_key": "管理 API Key"
-    }
+    },
+    "allowedDomains": "可用郵箱網域",
+    "allowedDomainsPlaceholder": "多個網域用逗號分隔，留空表示全部",
+    "allowedDomainsHint": "該等級的會員只能使用這裡填寫的網域產生郵箱",
+    "allowedExpiries": "可用郵箱有效期",
+    "allowedExpiriesHint": "不勾選表示可以使用全部有效期",
+    "defaultExpiry": "預設有效期",
+    "defaultExpiryNone": "跟隨使用者選擇",
+    "price": "購買價格（積分）",
+    "priceHint": "0 表示免費購買",
+    "purchasable": "允許購買",
+    "purchasableHint": "開啟後普通會員可在會員商城購買該等級",
+    "allowedDomainsLabel": "可用網域",
+    "allowedExpiriesLabel": "有效期選項"
+  },
+  "shop": {
+    "title": "會員商城",
+    "currentPoints": "目前積分：{points}",
+    "loading": "載入中...",
+    "empty": "暫無可購買的會員等級",
+    "allDomains": "全部網域",
+    "addToCart": "加入購物車",
+    "removeFromCart": "移出購物車",
+    "cartCount": "購物車 {count} 項",
+    "total": "合計",
+    "checkout": "立即購買",
+    "checkingOut": "購買中...",
+    "buySuccess": "購買成功，會員等級已升級",
+    "checkoutFailed": "購買失敗",
+    "insufficientPoints": "積分不足",
+    "loadFailed": "載入會員商城失敗"
   },
   "promote": {
     "title": "角色管理",
@@ -216,6 +248,11 @@
     "deleteConfirmButton": "刪除",
     "cancel": "取消",
     "deleteSuccess": "使用者刪除成功",
-    "deleteFailed": "刪除使用者失敗"
+    "deleteFailed": "刪除使用者失敗",
+    "points": "積分",
+    "savePoints": "儲存積分",
+    "pointsInvalid": "積分必須為非負整數",
+    "pointsSaved": "積分已更新",
+    "pointsSaveFailed": "積分更新失敗"
   }
 }

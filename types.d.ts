@@ -24,8 +24,14 @@ declare module "next-auth" {
       name: string
       displayName?: string | null
       icon?: string | null
+      price?: number
+      purchasable?: boolean
+      allowedDomains?: string[] | null
+      allowedExpiries?: number[] | null
+      defaultExpiry?: number | null
       permissions?: string[]
     }[]
+    points?: number
     username?: string | null
     providers?: string[]
   }

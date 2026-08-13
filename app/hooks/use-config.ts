@@ -11,6 +11,12 @@ interface Config {
   emailDomainsArray: string[]
   adminContact: string
   maxEmails: number
+  initialPoints: number
+  emailRules: {
+    allowedDomains: string[] | null
+    allowedExpiries: number[] | null
+    defaultExpiry: number | null
+  }
 }
 
 interface ConfigStore {
@@ -36,7 +42,13 @@ const useConfigStore = create<ConfigStore>((set) => ({
           emailDomains: data.emailDomains,
           emailDomainsArray: data.emailDomains.split(','),
           adminContact: data.adminContact || "",
-          maxEmails: Number(data.maxEmails) || EMAIL_CONFIG.MAX_ACTIVE_EMAILS
+          maxEmails: Number(data.maxEmails) || EMAIL_CONFIG.MAX_ACTIVE_EMAILS,
+          initialPoints: Number(data.initialPoints) || 0,
+          emailRules: data.emailRules || {
+            allowedDomains: null,
+            allowedExpiries: null,
+            defaultExpiry: null,
+          },
         },
         loading: false
       })

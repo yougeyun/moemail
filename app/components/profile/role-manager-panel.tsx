@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/components/ui/use-toast"
 import {
   Dialog,
@@ -46,6 +47,7 @@ import {
 import { EMAIL_CONFIG } from "@/config"
 import { PERMISSIONS, ROLES, getRoleIcon } from "@/lib/permissions"
 import { ROLE_ICON_MAP, ROLE_ICON_OPTIONS } from "./role-ui"
+import { EXPIRY_OPTIONS } from "@/types/email"
 const PERMISSION_OPTIONS = Object.values(PERMISSIONS) as string[]
 
 interface RoleItem {
@@ -56,6 +58,11 @@ interface RoleItem {
   icon: string | null
   permissions: string[]
   dailyLimit: number | null
+  allowedDomains: string[] | null
+  allowedExpiries: number[] | null
+  defaultExpiry: number | null
+  price: number
+  purchasable: boolean
   sortOrder: number
   isSystem: boolean
   userCount: number
@@ -68,6 +75,11 @@ interface RoleForm {
   icon: string
   permissions: string[]
   dailyLimit: string
+  allowedDomains: string
+  allowedExpiries: number[]
+  defaultExpiry: string
+  price: string
+  purchasable: boolean
   sortOrder: string
 }
 
@@ -78,12 +90,18 @@ const EMPTY_FORM: RoleForm = {
   icon: "User2",
   permissions: [],
   dailyLimit: "-1",
+  allowedDomains: "",
+  allowedExpiries: [],
+  defaultExpiry: "",
+  price: "0",
+  purchasable: false,
   sortOrder: "0",
 }
 
 export function RoleManagerPanel() {
   const t = useTranslations("profile.roleManager")
   const tCard = useTranslations("profile.card")
+  const tExpiry = useTranslations("emails.create")
   const { toast } = useToast()
   const [roles, setRoles] = useState<RoleItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -122,6 +140,13 @@ export function RoleManagerPanel() {
 
   const roleName = (role: RoleItem) => role.displayName || builtInName(role.name)
   const permissionLabel = (permission: string) => t(`permissions.${permission}`)
+  const expiryLabel = (value: number) => {
+    if (value === EXPIRY_OPTIONS[0].value) return tExpiry("oneHour")
+    if (value === EXPIRY_OPTIONS[1].value) return tExpiry("oneDay")
+    if (value === EXPIRY_OPTIONS[2].value) return tExpiry("threeDays")
+    if (value === EXPIRY_OPTIONS[3].value) return tExpiry("permanent")
+    return String(value)
+  }
 
   const openCreate = () => {
     setEditing(null)
@@ -145,6 +170,13 @@ export function RoleManagerPanel() {
       icon: getRoleIcon(role),
       permissions: [...role.permissions],
       dailyLimit: String(effectiveLimit),
+      allowedDomains: role.allowedDomains?.join(", ") || "",
+      allowedExpiries: [...(role.allowedExpiries ?? [])],
+      defaultExpiry: role.defaultExpiry !== null && role.defaultExpiry !== undefined
+        ? String(role.defaultExpiry)
+        : "",
+      price: String(role.price),
+      purchasable: role.purchasable,
       sortOrder: String(role.sortOrder),
     })
     setDialogOpen(true)
@@ -159,6 +191,15 @@ export function RoleManagerPanel() {
     }))
   }
 
+  const toggleExpiry = (value: number) => {
+    setForm((prev) => ({
+      ...prev,
+      allowedExpiries: prev.allowedExpiries.includes(value)
+        ? prev.allowedExpiries.filter((item) => item !== value)
+        : [...prev.allowedExpiries, value],
+    }))
+  }
+
   const handleSave = async () => {
     setSaving(true)
     try {
@@ -169,6 +210,14 @@ export function RoleManagerPanel() {
         icon: form.icon,
         permissions: form.permissions,
         dailyLimit: Number(form.dailyLimit),
+        allowedDomains: form.allowedDomains
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean),
+        allowedExpiries: form.allowedExpiries,
+        defaultExpiry: form.defaultExpiry ? Number(form.defaultExpiry) : null,
+        price: Number(form.price),
+        purchasable: form.purchasable,
         sortOrder: Number(form.sortOrder),
       }
 
@@ -177,9 +226,14 @@ export function RoleManagerPanel() {
           delete payload.name
           delete payload.permissions
           delete payload.dailyLimit
+          delete payload.price
+          delete payload.purchasable
         }
         if (editing.name === ROLES.EMPEROR) {
           delete payload.sortOrder
+          delete payload.allowedDomains
+          delete payload.allowedExpiries
+          delete payload.defaultExpiry
         }
       }
 
@@ -241,6 +295,8 @@ export function RoleManagerPanel() {
     ? editing.name === ROLES.EMPEROR || editing.name === ROLES.CIVILIAN
     : false
   const lockedLimitEditing = lockedPermissionEditing
+  const lockedShopEditing = lockedPermissionEditing
+  const lockedEmailRulesEditing = editing?.name === ROLES.EMPEROR
   const lockedSortEditing = editing?.name === ROLES.EMPEROR
 
   return (
@@ -334,6 +390,21 @@ export function RoleManagerPanel() {
                         {permissionLabel(permission)}
                       </span>
                     ))
+                  )}
+                  {role.purchasable && (
+                    <span className="rounded-md bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-600">
+                      {t("price")}: {role.price}
+                    </span>
+                  )}
+                  {role.allowedDomains && role.allowedDomains.length > 0 && (
+                    <span className="text-xs text-muted-foreground">
+                      {t("allowedDomainsLabel")}: {role.allowedDomains.join(", ")}
+                    </span>
+                  )}
+                  {role.allowedExpiries && role.allowedExpiries.length > 0 && (
+                    <span className="text-xs text-muted-foreground">
+                      {t("allowedExpiriesLabel")}: {role.allowedExpiries.length}
+                    </span>
                   )}
                   <span className="ml-auto text-xs text-muted-foreground">
                     {t("dailyLimitLabel")}:{" "}
@@ -462,6 +533,104 @@ export function RoleManagerPanel() {
                   onChange={(e) => setForm((prev) => ({ ...prev, sortOrder: e.target.value }))}
                 />
               </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="role-allowed-domains">{t("allowedDomains")}</Label>
+              <Input
+                id="role-allowed-domains"
+                value={form.allowedDomains}
+                disabled={lockedEmailRulesEditing}
+                onChange={(e) => setForm((prev) => ({ ...prev, allowedDomains: e.target.value }))}
+                placeholder={t("allowedDomainsPlaceholder")}
+              />
+              <p className="text-xs text-muted-foreground">{t("allowedDomainsHint")}</p>
+            </div>
+
+            <div className="grid gap-2">
+              <Label>{t("allowedExpiries")}</Label>
+              <div className="flex flex-wrap gap-4 rounded-lg border border-border/70 p-3">
+                {EXPIRY_OPTIONS.map((option) => {
+                  return (
+                    <label
+                      key={option.value}
+                      className="flex cursor-pointer items-center gap-2 text-sm text-foreground"
+                    >
+                      <Checkbox
+                        checked={form.allowedExpiries.includes(option.value)}
+                        onChange={() => toggleExpiry(option.value)}
+                        disabled={lockedEmailRulesEditing}
+                      />
+                      {expiryLabel(option.value)}
+                    </label>
+                  )
+                })}
+              </div>
+              <p className="text-xs text-muted-foreground">{t("allowedExpiriesHint")}</p>
+            </div>
+
+            <div className="grid gap-2 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <Label>{t("defaultExpiry")}</Label>
+                <Select
+                  value={form.defaultExpiry || "none"}
+                  onValueChange={(value) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      defaultExpiry: value === "none" ? "" : value,
+                    }))
+                  }
+                  disabled={lockedEmailRulesEditing}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("defaultExpiryNone")}</SelectItem>
+                    {(form.allowedExpiries.length > 0
+                      ? EXPIRY_OPTIONS.filter((option) =>
+                          form.allowedExpiries.includes(option.value)
+                        )
+                      : EXPIRY_OPTIONS
+                    ).map((option) => {
+                      return (
+                        <SelectItem key={option.value} value={String(option.value)}>
+                          {expiryLabel(option.value)}
+                        </SelectItem>
+                      )
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="role-price">{t("price")}</Label>
+                <Input
+                  id="role-price"
+                  type="number"
+                  min="0"
+                  value={form.price}
+                  disabled={lockedShopEditing}
+                  onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))}
+                />
+                <p className="text-xs text-muted-foreground">{t("priceHint")}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between rounded-lg border border-border/70 p-4">
+              <div>
+                <Label htmlFor="role-purchasable" className="text-sm font-medium">
+                  {t("purchasable")}
+                </Label>
+                <p className="text-xs text-muted-foreground">{t("purchasableHint")}</p>
+              </div>
+              <Switch
+                id="role-purchasable"
+                checked={form.purchasable}
+                onCheckedChange={(checked) =>
+                  setForm((prev) => ({ ...prev, purchasable: checked }))
+                }
+                disabled={lockedShopEditing}
+              />
             </div>
           </div>
 

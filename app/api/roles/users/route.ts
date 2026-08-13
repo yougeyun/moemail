@@ -41,6 +41,7 @@ export async function GET(request: Request) {
         username: users.username,
         email: users.email,
         image: users.image,
+        points: users.points,
         roleId: userRoles.roleId,
         role: roles.name,
       })
@@ -63,6 +64,7 @@ export async function GET(request: Request) {
         username: u.username,
         email: u.email,
         image: u.image,
+        points: u.points,
         roleId: u.roleId || null,
         role: u.role || null,
       })),
@@ -113,6 +115,7 @@ export async function POST(request: Request) {
         name: user.name,
         username: user.username,
         email: user.email,
+        points: user.points,
         roleId: user.userRoles[0]?.roleId,
         role: user.userRoles[0]?.role.name
       }

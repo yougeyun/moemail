@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server"
 import { nanoid } from "nanoid"
 import { createDb } from "@/lib/db"
-import { emails } from "@/lib/schema"
+import { emails, userRoles } from "@/lib/schema"
 import { eq, and, gt, sql } from "drizzle-orm"
 import { EXPIRY_OPTIONS } from "@/types/email"
 import { EMAIL_CONFIG } from "@/config"
 import { getRequestContext } from "@cloudflare/next-on-pages"
 import { getUserId } from "@/lib/apiKey"
-import { getUserRole } from "@/lib/auth"
 import { ROLES } from "@/lib/permissions"
+import { getRoleEmailRules } from "@/lib/role-rules"
 
 export const runtime = "edge"
 
@@ -17,10 +17,14 @@ export async function POST(request: Request) {
   const env = getRequestContext().env
 
   const userId = await getUserId()
-  const userRole = await getUserRole(userId!)
+  const userRoleRecord = await db.query.userRoles.findFirst({
+    where: eq(userRoles.userId, userId!),
+    with: { role: true },
+  })
+  const userRole = userRoleRecord?.role
 
   try {
-    if (userRole !== ROLES.EMPEROR) {
+    if (userRole?.name !== ROLES.EMPEROR) {
       const maxEmails = await env.SITE_CONFIG.get("MAX_EMAILS") || EMAIL_CONFIG.MAX_ACTIVE_EMAILS.toString()
       const activeEmailsCount = await db
         .select({ count: sql<number>`count(*)` })
@@ -60,6 +64,32 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "无效的域名" },
         { status: 400 }
+      )
+    }
+
+    const emailRules = getRoleEmailRules({
+      allowedDomains: userRole?.allowedDomains,
+      allowedExpiries: userRole?.allowedExpiries,
+      defaultExpiry: userRole?.defaultExpiry,
+    })
+
+    if (
+      emailRules.allowedDomains !== null &&
+      !emailRules.allowedDomains.includes(domain)
+    ) {
+      return NextResponse.json(
+        { error: "当前会员等级不能使用该域名" },
+        { status: 403 }
+      )
+    }
+
+    if (
+      emailRules.allowedExpiries !== null &&
+      !emailRules.allowedExpiries.includes(expiryTime)
+    ) {
+      return NextResponse.json(
+        { error: "当前会员等级不能使用该有效期" },
+        { status: 403 }
       )
     }
 

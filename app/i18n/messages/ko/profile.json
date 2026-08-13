@@ -9,7 +9,8 @@
       "DUKE": "공작",
       "KNIGHT": "기사",
       "CIVILIAN": "평민"
-    }
+    },
+    "points": "포인트: {points}"
   },
   "apiKey": {
     "title": "API Key 관리",
@@ -142,7 +143,8 @@
     "enable": "활성화",
     "active": "사용 중",
     "saveTemplate": "설정 저장",
-    "brandSettings": "브랜드 설정"
+    "brandSettings": "브랜드 설정",
+    "initialPoints": "신규 사용자 초기 포인트"
   },
   "roleManager": {
     "title": "회원 등급 관리",
@@ -190,7 +192,37 @@
       "manage_roles": "회원 등급 관리",
       "manage_config": "사이트 설정 관리",
       "manage_api_key": "API Key 관리"
-    }
+    },
+    "allowedDomains": "사용 가능한 메일 도메인",
+    "allowedDomainsPlaceholder": "여러 도메인은 쉼표로 구분. 비우면 전체",
+    "allowedDomainsHint": "이 등급은 여기에 입력한 도메인으로만 메일을 생성할 수 있습니다",
+    "allowedExpiries": "사용 가능한 메일 유효기간",
+    "allowedExpiriesHint": "선택하지 않으면 모든 유효기간을 사용할 수 있습니다",
+    "defaultExpiry": "기본 유효기간",
+    "defaultExpiryNone": "사용자 선택 따름",
+    "price": "구매 가격(포인트)",
+    "priceHint": "0은 무료 구매",
+    "purchasable": "구매 허용",
+    "purchasableHint": "활성화하면 일반 회원이 회원 상점에서 구매할 수 있습니다",
+    "allowedDomainsLabel": "사용 도메인",
+    "allowedExpiriesLabel": "유효기간 옵션"
+  },
+  "shop": {
+    "title": "회원 상점",
+    "currentPoints": "현재 포인트: {points}",
+    "loading": "로딩 중...",
+    "empty": "구매 가능한 회원 등급이 없습니다",
+    "allDomains": "전체 도메인",
+    "addToCart": "장바구니에 담기",
+    "removeFromCart": "장바구니에서 빼기",
+    "cartCount": "장바구니 {count}개",
+    "total": "합계",
+    "checkout": "바로 구매",
+    "checkingOut": "구매 중...",
+    "buySuccess": "구매 완료, 회원 등급이 올랐습니다",
+    "checkoutFailed": "구매에 실패했습니다",
+    "insufficientPoints": "포인트가 부족합니다",
+    "loadFailed": "회원 상점을 불러오지 못했습니다"
   },
   "promote": {
     "title": "역할 관리",
@@ -216,6 +248,11 @@
     "deleteConfirmButton": "삭제",
     "cancel": "취소",
     "deleteSuccess": "사용자가 삭제되었습니다",
-    "deleteFailed": "사용자 삭제에 실패했습니다"
+    "deleteFailed": "사용자 삭제에 실패했습니다",
+    "points": "포인트",
+    "savePoints": "포인트 저장",
+    "pointsInvalid": "포인트는 0 이상의 정수여야 합니다",
+    "pointsSaved": "포인트가 업데이트되었습니다",
+    "pointsSaveFailed": "포인트 업데이트에 실패했습니다"
   }
 }

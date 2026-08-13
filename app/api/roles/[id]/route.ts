@@ -1,13 +1,19 @@
 import { createDb } from "@/lib/db"
-import { roles, userRoles } from "@/lib/schema"
+import { roleOrders, roles, userRoles } from "@/lib/schema"
 import { and, eq } from "drizzle-orm"
 import { checkPermission } from "@/lib/auth"
 import { PERMISSIONS, ROLES, getRolePermissions } from "@/lib/permissions"
+import { getRoleEmailRules } from "@/lib/role-rules"
 import {
   ROLE_NAME_PATTERN,
   isProtectedRole,
   isRoleIcon,
+  normalizeBoolean,
   normalizeDailyLimit,
+  normalizeDefaultExpiry,
+  normalizeDomains,
+  normalizeExpiries,
+  normalizePrice,
   parseRolePermissions,
 } from "../shared"
 
@@ -31,6 +37,11 @@ export async function PATCH(
       icon?: string
       permissions?: unknown
       dailyLimit?: number
+      allowedDomains?: unknown
+      allowedExpiries?: unknown
+      defaultExpiry?: number
+      price?: number
+      purchasable?: boolean
       sortOrder?: number
     }
 
@@ -50,10 +61,15 @@ export async function PATCH(
         body.name !== undefined ||
         body.permissions !== undefined ||
         body.dailyLimit !== undefined ||
-        body.sortOrder !== undefined
+        body.sortOrder !== undefined ||
+        body.allowedDomains !== undefined ||
+        body.allowedExpiries !== undefined ||
+        body.defaultExpiry !== undefined ||
+        body.price !== undefined ||
+        body.purchasable !== undefined
       ) {
         return Response.json(
-          { error: "皇帝角色的标识、权限、发信上限和排序不可修改" },
+          { error: "皇帝角色的标识、权限、发信规则、价格和排序不可修改" },
           { status: 400 }
         )
       }
@@ -63,10 +79,12 @@ export async function PATCH(
       if (
         body.name !== undefined ||
         body.permissions !== undefined ||
-        body.dailyLimit !== undefined
+        body.dailyLimit !== undefined ||
+        body.price !== undefined ||
+        body.purchasable !== undefined
       ) {
         return Response.json(
-          { error: "平民角色的标识、权限和发信上限不可修改" },
+          { error: "平民角色的标识、权限、发信上限和价格不可修改" },
           { status: 400 }
         )
       }
@@ -122,6 +140,39 @@ export async function PATCH(
       updates.dailyLimit = normalizeDailyLimit(body.dailyLimit)
     }
 
+    const nextAllowedExpiries =
+      body.allowedExpiries !== undefined
+        ? normalizeExpiries(body.allowedExpiries)
+        : getRoleEmailRules({
+            allowedExpiries: existing.allowedExpiries,
+          }).allowedExpiries || []
+
+    if (body.allowedDomains !== undefined) {
+      const allowedDomains = normalizeDomains(body.allowedDomains)
+      updates.allowedDomains =
+        allowedDomains.length > 0 ? JSON.stringify(allowedDomains) : null
+    }
+
+    if (body.allowedExpiries !== undefined) {
+      updates.allowedExpiries =
+        nextAllowedExpiries.length > 0 ? JSON.stringify(nextAllowedExpiries) : null
+    }
+
+    if (body.defaultExpiry !== undefined) {
+      updates.defaultExpiry = normalizeDefaultExpiry(
+        body.defaultExpiry,
+        nextAllowedExpiries
+      )
+    }
+
+    if (body.price !== undefined) {
+      updates.price = normalizePrice(body.price)
+    }
+
+    if (body.purchasable !== undefined) {
+      updates.purchasable = normalizeBoolean(body.purchasable)
+    }
+
     if (body.sortOrder !== undefined) {
       if (!Number.isInteger(body.sortOrder)) {
         return Response.json({ error: "排序值必须为整数" }, { status: 400 })
@@ -144,6 +195,13 @@ export async function PATCH(
           name: role.name,
           permissions: role.permissions,
         }),
+        ...getRoleEmailRules({
+          allowedDomains: role.allowedDomains,
+          allowedExpiries: role.allowedExpiries,
+          defaultExpiry: role.defaultExpiry,
+        }),
+        price: role.price,
+        purchasable: role.purchasable,
       },
     })
   } catch (error) {
@@ -187,6 +245,18 @@ export async function DELETE(
     if (userCountResult.length > 0) {
       return Response.json(
         { error: "该角色下仍有用户，请先为用户更换角色后再删除" },
+        { status: 400 }
+      )
+    }
+
+    const orderCountResult = await db
+      .select({ count: roleOrders.roleId })
+      .from(roleOrders)
+      .where(eq(roleOrders.roleId, id))
+
+    if (orderCountResult.length > 0) {
+      return Response.json(
+        { error: "该角色已有购买记录，不能删除" },
         { status: 400 }
       )
     }

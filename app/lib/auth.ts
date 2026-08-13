@@ -20,6 +20,7 @@ import { authSchema, AuthSchema } from "@/lib/validation"
 import { generateAvatarUrl } from "./avatar"
 import { getUserId } from "./apiKey"
 import { verifyTurnstileToken } from "./turnstile"
+import { getRoleEmailRules } from "./role-rules"
 
 const ROLE_DESCRIPTIONS: Record<Role, string> = {
   [ROLES.EMPEROR]: "皇帝（网站所有者）",
@@ -190,6 +191,15 @@ export const {
 
         if (existingRole) return
 
+        const initialPoints = Number(
+          (await getRequestContext().env.SITE_CONFIG.get("INITIAL_POINTS")) || 0
+        )
+        if (initialPoints > 0) {
+          await db.update(users)
+            .set({ points: initialPoints })
+            .where(eq(users.id, user.id))
+        }
+
         const defaultRole = await getDefaultRole()
         const role = await findOrCreateRole(db, defaultRole)
         await assignRoleToUser(db, user.id, role.id)
@@ -209,13 +219,16 @@ export const {
       return token
     },
     async session({ session, token }) {
-      if (token && session.user) {
+        if (token && session.user) {
         session.user.id = token.id as string
         session.user.name = token.name as string
         session.user.username = token.username as string
         session.user.image = token.image as string
 
         const db = createDb()
+        const userRecord = await db.query.users.findFirst({
+          where: eq(users.id, session.user.id),
+        })
         let userRoleRecords = await db.query.userRoles.findMany({
           where: eq(userRoles.userId, session.user.id),
           with: { role: true },
@@ -237,11 +250,19 @@ export const {
           name: ur.role.name,
           displayName: ur.role.displayName,
           icon: ur.role.icon,
+          price: ur.role.price,
+          purchasable: ur.role.purchasable,
+          ...getRoleEmailRules({
+            allowedDomains: ur.role.allowedDomains,
+            allowedExpiries: ur.role.allowedExpiries,
+            defaultExpiry: ur.role.defaultExpiry,
+          }),
           permissions: getRolePermissions({
             name: ur.role.name,
             permissions: ur.role.permissions,
           }),
         }))
+        session.user.points = userRecord?.points ?? 0
 
         const userAccounts = await db.query.accounts.findMany({
           where: eq(accounts.userId, session.user.id),

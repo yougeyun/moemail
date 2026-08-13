@@ -13,6 +13,7 @@ export const users = sqliteTable("user", {
   image: text("image"),
   username: text("username").unique(),
   password: text("password"),
+  points: integer("points").notNull().default(0),
 })
 export const accounts = sqliteTable(
   "account",
@@ -100,6 +101,11 @@ export const roles = sqliteTable("role", {
   icon: text("icon").notNull().default("User2"),
   permissions: text("permissions"),
   dailyLimit: integer("daily_limit"),
+  allowedDomains: text("allowed_domains"),
+  allowedExpiries: text("allowed_expiries"),
+  defaultExpiry: integer("default_expiry"),
+  price: integer("price").notNull().default(0),
+  purchasable: integer("purchasable", { mode: "boolean" }).notNull().default(false),
   sortOrder: integer("sort_order").notNull().default(0),
   isSystem: integer("is_system", { mode: "boolean" }).notNull().default(false),
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
@@ -127,6 +133,26 @@ export const apiKeys = sqliteTable('api_keys', {
   nameUserIdUnique: uniqueIndex('name_user_id_unique').on(table.name, table.userId),
   userIdIdx: index('api_keys_user_id_idx').on(table.userId),
 }));
+
+export const roleOrders = sqliteTable("role_order", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  roleId: text("role_id")
+    .notNull()
+    .references(() => roles.id, { onDelete: "restrict" }),
+  roleName: text("role_name").notNull(),
+  roleDisplayName: text("role_display_name"),
+  price: integer("price").notNull(),
+  status: text("status").notNull().default("completed"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+}, (table) => ({
+  userIdIdx: index("role_order_user_id_idx").on(table.userId),
+  createdAtIdx: index("role_order_created_at_idx").on(table.createdAt),
+}))
 
 export const emailShares = sqliteTable('email_share', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
@@ -181,10 +207,23 @@ export const userRolesRelations = relations(userRoles, ({ one }) => ({
 export const usersRelations = relations(users, ({ many }) => ({
   userRoles: many(userRoles),
   apiKeys: many(apiKeys),
+  roleOrders: many(roleOrders),
 }));
 
 export const rolesRelations = relations(roles, ({ many }) => ({
   userRoles: many(userRoles),
+  roleOrders: many(roleOrders),
+}));
+
+export const roleOrdersRelations = relations(roleOrders, ({ one }) => ({
+  user: one(users, {
+    fields: [roleOrders.userId],
+    references: [users.id],
+  }),
+  role: one(roles, {
+    fields: [roleOrders.roleId],
+    references: [roles.id],
+  }),
 }));
 
 export const emailSharesRelations = relations(emailShares, ({ one }) => ({

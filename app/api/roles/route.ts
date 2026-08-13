@@ -3,10 +3,16 @@ import { roles, userRoles } from "@/lib/schema"
 import { eq, sql } from "drizzle-orm"
 import { checkPermission } from "@/lib/auth"
 import { PERMISSIONS, getRolePermissions } from "@/lib/permissions"
+import { getRoleEmailRules } from "@/lib/role-rules"
 import {
   ROLE_NAME_PATTERN,
   isRoleIcon,
+  normalizeBoolean,
   normalizeDailyLimit,
+  normalizeDefaultExpiry,
+  normalizeDomains,
+  normalizeExpiries,
+  normalizePrice,
   parseRolePermissions,
 } from "./shared"
 
@@ -33,6 +39,11 @@ export async function GET() {
         icon: roles.icon,
         permissions: roles.permissions,
         dailyLimit: roles.dailyLimit,
+        allowedDomains: roles.allowedDomains,
+        allowedExpiries: roles.allowedExpiries,
+        defaultExpiry: roles.defaultExpiry,
+        price: roles.price,
+        purchasable: roles.purchasable,
         sortOrder: roles.sortOrder,
         isSystem: roles.isSystem,
         userCount: sql<number>`count(${userRoles.userId})`,
@@ -49,6 +60,13 @@ export async function GET() {
           name: role.name,
           permissions: role.permissions,
         }),
+        ...getRoleEmailRules({
+          allowedDomains: role.allowedDomains,
+          allowedExpiries: role.allowedExpiries,
+          defaultExpiry: role.defaultExpiry,
+        }),
+        price: role.price,
+        purchasable: role.purchasable,
       })),
     })
   } catch (error) {
@@ -71,6 +89,11 @@ export async function POST(request: Request) {
       icon?: string
       permissions?: unknown
       dailyLimit?: number
+      allowedDomains?: unknown
+      allowedExpiries?: unknown
+      defaultExpiry?: number
+      price?: number
+      purchasable?: boolean
       sortOrder?: number
     }
 
@@ -97,6 +120,9 @@ export async function POST(request: Request) {
       return Response.json({ error: "该角色标识已存在" }, { status: 409 })
     }
 
+    const allowedExpiries = normalizeExpiries(body.allowedExpiries)
+    const allowedDomains = normalizeDomains(body.allowedDomains)
+
     const [role] = await db.insert(roles)
       .values({
         name,
@@ -105,6 +131,11 @@ export async function POST(request: Request) {
         icon: isRoleIcon(body.icon) ? body.icon : "User2",
         permissions: JSON.stringify(parseRolePermissions(body.permissions)),
         dailyLimit: normalizeDailyLimit(body.dailyLimit),
+        allowedDomains: allowedDomains.length > 0 ? JSON.stringify(allowedDomains) : undefined,
+        allowedExpiries: allowedExpiries.length > 0 ? JSON.stringify(allowedExpiries) : undefined,
+        defaultExpiry: normalizeDefaultExpiry(body.defaultExpiry, allowedExpiries),
+        price: normalizePrice(body.price),
+        purchasable: normalizeBoolean(body.purchasable),
         sortOrder: Number.isInteger(body.sortOrder) ? Math.max(0, body.sortOrder as number) : 0,
         isSystem: false,
       })
@@ -117,6 +148,13 @@ export async function POST(request: Request) {
           name: role.name,
           permissions: role.permissions,
         }),
+        ...getRoleEmailRules({
+          allowedDomains: role.allowedDomains,
+          allowedExpiries: role.allowedExpiries,
+          defaultExpiry: role.defaultExpiry,
+        }),
+        price: role.price,
+        purchasable: role.purchasable,
       },
     })
   } catch (error) {

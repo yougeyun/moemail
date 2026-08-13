@@ -39,6 +39,7 @@ interface UserItem {
   username: string | null
   email: string | null
   image: string | null
+  points: number
   roleId: string | null
   role: string | null
 }
@@ -49,6 +50,7 @@ export function PromotePanel() {
   const t = useTranslations("profile.promote")
   const tCard = useTranslations("profile.card")
   const [users, setUsers] = useState<UserItem[]>([])
+  const [pointsValues, setPointsValues] = useState<Record<string, string>>({})
   const [roles, setRoles] = useState<RoleOption[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -102,6 +104,13 @@ export function PromotePanel() {
         pageSize: number
       }
       setUsers(data.users)
+      setPointsValues((prev) => {
+        const next = { ...prev }
+        for (const user of data.users) {
+          next[user.id] = String(user.points ?? 0)
+        }
+        return next
+      })
       setTotal(data.total)
     } catch {
       toast({
@@ -154,6 +163,38 @@ export function PromotePanel() {
       })
     } finally {
       setUpdatingUserId(null)
+    }
+  }
+
+  const handleSavePoints = async (user: UserItem) => {
+    const points = Number(pointsValues[user.id])
+    if (!Number.isInteger(points) || points < 0) {
+      toast({ title: t("pointsInvalid"), variant: "destructive" })
+      return
+    }
+
+    try {
+      const res = await fetch(`/api/users/${user.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ points }),
+      })
+
+      if (!res.ok) {
+        const error = await res.json() as { error: string }
+        throw new Error(error.error)
+      }
+
+      setUsers((prev) =>
+        prev.map((item) => (item.id === user.id ? { ...item, points } : item))
+      )
+      toast({ title: t("pointsSaved") })
+    } catch (error) {
+      toast({
+        title: t("pointsSaveFailed"),
+        description: error instanceof Error ? error.message : undefined,
+        variant: "destructive",
+      })
     }
   }
 
@@ -255,6 +296,29 @@ export function PromotePanel() {
                     </div>
                     <div className="text-xs text-muted-foreground truncate">
                       {user.email || user.username || "—"}
+                    </div>
+                    <div className="mt-1.5 flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">{t("points")}:</span>
+                      <Input
+                        type="number"
+                        min="0"
+                        value={pointsValues[user.id] ?? String(user.points ?? 0)}
+                        onChange={(e) =>
+                          setPointsValues((prev) => ({
+                            ...prev,
+                            [user.id]: e.target.value,
+                          }))
+                        }
+                        className="h-7 w-24 text-xs"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 px-2 text-xs"
+                        onClick={() => handleSavePoints(user)}
+                      >
+                        {t("savePoints")}
+                      </Button>
                     </div>
                   </div>
 

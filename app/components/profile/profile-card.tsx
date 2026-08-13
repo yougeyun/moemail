@@ -18,6 +18,7 @@ import { BrandSettingsPanel } from "./brand-settings-panel"
 import { TemplateManagerPanel } from "./template-manager-panel"
 import { RoleManagerPanel } from "./role-manager-panel"
 import { ROLE_ICON_MAP } from "./role-ui"
+import { MembershipShopPanel } from "./membership-shop-panel"
 
 interface ProfileCardProps {
   user: User
@@ -138,9 +139,16 @@ export function ProfileCard({ user }: ProfileCardProps) {
                 })}
               </div>
             )}
+            {typeof user.points === "number" && (
+              <div className="mt-2 text-sm text-muted-foreground">
+                {t("points", { points: user.points })}
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      <MembershipShopPanel />
 
       {canManageWebhook && (
       <div className="panel-card">

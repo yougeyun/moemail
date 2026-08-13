@@ -9,7 +9,8 @@
       "DUKE": "公爵",
       "KNIGHT": "騎士",
       "CIVILIAN": "市民"
-    }
+    },
+    "points": "ポイント：{points}"
   },
   "apiKey": {
     "title": "API Key 管理",
@@ -142,7 +143,8 @@
     "enable": "有効化",
     "active": "使用中",
     "saveTemplate": "設定を保存",
-    "brandSettings": "ブランド設定"
+    "brandSettings": "ブランド設定",
+    "initialPoints": "新規ユーザーの初期ポイント"
   },
   "roleManager": {
     "title": "会員レベル管理",
@@ -190,7 +192,37 @@
       "manage_roles": "会員レベル管理",
       "manage_config": "サイト設定管理",
       "manage_api_key": "API Key 管理"
-    }
+    },
+    "allowedDomains": "利用可能なメールドメイン",
+    "allowedDomainsPlaceholder": "複数ドメインはカンマ区切り。空欄で全て",
+    "allowedDomainsHint": "このレベルはここで設定したドメインのみメールを作成できます",
+    "allowedExpiries": "利用可能なメール有効期限",
+    "allowedExpiriesHint": "未選択の場合はすべての有効期限を使用できます",
+    "defaultExpiry": "デフォルト有効期限",
+    "defaultExpiryNone": "ユーザー選択に従う",
+    "price": "購入価格（ポイント）",
+    "priceHint": "0 は無料購入",
+    "purchasable": "購入可能",
+    "purchasableHint": "有効にすると一般会員が会員ショップで購入できます",
+    "allowedDomainsLabel": "利用ドメイン",
+    "allowedExpiriesLabel": "有効期限オプション"
+  },
+  "shop": {
+    "title": "会員ショップ",
+    "currentPoints": "現在のポイント：{points}",
+    "loading": "読み込み中...",
+    "empty": "購入できる会員レベルがありません",
+    "allDomains": "すべてのドメイン",
+    "addToCart": "カートに追加",
+    "removeFromCart": "カートから削除",
+    "cartCount": "カート {count} 件",
+    "total": "合計",
+    "checkout": "購入する",
+    "checkingOut": "購入中...",
+    "buySuccess": "購入が完了し、会員レベルがアップしました",
+    "checkoutFailed": "購入に失敗しました",
+    "insufficientPoints": "ポイントが不足しています",
+    "loadFailed": "会員ショップの読み込みに失敗しました"
   },
   "promote": {
     "title": "ロール管理",
@@ -216,6 +248,11 @@
     "deleteConfirmButton": "削除",
     "cancel": "キャンセル",
     "deleteSuccess": "ユーザーを削除しました",
-    "deleteFailed": "ユーザーの削除に失敗しました"
+    "deleteFailed": "ユーザーの削除に失敗しました",
+    "points": "ポイント",
+    "savePoints": "ポイント保存",
+    "pointsInvalid": "ポイントは0以上の整数で入力してください",
+    "pointsSaved": "ポイントを更新しました",
+    "pointsSaveFailed": "ポイントの更新に失敗しました"
   }
 }

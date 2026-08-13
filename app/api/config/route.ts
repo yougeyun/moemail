@@ -5,8 +5,10 @@ import { checkPermission } from "@/lib/auth"
 import { isTemplateId } from "@/templates/configs"
 import { DEFAULT_SITE_NAME } from "@/lib/site-config"
 import { createDb } from "@/lib/db"
-import { roles } from "@/lib/schema"
+import { roles, userRoles } from "@/lib/schema"
 import { eq } from "drizzle-orm"
+import { getUserId } from "@/lib/apiKey"
+import { getRoleEmailRules } from "@/lib/role-rules"
 
 export const runtime = "edge"
 
@@ -28,7 +30,8 @@ export async function GET() {
     siteKeywords,
     siteLogo,
     siteIcons,
-    activeTemplate
+    activeTemplate,
+    initialPoints
   ] = await Promise.all([
     env.SITE_CONFIG.get("DEFAULT_ROLE"),
     env.SITE_CONFIG.get("EMAIL_DOMAINS"),
@@ -43,7 +46,8 @@ export async function GET() {
     env.SITE_CONFIG.get("SITE_KEYWORDS"),
     env.SITE_CONFIG.get("SITE_LOGO"),
     env.SITE_CONFIG.get("SITE_ICONS"),
-    env.SITE_CONFIG.get("ACTIVE_TEMPLATE")
+    env.SITE_CONFIG.get("ACTIVE_TEMPLATE"),
+    env.SITE_CONFIG.get("INITIAL_POINTS")
   ])
 
   let icons = {}
@@ -55,11 +59,48 @@ export async function GET() {
     }
   }
 
+  const domains = (emailDomains || "moemail.app")
+    .split(",")
+    .map((domain) => domain.trim())
+    .filter(Boolean)
+
+  const userId = await getUserId()
+  let emailRules = {
+    allowedDomains: null as string[] | null,
+    allowedExpiries: null as number[] | null,
+    defaultExpiry: null as number | null,
+  }
+
+  if (userId) {
+    const db = createDb()
+    const userRole = await db.query.userRoles.findFirst({
+      where: eq(userRoles.userId, userId),
+      with: { role: true },
+    })
+
+    if (userRole) {
+      const rules = getRoleEmailRules({
+        allowedDomains: userRole.role.allowedDomains,
+        allowedExpiries: userRole.role.allowedExpiries,
+        defaultExpiry: userRole.role.defaultExpiry,
+      })
+      emailRules = {
+        allowedDomains: rules.allowedDomains
+          ? rules.allowedDomains.filter((domain) => domains.includes(domain))
+          : null,
+        allowedExpiries: rules.allowedExpiries,
+        defaultExpiry: rules.defaultExpiry,
+      }
+    }
+  }
+
   return Response.json({
     defaultRole: defaultRole || ROLES.CIVILIAN,
     emailDomains: emailDomains || "moemail.app",
     adminContact: adminContact || "",
     maxEmails: maxEmails || EMAIL_CONFIG.MAX_ACTIVE_EMAILS.toString(),
+    initialPoints: initialPoints ? Number(initialPoints) : 0,
+    emailRules,
     siteName: siteName || DEFAULT_SITE_NAME,
     siteTitle: siteTitle || "",
     siteDescription: siteDescription || "",
@@ -89,6 +130,7 @@ export async function POST(request: Request) {
     emailDomains,
     adminContact,
     maxEmails,
+    initialPoints,
     turnstile,
     siteName,
     siteTitle,
@@ -102,6 +144,7 @@ export async function POST(request: Request) {
     emailDomains: string,
     adminContact: string,
     maxEmails: string,
+    initialPoints?: number,
     siteName?: string,
     siteTitle?: string,
     siteDescription?: string,
@@ -155,6 +198,7 @@ export async function POST(request: Request) {
     env.SITE_CONFIG.put("EMAIL_DOMAINS", emailDomains),
     env.SITE_CONFIG.put("ADMIN_CONTACT", adminContact),
     env.SITE_CONFIG.put("MAX_EMAILS", maxEmails),
+    env.SITE_CONFIG.put("INITIAL_POINTS", String(Math.max(0, Number(initialPoints) || 0))),
     env.SITE_CONFIG.put("TURNSTILE_ENABLED", turnstileConfig.enabled.toString()),
     env.SITE_CONFIG.put("TURNSTILE_SITE_KEY", turnstileConfig.siteKey),
     env.SITE_CONFIG.put("TURNSTILE_SECRET_KEY", turnstileConfig.secretKey),

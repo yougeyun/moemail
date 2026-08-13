@@ -34,6 +34,7 @@ export function WebsiteConfigPanel() {
   const [emailDomains, setEmailDomains] = useState<string>("")
   const [adminContact, setAdminContact] = useState<string>("")
   const [maxEmails, setMaxEmails] = useState<string>(EMAIL_CONFIG.MAX_ACTIVE_EMAILS.toString())
+  const [initialPoints, setInitialPoints] = useState("0")
   const [turnstileEnabled, setTurnstileEnabled] = useState(false)
   const [turnstileSiteKey, setTurnstileSiteKey] = useState("")
   const [turnstileSecretKey, setTurnstileSecretKey] = useState("")
@@ -55,6 +56,7 @@ export function WebsiteConfigPanel() {
         emailDomains: string,
         adminContact: string,
         maxEmails: string,
+        initialPoints?: number,
         turnstile?: {
           enabled: boolean,
           siteKey: string,
@@ -65,6 +67,7 @@ export function WebsiteConfigPanel() {
       setEmailDomains(data.emailDomains)
       setAdminContact(data.adminContact)
       setMaxEmails(data.maxEmails || EMAIL_CONFIG.MAX_ACTIVE_EMAILS.toString())
+      setInitialPoints(String(data.initialPoints || 0))
       setTurnstileEnabled(Boolean(data.turnstile?.enabled))
       setTurnstileSiteKey(data.turnstile?.siteKey ?? "")
       setTurnstileSecretKey(data.turnstile?.secretKey ?? "")
@@ -93,6 +96,7 @@ export function WebsiteConfigPanel() {
           emailDomains,
           adminContact,
           maxEmails: maxEmails || EMAIL_CONFIG.MAX_ACTIVE_EMAILS.toString(),
+          initialPoints: Number(initialPoints) || 0,
           turnstile: {
             enabled: turnstileEnabled,
             siteKey: turnstileSiteKey,
@@ -185,6 +189,19 @@ export function WebsiteConfigPanel() {
               value={maxEmails}
               onChange={(e) => setMaxEmails(e.target.value)}
               placeholder={`${EMAIL_CONFIG.MAX_ACTIVE_EMAILS}`}
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <span className="text-sm">{t("initialPoints")}:</span>
+          <div className="flex-1">
+            <Input
+              type="number"
+              min="0"
+              value={initialPoints}
+              onChange={(e) => setInitialPoints(e.target.value)}
+              placeholder="0"
             />
           </div>
         </div>
