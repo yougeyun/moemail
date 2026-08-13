@@ -51,7 +51,8 @@
     "visibleUpperDomainsHint": "このドメインは上位会員のみ利用できます",
     "count": "生成数",
     "batchSuccess": "{count} 個のメールを作成しました",
-    "createdCount": "{count} 個作成"
+    "createdCount": "{count} 個作成",
+    "batchLimit": "一度に作成できるメールは最大500個です"
   },
   "messages": {
     "received": "受信箱",

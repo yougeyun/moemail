@@ -306,7 +306,8 @@
   },
   "activationCode": {
     "title": "アクティベーションコード",
-    "emailQuota": "メール枠：{count}",
+    "emailQuota": "残りメール枠：{count}",
+    "emailQuotaTotal": "メール枠（合計）：{count}",
     "sendQuota": "送信回数：{count}",
     "code": "コード",
     "codePlaceholder": "コードを入力",

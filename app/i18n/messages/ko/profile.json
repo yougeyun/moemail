@@ -306,7 +306,8 @@
   },
   "activationCode": {
     "title": "활성 코드 교환",
-    "emailQuota": "교환 메일 수: {count}",
+    "emailQuota": "남은 메일 할당량: {count}",
+    "emailQuotaTotal": "메일 할당량(총): {count}",
     "sendQuota": "교환 발송 횟수: {count}",
     "code": "활성 코드",
     "codePlaceholder": "활성 코드 입력",

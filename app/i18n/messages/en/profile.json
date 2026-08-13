@@ -306,7 +306,8 @@
   },
   "activationCode": {
     "title": "Activation Code",
-    "emailQuota": "Email quota: {count}",
+    "emailQuota": "Remaining email quota: {count}",
+    "emailQuotaTotal": "Total email quota: {count}",
     "sendQuota": "Send quota: {count}",
     "code": "Code",
     "codePlaceholder": "Enter activation code",

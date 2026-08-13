@@ -306,7 +306,8 @@
   },
   "activationCode": {
     "title": "激活码兑换",
-    "emailQuota": "已兑换邮箱额度：{count}",
+    "emailQuota": "剩余邮箱额度：{count}",
+    "emailQuotaTotal": "已兑换邮箱额度：{count}",
     "sendQuota": "已兑换发件次数：{count}",
     "code": "激活码",
     "codePlaceholder": "请输入激活码",

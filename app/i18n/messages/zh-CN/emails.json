@@ -51,7 +51,8 @@
     "visibleUpperDomainsHint": "该域名仅上一级会员可使用",
     "count": "生成数量",
     "batchSuccess": "已成功创建 {count} 个邮箱",
-    "createdCount": "已创建 {count} 个"
+    "createdCount": "已创建 {count} 个",
+    "batchLimit": "单次最多生成 500 个邮箱"
   },
   "messages": {
     "received": "收件箱",

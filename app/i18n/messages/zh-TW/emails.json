@@ -51,7 +51,8 @@
     "visibleUpperDomainsHint": "該網域僅上一級會員可使用",
     "count": "產生數量",
     "batchSuccess": "已成功建立 {count} 個郵箱",
-    "createdCount": "已建立 {count} 個"
+    "createdCount": "已建立 {count} 個",
+    "batchLimit": "單次最多產生 500 個郵箱"
   },
   "messages": {
     "received": "收件匣",

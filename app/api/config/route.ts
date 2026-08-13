@@ -10,6 +10,7 @@ import { eq, lt } from "drizzle-orm"
 import { getUserId } from "@/lib/apiKey"
 import { getRoleEmailRules } from "@/lib/role-rules"
 import { getActiveUserRole } from "@/lib/role-access"
+import { getEmailQuotaSummary } from "@/lib/email-quota"
 
 export const runtime = "edge"
 
@@ -73,6 +74,12 @@ export async function GET() {
     visibleUpperDomains: [] as string[],
   }
   let emailLimit: number | null = null
+  let emailQuotaInfo:
+    | {
+        total: number
+        remaining: number
+      }
+    | undefined
 
   if (userId) {
     const db = createDb()
@@ -90,10 +97,15 @@ export async function GET() {
         (Number.isFinite(globalMax) && globalMax > 0
           ? globalMax
           : EMAIL_CONFIG.MAX_ACTIVE_EMAILS)
+      const emailQuota = await getEmailQuotaSummary(userId, user)
       emailLimit =
         userRole.role.name === ROLES.EMPEROR
           ? null
-          : freeLimit + (user?.redeemedEmailQuota ?? 0)
+          : freeLimit + emailQuota.total
+      emailQuotaInfo = {
+        total: emailQuota.total,
+        remaining: emailQuota.remaining,
+      }
 
       const rules = getRoleEmailRules({
         allowedDomains: userRole.role.allowedDomains,
@@ -139,6 +151,7 @@ export async function GET() {
     initialPoints: initialPoints ? Number(initialPoints) : 0,
     emailRules,
     emailLimit,
+    emailQuota: emailQuotaInfo,
     siteName: siteName || DEFAULT_SITE_NAME,
     siteTitle: siteTitle || "",
     siteDescription: siteDescription || "",

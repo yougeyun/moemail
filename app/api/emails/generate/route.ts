@@ -10,6 +10,7 @@ import { getUserId } from "@/lib/apiKey"
 import { ROLES } from "@/lib/permissions"
 import { getRoleEmailRules } from "@/lib/role-rules"
 import { getActiveUserRole } from "@/lib/role-access"
+import { getEmailQuotaSummary } from "@/lib/email-quota"
 
 export const runtime = "edge"
 
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
 
   let activeEmailsCount = 0
   let freeLimit = Number.MAX_SAFE_INTEGER
-  const redeemedEmailQuota = userRecord?.redeemedEmailQuota ?? 0
+  let redeemedEmailQuota = 0
   let usedQuotaExpiry = 86400000
   let quotaRowToConsume: {
     id: string
@@ -36,6 +37,9 @@ export async function POST(request: Request) {
   let legacyQuotaConsumed = false
 
   try {
+    const quota = await getEmailQuotaSummary(userId!, userRecord)
+    redeemedEmailQuota = quota.remaining
+
     if (userRole?.name !== ROLES.EMPEROR) {
       const globalMaxEmails = Number(await env.SITE_CONFIG.get("MAX_EMAILS"))
       freeLimit =
@@ -54,7 +58,7 @@ export async function POST(request: Request) {
         )
       activeEmailsCount = Number(activeCountResult[0].count)
 
-      const maxEmails = freeLimit + redeemedEmailQuota
+      const maxEmails = freeLimit + quota.total
       if (activeEmailsCount >= maxEmails) {
         return NextResponse.json(
           { error: `已达到最大邮箱数量限制 (${maxEmails})` },

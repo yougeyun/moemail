@@ -51,7 +51,8 @@
     "visibleUpperDomainsHint": "Only upper level members can use these domains.",
     "count": "Count",
     "batchSuccess": "Created {count} email addresses",
-    "createdCount": "{count} created"
+    "createdCount": "{count} created",
+    "batchLimit": "Up to 500 emails can be created at once"
   },
   "messages": {
     "received": "Received",

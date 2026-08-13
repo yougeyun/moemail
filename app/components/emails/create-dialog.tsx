@@ -48,7 +48,15 @@ export function CreateDialog({ onEmailCreated }: CreateDialogProps) {
   }
 
   const createEmail = async () => {
-    const count = Math.min(50, Math.max(1, Number(emailCount) || 1))
+    const count = Math.max(1, Math.floor(Number(emailCount) || 1))
+    if (count > 500) {
+      toast({
+        title: tList("error"),
+        description: t("batchLimit"),
+        variant: "destructive"
+      })
+      return
+    }
     if (count === 1 && !emailName.trim()) {
       toast({
         title: tList("error"),
@@ -60,32 +68,23 @@ export function CreateDialog({ onEmailCreated }: CreateDialogProps) {
 
     setLoading(true)
     try {
-      const baseName = emailName.trim()
-      const names = Array.from({ length: count }, (_, index) => {
-        if (count === 1) return baseName
-        if (!baseName) return ""
-        return index === 0 ? baseName : `${baseName}-${index + 1}`
-      })
-      const created: string[] = []
-
-      for (const name of names) {
-        const response = await fetch("/api/emails/generate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name,
-            domain: currentDomain,
-            expiryTime: parseInt(expiryTime)
-          })
+      const response = await fetch("/api/emails/batch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: emailName.trim(),
+          count,
+          domain: currentDomain,
+          expiryTime: parseInt(expiryTime)
         })
+      })
 
-        if (!response.ok) {
-          const data = await response.json()
-          throw new Error((data as { error: string }).error || t("failed"))
-        }
-        const data = await response.json() as { email: string }
-        created.push(data.email)
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error((data as { error: string }).error || t("failed"))
       }
+      const data = await response.json() as { emails: string[] }
+      const created = data.emails
 
       setCreatedEmails(created)
       toast({
@@ -183,7 +182,7 @@ export function CreateDialog({ onEmailCreated }: CreateDialogProps) {
             <Input
               type="number"
               min="1"
-              max="50"
+              max="500"
               value={emailCount}
               onChange={(e) => setEmailCount(e.target.value)}
               className="w-24"

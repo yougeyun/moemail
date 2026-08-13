@@ -14,6 +14,7 @@ export function ActivationCodePanel() {
   const { toast } = useToast()
   const { fetch: fetchConfig } = useConfig()
   const [emailQuota, setEmailQuota] = useState(0)
+  const [emailQuotaTotal, setEmailQuotaTotal] = useState(0)
   const [sendQuota, setSendQuota] = useState(0)
   const [code, setCode] = useState("")
   const [redeeming, setRedeeming] = useState(false)
@@ -24,9 +25,11 @@ export function ActivationCodePanel() {
       if (!res.ok) return
       const data = await res.json() as {
         redeemedEmailQuota: number
+        redeemedEmailQuotaTotal: number
         redeemedSendQuota: number
       }
       setEmailQuota(data.redeemedEmailQuota)
+      setEmailQuotaTotal(data.redeemedEmailQuotaTotal)
       setSendQuota(data.redeemedSendQuota)
     } catch {
       // Quota panel is optional.
@@ -49,12 +52,14 @@ export function ActivationCodePanel() {
       const data = await res.json() as {
         error?: string
         redeemedEmailQuota?: number
+        redeemedEmailQuotaTotal?: number
         redeemedSendQuota?: number
       }
       if (!res.ok) {
         throw new Error(data.error || t("redeemFailed"))
       }
       setEmailQuota(data.redeemedEmailQuota ?? emailQuota)
+      setEmailQuotaTotal(data.redeemedEmailQuotaTotal ?? emailQuotaTotal)
       setSendQuota(data.redeemedSendQuota ?? sendQuota)
       setCode("")
       await fetchConfig()
@@ -78,6 +83,7 @@ export function ActivationCodePanel() {
         </div>
         <h2 className="text-lg font-semibold">{t("title")}</h2>
         <div className="ml-auto text-right text-sm text-muted-foreground">
+          <div>{t("emailQuotaTotal", { count: emailQuotaTotal })}</div>
           <div>{t("emailQuota", { count: emailQuota })}</div>
           <div>{t("sendQuota", { count: sendQuota })}</div>
         </div>

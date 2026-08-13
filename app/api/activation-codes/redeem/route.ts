@@ -2,6 +2,7 @@ import { createDb } from "@/lib/db"
 import { activationCodes, userEmailQuotas, users } from "@/lib/schema"
 import { eq } from "drizzle-orm"
 import { getUserId } from "@/lib/apiKey"
+import { getEmailQuotaSummary } from "@/lib/email-quota"
 
 export const runtime = "edge"
 
@@ -69,9 +70,14 @@ export async function POST(request: Request) {
         }),
     ])
 
+    const quota = await getEmailQuotaSummary(userId, {
+      redeemedEmailQuota,
+    })
+
     return Response.json({
       success: true,
-      redeemedEmailQuota,
+      redeemedEmailQuota: quota.remaining,
+      redeemedEmailQuotaTotal: quota.total,
       redeemedSendQuota,
       addedEmailQuota: activationCode.emailQuota,
       addedSendQuota: activationCode.sendQuota,
