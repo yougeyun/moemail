@@ -338,6 +338,7 @@
     "copied": "Copied to clipboard",
     "copyFailed": "Copy failed",
     "emailExpiryDays": "Email Expiry (Days)",
+    "emailExpiry": "Email Expiry",
     "expiryDays": "Expires in {days} days"
   }
 }

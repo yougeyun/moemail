@@ -28,7 +28,9 @@
     "deleteSuccess": "郵箱已刪除",
     "deleteFailed": "刪除郵箱失敗",
     "error": "錯誤",
-    "success": "成功"
+    "success": "成功",
+    "export": "匯出郵箱列表",
+    "exportFailed": "匯出失敗"
   },
   "create": {
     "title": "建立郵箱",
@@ -46,7 +48,10 @@
     "success": "郵箱建立成功",
     "failed": "建立郵箱失敗",
     "visibleUpperDomains": "上一級會員專屬網域（不可選）",
-    "visibleUpperDomainsHint": "該網域僅上一級會員可使用"
+    "visibleUpperDomainsHint": "該網域僅上一級會員可使用",
+    "count": "產生數量",
+    "batchSuccess": "已成功建立 {count} 個郵箱",
+    "createdCount": "已建立 {count} 個"
   },
   "messages": {
     "received": "收件匣",

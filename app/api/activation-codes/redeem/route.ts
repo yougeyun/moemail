@@ -64,6 +64,7 @@ export async function POST(request: Request) {
           userId,
           quota: activationCode.emailQuota,
           expiryDays: activationCode.emailExpiryDays,
+          expiry: activationCode.emailExpiry,
           sourceCodeId: activationCode.id,
         }),
     ])
@@ -75,6 +76,7 @@ export async function POST(request: Request) {
       addedEmailQuota: activationCode.emailQuota,
       addedSendQuota: activationCode.sendQuota,
       addedEmailExpiryDays: activationCode.emailExpiryDays,
+      addedEmailExpiry: activationCode.emailExpiry,
     })
   } catch (error) {
     console.error("Failed to redeem activation code:", error)

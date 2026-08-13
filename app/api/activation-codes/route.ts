@@ -4,6 +4,7 @@ import { desc, eq } from "drizzle-orm"
 import { nanoid } from "nanoid"
 import { auth, checkPermission } from "@/lib/auth"
 import { PERMISSIONS } from "@/lib/permissions"
+import { EXPIRY_OPTIONS } from "@/types/email"
 
 export const runtime = "edge"
 
@@ -22,6 +23,7 @@ export async function GET() {
         emailQuota: activationCodes.emailQuota,
         sendQuota: activationCodes.sendQuota,
         emailExpiryDays: activationCodes.emailExpiryDays,
+        emailExpiry: activationCodes.emailExpiry,
         usedBy: activationCodes.usedBy,
         usedAt: activationCodes.usedAt,
         createdAt: activationCodes.createdAt,
@@ -52,6 +54,7 @@ export async function POST(request: Request) {
       emailQuota?: number
       sendQuota?: number
       emailExpiryDays?: number
+      emailExpiry?: number
       prefix?: string
       expiresInDays?: number
     }
@@ -59,7 +62,10 @@ export async function POST(request: Request) {
     const count = Math.min(500, Math.max(1, Number(body.count) || 1))
     const emailQuota = Math.max(0, Number(body.emailQuota) || 0)
     const sendQuota = Math.max(0, Number(body.sendQuota) || 0)
-    const emailExpiryDays = Math.max(0, Number(body.emailExpiryDays) || 0)
+    const emailExpiry = Number(body.emailExpiry)
+    const validExpiries = EXPIRY_OPTIONS.map((option) => option.value)
+    const normalizedEmailExpiry =
+      validExpiries.includes(emailExpiry) ? emailExpiry : 86400000
     const prefix = (body.prefix || "").replace(/[^A-Za-z0-9_-]/g, "").toUpperCase()
     const expiresAt =
       Number(body.expiresInDays) > 0
@@ -76,7 +82,11 @@ export async function POST(request: Request) {
         code,
         emailQuota,
         sendQuota,
-        emailExpiryDays,
+        emailExpiryDays:
+          normalizedEmailExpiry === 0
+            ? 0
+            : Math.ceil(normalizedEmailExpiry / 86400000),
+        emailExpiry: normalizedEmailExpiry,
         createdBy: sessionUserId,
         expiresAt,
       }

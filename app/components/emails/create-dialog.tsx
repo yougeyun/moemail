@@ -27,6 +27,8 @@ export function CreateDialog({ onEmailCreated }: CreateDialogProps) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [emailName, setEmailName] = useState("")
+  const [emailCount, setEmailCount] = useState("1")
+  const [createdEmails, setCreatedEmails] = useState<string[]>([])
   const [currentDomain, setCurrentDomain] = useState("")
   const [expiryTime, setExpiryTime] = useState("")
   const { toast } = useToast()
@@ -46,7 +48,8 @@ export function CreateDialog({ onEmailCreated }: CreateDialogProps) {
   }
 
   const createEmail = async () => {
-    if (!emailName.trim()) {
+    const count = Math.min(50, Math.max(1, Number(emailCount) || 1))
+    if (count === 1 && !emailName.trim()) {
       toast({
         title: tList("error"),
         description: t("namePlaceholder"),
@@ -57,37 +60,47 @@ export function CreateDialog({ onEmailCreated }: CreateDialogProps) {
 
     setLoading(true)
     try {
-      const response = await fetch("/api/emails/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: emailName,
-          domain: currentDomain,
-          expiryTime: parseInt(expiryTime)
-        })
+      const baseName = emailName.trim()
+      const names = Array.from({ length: count }, (_, index) => {
+        if (count === 1) return baseName
+        if (!baseName) return ""
+        return index === 0 ? baseName : `${baseName}-${index + 1}`
       })
+      const created: string[] = []
 
-      if (!response.ok) {
-        const data = await response.json()
-        toast({
-          title: tList("error"),
-          description: (data as { error: string }).error,
-          variant: "destructive"
+      for (const name of names) {
+        const response = await fetch("/api/emails/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            domain: currentDomain,
+            expiryTime: parseInt(expiryTime)
+          })
         })
-        return
+
+        if (!response.ok) {
+          const data = await response.json()
+          throw new Error((data as { error: string }).error || t("failed"))
+        }
+        const data = await response.json() as { email: string }
+        created.push(data.email)
       }
 
+      setCreatedEmails(created)
       toast({
         title: tList("success"),
-        description: t("success")
+        description: t("batchSuccess", { count: created.length })
       })
       onEmailCreated()
       setOpen(false)
       setEmailName("")
-    } catch {
+      setEmailCount("1")
+      setCreatedEmails([])
+    } catch (error) {
       toast({
         title: tList("error"),
-        description: t("failed"),
+        description: error instanceof Error ? error.message : t("failed"),
         variant: "destructive"
       })
     } finally {
@@ -163,6 +176,23 @@ export function CreateDialog({ onEmailCreated }: CreateDialogProps) {
             >
               <RefreshCw className="w-4 h-4" />
             </Button>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Label className="shrink-0 text-muted-foreground">{t("count")}</Label>
+            <Input
+              type="number"
+              min="1"
+              max="50"
+              value={emailCount}
+              onChange={(e) => setEmailCount(e.target.value)}
+              className="w-24"
+            />
+            {createdEmails.length > 0 && (
+              <span className="text-sm text-muted-foreground">
+                {t("createdCount", { count: createdEmails.length })}
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-4">

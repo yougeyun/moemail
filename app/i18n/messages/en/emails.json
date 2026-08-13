@@ -28,7 +28,9 @@
     "deleteSuccess": "Email deleted successfully",
     "deleteFailed": "Failed to delete email",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "export": "Export Email List",
+    "exportFailed": "Export failed"
   },
   "create": {
     "title": "Create Email",
@@ -46,7 +48,10 @@
     "success": "Email created successfully",
     "failed": "Failed to create email",
     "visibleUpperDomains": "Upper level domains (not selectable)",
-    "visibleUpperDomainsHint": "Only upper level members can use these domains."
+    "visibleUpperDomainsHint": "Only upper level members can use these domains.",
+    "count": "Count",
+    "batchSuccess": "Created {count} email addresses",
+    "createdCount": "{count} created"
   },
   "messages": {
     "received": "Received",

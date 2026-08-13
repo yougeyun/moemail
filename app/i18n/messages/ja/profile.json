@@ -338,6 +338,7 @@
     "copied": "コピーしました",
     "copyFailed": "コピーに失敗しました",
     "emailExpiryDays": "メール有効日数",
+    "emailExpiry": "メール有効期限",
     "expiryDays": "有効 {days} 日"
   }
 }

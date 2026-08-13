@@ -27,11 +27,11 @@ export async function POST(request: Request) {
   let activeEmailsCount = 0
   let freeLimit = Number.MAX_SAFE_INTEGER
   const redeemedEmailQuota = userRecord?.redeemedEmailQuota ?? 0
-  let usedQuotaExpiryDays = 30
+  let usedQuotaExpiry = 86400000
   let quotaRowToConsume: {
     id: string
     quota: number
-    expiryDays: number
+    expiry: number
   } | null = null
   let legacyQuotaConsumed = false
 
@@ -140,16 +140,16 @@ export async function POST(request: Request) {
       })
 
       if (quotaRow) {
-        usedQuotaExpiryDays = quotaRow.expiryDays
+        usedQuotaExpiry = quotaRow.expiry
         quotaRowToConsume = quotaRow
       } else {
         legacyQuotaConsumed = true
       }
 
       expires =
-        usedQuotaExpiryDays === 0
+        usedQuotaExpiry === 0
           ? new Date("9999-01-01T00:00:00.000Z")
-          : new Date(now.getTime() + usedQuotaExpiryDays * 24 * 60 * 60 * 1000)
+          : new Date(now.getTime() + usedQuotaExpiry)
     }
 
     if (!expires) {

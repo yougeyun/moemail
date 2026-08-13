@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react"
 import { useTranslations } from "next-intl"
 import { CreateDialog } from "./create-dialog"
 import { ShareDialog } from "./share-dialog"
-import { Mail, RefreshCw, Trash2 } from "lucide-react"
+import { Download, Mail, RefreshCw, Trash2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useThrottle } from "@/hooks/use-throttle"
@@ -52,6 +52,7 @@ export function EmailList({ onEmailSelect, selectedEmailId }: EmailListProps) {
   const [emails, setEmails] = useState<Email[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
+  const [exporting, setExporting] = useState(false)
   const [nextCursor, setNextCursor] = useState<string | null>(null)
   const [loadingMore, setLoadingMore] = useState(false)
   const [total, setTotal] = useState(0)
@@ -101,6 +102,42 @@ export function EmailList({ onEmailSelect, selectedEmailId }: EmailListProps) {
   const handleRefresh = async () => {
     setRefreshing(true)
     await fetchEmails()
+  }
+
+  const exportEmails = async () => {
+    setExporting(true)
+    try {
+      const rows: string[][] = [["address", "createdAt", "expiresAt"]]
+      let cursor: string | null = null
+      do {
+        const url = new URL("/api/emails", window.location.origin)
+        url.searchParams.set("pageSize", "50")
+        if (cursor) url.searchParams.set("cursor", cursor)
+        const response = await fetch(url)
+        const data = await response.json() as EmailResponse
+        for (const email of data.emails) {
+          rows.push([
+            email.address,
+            new Date(email.createdAt).toISOString(),
+            new Date(email.expiresAt).toISOString(),
+          ])
+        }
+        cursor = data.nextCursor
+      } while (cursor)
+
+      const csv = rows.map((row) => row.map((cell) => `"${cell}"`).join(",")).join("\n")
+      const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = url
+      link.download = "moemail-emails.csv"
+      link.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      toast({ title: t("exportFailed"), variant: "destructive" })
+    } finally {
+      setExporting(false)
+    }
   }
 
   const handleScroll = useThrottle((e: React.UIEvent<HTMLDivElement>) => {
@@ -186,13 +223,40 @@ export function EmailList({ onEmailSelect, selectedEmailId }: EmailListProps) {
                 })
               )}
             </span>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={exportEmails}
+              disabled={exporting}
+              className="h-8 w-8"
+              title={t("export")}
+            >
+              {exporting ? (
+                <RefreshCw className="h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4" />
+              )}
+            </Button>
           </div>
           <CreateDialog onEmailCreated={handleRefresh} />
         </div>
         
         <div className="flex-1 overflow-auto p-2" onScroll={handleScroll}>
           {loading ? (
-            <div className="text-center text-sm text-muted-foreground">{t("loading")}</div>
+            <div className="space-y-1.5 p-1">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="flex animate-pulse items-center gap-3 rounded-lg border border-border/50 px-3 py-3"
+                >
+                  <div className="h-4 w-4 rounded bg-muted" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-3 w-1/2 rounded bg-muted" />
+                    <div className="h-2.5 w-1/3 rounded bg-muted" />
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : emails.length > 0 ? (
             <div className="space-y-1.5 p-1">
               {emails.map(email => (

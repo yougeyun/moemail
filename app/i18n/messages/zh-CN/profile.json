@@ -338,6 +338,7 @@
     "copied": "已复制到剪贴板",
     "copyFailed": "复制失败",
     "emailExpiryDays": "邮箱有效期（天）",
+    "emailExpiry": "邮箱有效期",
     "expiryDays": "有效期 {days} 天"
   }
 }

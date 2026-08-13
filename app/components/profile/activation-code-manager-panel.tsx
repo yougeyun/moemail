@@ -7,6 +7,14 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { EXPIRY_OPTIONS } from "@/types/email"
 
 interface ActivationCodeItem {
   id: string
@@ -14,6 +22,7 @@ interface ActivationCodeItem {
   emailQuota: number
   sendQuota: number
   emailExpiryDays: number
+  emailExpiry: number
   usedAt: string | null
   expiresAt: string | null
   usedUsername: string | null
@@ -21,11 +30,12 @@ interface ActivationCodeItem {
 
 export function ActivationCodeManagerPanel() {
   const t = useTranslations("profile.activationCodeManager")
+  const tExpiry = useTranslations("emails.create")
   const { toast } = useToast()
   const [count, setCount] = useState("10")
   const [emailQuota, setEmailQuota] = useState("0")
   const [sendQuota, setSendQuota] = useState("0")
-  const [emailExpiryDays, setEmailExpiryDays] = useState("30")
+  const [emailExpiry, setEmailExpiry] = useState(String(EXPIRY_OPTIONS[1].value))
   const [prefix, setPrefix] = useState("")
   const [expiresInDays, setExpiresInDays] = useState("")
   const [generatedCodes, setGeneratedCodes] = useState<ActivationCodeItem[]>([])
@@ -61,7 +71,7 @@ export function ActivationCodeManagerPanel() {
           count: Number(count) || 1,
           emailQuota: Number(emailQuota) || 0,
           sendQuota: Number(sendQuota) || 0,
-          emailExpiryDays: Number(emailExpiryDays) || 0,
+          emailExpiry: Number(emailExpiry),
           prefix: prefix.trim(),
           expiresInDays: Number(expiresInDays) || 0,
         }),
@@ -119,8 +129,27 @@ export function ActivationCodeManagerPanel() {
           <Input type="number" min="0" value={sendQuota} onChange={(e) => setSendQuota(e.target.value)} />
         </div>
         <div className="grid gap-1.5">
-          <Label>{t("emailExpiryDays")}</Label>
-          <Input type="number" min="0" value={emailExpiryDays} onChange={(e) => setEmailExpiryDays(e.target.value)} />
+          <Label>{t("emailExpiry")}</Label>
+          <Select value={emailExpiry} onValueChange={setEmailExpiry}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {EXPIRY_OPTIONS.map((option, index) => {
+                const labels = [
+                  tExpiry("oneHour"),
+                  tExpiry("oneDay"),
+                  tExpiry("threeDays"),
+                  tExpiry("permanent"),
+                ]
+                return (
+                  <SelectItem key={option.value} value={String(option.value)}>
+                    {labels[index]}
+                  </SelectItem>
+                )
+              })}
+            </SelectContent>
+          </Select>
         </div>
         <div className="grid gap-1.5">
           <Label>{t("prefix")}</Label>
@@ -169,8 +198,8 @@ export function ActivationCodeManagerPanel() {
                 <span className="font-mono">{item.code}</span>
                 <span className="text-xs text-muted-foreground">
                   {t("emailQuotaShort", { count: item.emailQuota })} · {t("sendQuotaShort", { count: item.sendQuota })}
-                  {item.emailExpiryDays > 0 && (
-                    <span> · {t("expiryDays", { days: item.emailExpiryDays })}</span>
+                  {item.emailExpiry > 0 && (
+                    <span> · {expiryLabel(item.emailExpiry, tExpiry)}</span>
                   )}
                 </span>
                 <span className="ml-auto text-xs">
@@ -188,4 +217,19 @@ export function ActivationCodeManagerPanel() {
       </div>
     </div>
   )
+}
+
+function expiryLabel(
+  value: number,
+  tExpiry: (key: string) => string
+) {
+  const index = EXPIRY_OPTIONS.findIndex((option) => option.value === value)
+  if (index === -1) return String(value)
+  const labels = [
+    tExpiry("oneHour"),
+    tExpiry("oneDay"),
+    tExpiry("threeDays"),
+    tExpiry("permanent"),
+  ]
+  return labels[index]
 }

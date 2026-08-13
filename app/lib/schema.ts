@@ -169,6 +169,7 @@ export const activationCodes = sqliteTable("activation_code", {
   emailQuota: integer("email_quota").notNull().default(0),
   sendQuota: integer("send_quota").notNull().default(0),
   emailExpiryDays: integer("email_expiry_days").notNull().default(30),
+  emailExpiry: integer("email_expiry").notNull().default(86400000),
   createdBy: text("created_by")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
@@ -190,6 +191,7 @@ export const userEmailQuotas = sqliteTable("user_email_quota", {
     .references(() => users.id, { onDelete: "cascade" }),
   quota: integer("quota").notNull().default(0),
   expiryDays: integer("expiry_days").notNull().default(30),
+  expiry: integer("expiry").notNull().default(86400000),
   sourceCodeId: text("source_code_id").references(() => activationCodes.id, { onDelete: "set null" }),
   createdAt: integer("created_at", { mode: "timestamp_ms" })
     .notNull()

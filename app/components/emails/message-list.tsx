@@ -188,6 +188,8 @@ export function MessageList({ email, messageType, onMessageSelect, selectedMessa
       return
     }
     setLoading(true)
+    setMessages([])
+    setTotal(0)
     setNextCursor(null)
     fetchMessages()
     startPolling() 
@@ -226,7 +228,20 @@ export function MessageList({ email, messageType, onMessageSelect, selectedMessa
 
       <div className="flex-1 overflow-auto" onScroll={handleScroll}>
         {loading ? (
-          <div className="p-4 text-center text-sm text-muted-foreground">{t("loading")}</div>
+          <div className="space-y-1 p-1.5">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div
+                key={index}
+                className="flex animate-pulse items-start gap-3 rounded-lg border border-border/50 p-3"
+              >
+                <div className="mt-1 h-4 w-4 rounded bg-muted" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-3 w-2/3 rounded bg-muted" />
+                  <div className="h-2.5 w-1/2 rounded bg-muted" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : messages.length > 0 ? (
           <div className="space-y-1 p-1.5">
             {messages.map(message => (

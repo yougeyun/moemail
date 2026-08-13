@@ -28,7 +28,9 @@
     "deleteSuccess": "メールボックスを削除しました",
     "deleteFailed": "メールボックスの削除に失敗しました",
     "error": "エラー",
-    "success": "成功"
+    "success": "成功",
+    "export": "メール一覧をエクスポート",
+    "exportFailed": "エクスポートに失敗しました"
   },
   "create": {
     "title": "メールボックスを作成",
@@ -46,7 +48,10 @@
     "success": "メールボックスを作成しました",
     "failed": "メールボックスの作成に失敗しました",
     "visibleUpperDomains": "上位会員専用ドメイン（選択不可）",
-    "visibleUpperDomainsHint": "このドメインは上位会員のみ利用できます"
+    "visibleUpperDomainsHint": "このドメインは上位会員のみ利用できます",
+    "count": "生成数",
+    "batchSuccess": "{count} 個のメールを作成しました",
+    "createdCount": "{count} 個作成"
   },
   "messages": {
     "received": "受信箱",

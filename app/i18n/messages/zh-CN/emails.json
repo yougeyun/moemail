@@ -28,7 +28,9 @@
     "deleteSuccess": "邮箱已删除",
     "deleteFailed": "删除邮箱失败",
     "error": "错误",
-    "success": "成功"
+    "success": "成功",
+    "export": "导出邮箱列表",
+    "exportFailed": "导出失败"
   },
   "create": {
     "title": "创建邮箱",
@@ -46,7 +48,10 @@
     "success": "邮箱创建成功",
     "failed": "创建邮箱失败",
     "visibleUpperDomains": "上一级会员专属域名（不可选）",
-    "visibleUpperDomainsHint": "该域名仅上一级会员可使用"
+    "visibleUpperDomainsHint": "该域名仅上一级会员可使用",
+    "count": "生成数量",
+    "batchSuccess": "已成功创建 {count} 个邮箱",
+    "createdCount": "已创建 {count} 个"
   },
   "messages": {
     "received": "收件箱",

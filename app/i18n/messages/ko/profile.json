@@ -338,6 +338,7 @@
     "copied": "복사되었습니다",
     "copyFailed": "복사 실패",
     "emailExpiryDays": "메일 유효기간(일)",
+    "emailExpiry": "메일 유효기간",
     "expiryDays": "유효 {days}일"
   }
 }
