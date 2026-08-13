@@ -39,6 +39,7 @@ export function CreateDialog({ onEmailCreated }: CreateDialogProps) {
   const allowedExpiries =
     config?.emailRules?.allowedExpiries ??
     EXPIRY_OPTIONS.map((option) => option.value)
+  const visibleUpperDomains = config?.emailRules?.visibleUpperDomains ?? []
 
   const copyEmailAddress = () => {
     copyToClipboard(`${emailName}@${currentDomain}`)
@@ -202,6 +203,21 @@ export function CreateDialog({ onEmailCreated }: CreateDialogProps) {
               <span className="text-muted-foreground/60">...</span>
             )}
           </div>
+
+          {visibleUpperDomains.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+              <span className="shrink-0">{t("visibleUpperDomains")}:</span>
+              {visibleUpperDomains.map((domain) => (
+                <span
+                  key={domain}
+                  className="cursor-not-allowed rounded-md border border-border bg-muted/50 px-2 py-0.5 text-xs opacity-70"
+                  title={t("visibleUpperDomainsHint")}
+                >
+                  @{domain}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
         <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>

@@ -209,7 +209,15 @@
     "maxEmails": "Max Emails",
     "maxEmailsPlaceholder": "Leave empty to use site default",
     "maxEmailsHint": "Maximum number of email addresses this level can create.",
-    "noDomains": "No domains available. Add domains in site settings first."
+    "noDomains": "No domains available. Add domains in site settings first.",
+    "durationOptions": "Purchase Durations",
+    "addDuration": "Add Duration",
+    "durationEmpty": "No purchase durations configured",
+    "days": "days",
+    "pointsUnit": "points",
+    "durationHint": "Configure purchasable durations and prices. Buyers must choose one.",
+    "showUpperDomains": "Show Upper Level Domains",
+    "showUpperDomainsHint": "Show upper level domains when creating emails, but keep them unselectable."
   },
   "shop": {
     "title": "Member Shop",
@@ -226,7 +234,18 @@
     "buySuccess": "Purchase complete, member level upgraded",
     "checkoutFailed": "Purchase failed",
     "insufficientPoints": "Not enough points",
-    "loadFailed": "Failed to load member shop"
+    "loadFailed": "Failed to load member shop",
+    "duration": "Duration",
+    "permanent": "Permanent",
+    "daysValue": "{days} days",
+    "daysValue": "{days} days",
+    "paymentMethod": "Payment Method",
+    "methodPoints": "Points",
+    "methodWechat": "WeChat Pay",
+    "methodAlipay": "Alipay",
+    "buyNow": "Buy Now",
+    "currentExpiresAt": "Current level expires: {date}",
+    "paymentQrHint": "Complete payment by scanning the QR code"
   },
   "promote": {
     "title": "Role Management",
@@ -258,5 +277,32 @@
     "pointsInvalid": "Points must be a non-negative integer",
     "pointsSaved": "Points updated",
     "pointsSaveFailed": "Failed to update points"
+  },
+  "payment": {
+    "title": "Payment Settings",
+    "wechat": "WeChat Pay",
+    "wechatHint": "Use WeChat Pay Native QR payment with merchant credentials.",
+    "alipay": "Alipay",
+    "alipayHint": "Use Alipay PC web payment with application credentials.",
+    "appId": "App ID",
+    "mchId": "Merchant ID",
+    "serialNo": "Certificate Serial No.",
+    "notifyUrl": "Async Notify URL",
+    "privateKey": "Merchant Private Key",
+    "privateKeyPlaceholder": "Paste PKCS8 private key",
+    "publicKey": "Alipay Public Key",
+    "publicKeyPlaceholder": "Paste Alipay public key",
+    "keyConfigured": "Configured. Leave empty to keep unchanged.",
+    "save": "Save Payment Settings",
+    "saving": "Saving...",
+    "saveSuccess": "Payment settings saved",
+    "saveFailed": "Failed to save",
+    "loadFailed": "Failed to load payment settings",
+    "pendingOrders": "Pending Payment Orders",
+    "confirmOrder": "Confirm Payment",
+    "orderConfirmed": "Order confirmed, member level activated",
+    "orderConfirmFailed": "Failed to confirm order",
+    "pendingOrdersHint": "Automatic activation works after callback verification is configured. Manual confirmation is available now.",
+    "permanent": "Permanent"
   }
 }

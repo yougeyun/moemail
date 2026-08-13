@@ -12,6 +12,7 @@ import {
   normalizeDailyLimit,
   normalizeDefaultExpiry,
   normalizeDomains,
+  normalizeDurationOptions,
   normalizeExpiries,
   normalizeMaxEmails,
   normalizePrice,
@@ -42,6 +43,8 @@ export async function PATCH(
       allowedDomains?: unknown
       allowedExpiries?: unknown
       defaultExpiry?: number
+      durationOptions?: unknown
+      showUpperDomains?: boolean
       price?: number
       purchasable?: boolean
       sortOrder?: number
@@ -68,11 +71,13 @@ export async function PATCH(
         body.allowedDomains !== undefined ||
         body.allowedExpiries !== undefined ||
         body.defaultExpiry !== undefined ||
+        body.durationOptions !== undefined ||
+        body.showUpperDomains !== undefined ||
         body.price !== undefined ||
         body.purchasable !== undefined
       ) {
         return Response.json(
-          { error: "皇帝角色的标识、权限、发信、邮箱上限、域名规则、价格和排序不可修改" },
+          { error: "皇帝角色的标识、权限、发信、邮箱上限、域名规则、时长、价格和排序不可修改" },
           { status: 400 }
         )
       }
@@ -170,6 +175,16 @@ export async function PATCH(
       )
     }
 
+    if (body.durationOptions !== undefined) {
+      const durationOptions = normalizeDurationOptions(body.durationOptions)
+      updates.durationOptions =
+        durationOptions.length > 0 ? JSON.stringify(durationOptions) : null
+    }
+
+    if (body.showUpperDomains !== undefined) {
+      updates.showUpperDomains = normalizeBoolean(body.showUpperDomains)
+    }
+
     if (body.price !== undefined) {
       updates.price = normalizePrice(body.price)
     }
@@ -205,6 +220,8 @@ export async function PATCH(
           allowedExpiries: role.allowedExpiries,
           defaultExpiry: role.defaultExpiry,
         }),
+        durationOptions: normalizeDurationOptions(role.durationOptions),
+        showUpperDomains: role.showUpperDomains,
         price: role.price,
         purchasable: role.purchasable,
         maxEmails: role.maxEmails,

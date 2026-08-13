@@ -209,7 +209,15 @@
     "maxEmails": "最大郵箱數",
     "maxEmailsPlaceholder": "留空使用網站預設值",
     "maxEmailsHint": "該等級的會員最多可建立的郵箱數量",
-    "noDomains": "暫無可用網域，請先在網站設定中新增網域"
+    "noDomains": "暫無可用網域，請先在網站設定中新增網域",
+    "durationOptions": "購買時長",
+    "addDuration": "新增時長",
+    "durationEmpty": "尚未設定購買時長",
+    "days": "天",
+    "pointsUnit": "積分",
+    "durationHint": "設定可購買的時長與對應價格，購買時使用者必須選擇其中一個",
+    "showUpperDomains": "顯示上一級會員可用網域",
+    "showUpperDomainsHint": "開啟後，使用者產生郵箱時可看到上一級會員可用的網域，但不可選擇"
   },
   "shop": {
     "title": "會員商城",
@@ -226,7 +234,18 @@
     "buySuccess": "購買成功，會員等級已升級",
     "checkoutFailed": "購買失敗",
     "insufficientPoints": "積分不足",
-    "loadFailed": "載入會員商城失敗"
+    "loadFailed": "載入會員商城失敗",
+    "duration": "購買時長",
+    "permanent": "永久",
+    "daysValue": "{days} 天",
+    "daysValue": "{days} 天",
+    "paymentMethod": "付款方式",
+    "methodPoints": "積分付款",
+    "methodWechat": "微信支付",
+    "methodAlipay": "支付寶",
+    "buyNow": "立即購買",
+    "currentExpiresAt": "目前等級到期：{date}",
+    "paymentQrHint": "請使用掃碼付款完成付款"
   },
   "promote": {
     "title": "角色管理",
@@ -258,5 +277,32 @@
     "pointsInvalid": "積分必須為非負整數",
     "pointsSaved": "積分已更新",
     "pointsSaveFailed": "積分更新失敗"
+  },
+  "payment": {
+    "title": "付款設定",
+    "wechat": "微信支付",
+    "wechatHint": "使用微信支付 Native 掃碼付款，需設定微信支付商戶參數",
+    "alipay": "支付寶",
+    "alipayHint": "使用支付寶電腦網站付款，需設定應用程式參數",
+    "appId": "AppID",
+    "mchId": "商戶號",
+    "serialNo": "憑證序號",
+    "notifyUrl": "非同步回調位址",
+    "privateKey": "商戶私鑰",
+    "privateKeyPlaceholder": "貼上 PKCS8 格式私鑰",
+    "publicKey": "支付寶公鑰",
+    "publicKeyPlaceholder": "貼上支付寶公鑰",
+    "keyConfigured": "已設定，留空則保持不變",
+    "save": "儲存付款設定",
+    "saving": "儲存中...",
+    "saveSuccess": "付款設定已儲存",
+    "saveFailed": "儲存失敗",
+    "loadFailed": "載入付款設定失敗",
+    "pendingOrders": "待確認付款訂單",
+    "confirmOrder": "確認入帳",
+    "orderConfirmed": "訂單已確認，會員等級已生效",
+    "orderConfirmFailed": "確認訂單失敗",
+    "pendingOrdersHint": "付款回調自動驗簽設定完成後將自動入帳，目前可手動確認",
+    "permanent": "永久"
   }
 }

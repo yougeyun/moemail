@@ -44,7 +44,9 @@
     "create": "作成",
     "creating": "作成中...",
     "success": "メールボックスを作成しました",
-    "failed": "メールボックスの作成に失敗しました"
+    "failed": "メールボックスの作成に失敗しました",
+    "visibleUpperDomains": "上位会員専用ドメイン（選択不可）",
+    "visibleUpperDomainsHint": "このドメインは上位会員のみ利用できます"
   },
   "messages": {
     "received": "受信箱",

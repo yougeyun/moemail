@@ -1,14 +1,27 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { useTranslations } from "next-intl"
-import { Loader2, Plus, ShoppingCart, Trash2 } from "lucide-react"
+import { Loader2, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { getRoleIcon } from "@/lib/permissions"
 import { ROLE_ICON_MAP } from "./role-ui"
+
+interface DurationOption {
+  days: number
+  price: number
+}
 
 interface ShopRole {
   id: string
@@ -18,12 +31,13 @@ interface ShopRole {
   icon: string | null
   price: number
   sortOrder: number
+  durationOptions: DurationOption[]
   permissions: string[]
   allowedDomains: string[] | null
   allowedExpiries: number[] | null
 }
 
-const CART_KEY = "moemail_member_cart"
+type PaymentMethod = "points" | "wechat" | "alipay"
 
 export function MembershipShopPanel() {
   const t = useTranslations("profile.shop")
@@ -34,28 +48,11 @@ export function MembershipShopPanel() {
   const [roles, setRoles] = useState<ShopRole[]>([])
   const [points, setPoints] = useState(0)
   const [currentRoleSort, setCurrentRoleSort] = useState(999)
+  const [currentExpiresAt, setCurrentExpiresAt] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const [checkingOut, setCheckingOut] = useState(false)
-  const [cart, setCart] = useState<string[]>([])
-
-  const loadCart = useCallback(() => {
-    try {
-      const raw = localStorage.getItem(CART_KEY)
-      if (raw) {
-        const parsed = JSON.parse(raw) as unknown
-        if (Array.isArray(parsed)) {
-          setCart(parsed.filter((item): item is string => typeof item === "string"))
-        }
-      }
-    } catch {
-      setCart([])
-    }
-  }, [])
-
-  const saveCart = useCallback((next: string[]) => {
-    setCart(next)
-    localStorage.setItem(CART_KEY, JSON.stringify(next))
-  }, [])
+  const [purchasingRoleId, setPurchasingRoleId] = useState<string | null>(null)
+  const [selectedDurations, setSelectedDurations] = useState<Record<string, number>>({})
+  const [paymentMethods, setPaymentMethods] = useState<Record<string, PaymentMethod>>({})
 
   const fetchShop = useCallback(async () => {
     setLoading(true)
@@ -66,10 +63,12 @@ export function MembershipShopPanel() {
         roles: ShopRole[]
         points: number
         currentRoleSort: number
+        currentExpiresAt: string | null
       }
       setRoles(data.roles)
       setPoints(data.points)
       setCurrentRoleSort(data.currentRoleSort)
+      setCurrentExpiresAt(data.currentExpiresAt)
     } catch {
       toast({ title: t("loadFailed"), variant: "destructive" })
     } finally {
@@ -78,73 +77,66 @@ export function MembershipShopPanel() {
   }, [t, toast])
 
   useEffect(() => {
-    loadCart()
     fetchShop()
-  }, [loadCart, fetchShop])
+  }, [fetchShop])
 
-  const addToCart = (roleId: string) => {
-    if (!cart.includes(roleId)) {
-      saveCart([...cart, roleId])
-    }
+  const durationFor = (role: ShopRole) =>
+    role.durationOptions.length > 0
+      ? role.durationOptions
+      : [{ days: 0, price: role.price }]
+
+  const selectedDuration = (role: ShopRole) => {
+    const options = durationFor(role)
+    const selected = selectedDurations[role.id]
+    return options.find((option) => option.days === selected) || options[0]
   }
 
-  const removeFromCart = (roleId: string) => {
-    saveCart(cart.filter((id) => id !== roleId))
-  }
-
-  const cartRoles = useMemo(
-    () => roles.filter((role) => cart.includes(role.id)),
-    [roles, cart]
-  )
-  const totalPrice = cartRoles.reduce((sum, role) => sum + role.price, 0)
-
-  const canBuyRole = (role: ShopRole) => role.sortOrder < currentRoleSort
-
-  const handleCheckout = async () => {
-    if (cartRoles.length === 0 || points < totalPrice) {
-      toast({
-        title: t("checkoutFailed"),
-        description: points < totalPrice ? t("insufficientPoints") : undefined,
-        variant: "destructive",
-      })
-      return
-    }
-
-    setCheckingOut(true)
-    const sorted = [...cartRoles].sort((a, b) => b.sortOrder - a.sortOrder)
-    let remainingCart = [...cart]
-
+  const handlePurchase = async (role: ShopRole) => {
+    const duration = selectedDuration(role)
+    const method = paymentMethods[role.id] || "points"
+    setPurchasingRoleId(role.id)
     try {
-      for (const role of sorted) {
-        const res = await fetch("/api/member-shop", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ roleId: role.id }),
-        })
+      const res = await fetch("/api/member-shop", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          roleId: role.id,
+          durationDays: duration.days,
+          paymentMethod: method,
+        }),
+      })
 
-        if (!res.ok) {
-          const error = await res.json() as { error: string }
-          throw new Error(error.error)
-        }
-
-        const data = await res.json() as { points: number }
-        setPoints(data.points)
-        remainingCart = remainingCart.filter((id) => id !== role.id)
+      const data = await res.json() as {
+        error?: string
+        points?: number
+        paymentUrl?: string
+        paymentQr?: string
       }
 
-      saveCart(remainingCart)
-      await update()
-      router.refresh()
-      toast({ title: t("buySuccess") })
+      if (!res.ok) {
+        throw new Error(data.error || t("checkoutFailed"))
+      }
+
+      if (data.paymentUrl) {
+        window.open(data.paymentUrl, "_blank", "noopener,noreferrer")
+      } else if (data.paymentQr) {
+        toast({ title: t("paymentQrHint") })
+      } else {
+        if (typeof data.points === "number") {
+          setPoints(data.points)
+        }
+        await update()
+        router.refresh()
+        toast({ title: t("buySuccess") })
+      }
     } catch (error) {
-      saveCart(remainingCart)
       toast({
         title: t("checkoutFailed"),
         description: error instanceof Error ? error.message : undefined,
         variant: "destructive",
       })
     } finally {
-      setCheckingOut(false)
+      setPurchasingRoleId(null)
     }
   }
 
@@ -157,9 +149,12 @@ export function MembershipShopPanel() {
           <ShoppingCart className="h-5 w-5" />
         </div>
         <h2 className="text-lg font-semibold">{t("title")}</h2>
-        <span className="ml-auto text-sm text-muted-foreground">
-          {t("currentPoints", { points })}
-        </span>
+        <div className="ml-auto text-right text-sm text-muted-foreground">
+          <div>{t("currentPoints", { points })}</div>
+          {currentExpiresAt && (
+            <div className="text-xs">{t("currentExpiresAt", { date: currentExpiresAt })}</div>
+          )}
+        </div>
       </div>
 
       {loading ? (
@@ -173,8 +168,10 @@ export function MembershipShopPanel() {
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {roles.map((role) => {
             const Icon = ROLE_ICON_MAP[getRoleIcon(role)] || ROLE_ICON_MAP.User2
-            const inCart = cart.includes(role.id)
-            const buyable = canBuyRole(role)
+            const buyable = role.sortOrder <= currentRoleSort
+            const options = durationFor(role)
+            const duration = selectedDuration(role)
+            const method = paymentMethods[role.id] || "points"
 
             return (
               <div
@@ -193,7 +190,6 @@ export function MembershipShopPanel() {
                       {role.description || role.name}
                     </div>
                   </div>
-                  <div className="text-sm font-bold text-primary">{role.price}</div>
                 </div>
 
                 <div className="mt-3 flex flex-wrap gap-1.5">
@@ -207,56 +203,75 @@ export function MembershipShopPanel() {
                   ))}
                 </div>
 
-                <div className="mt-auto flex items-center justify-between border-t border-border/70 pt-3">
-                  <span className="text-xs text-muted-foreground">
-                    {role.allowedDomains && role.allowedDomains.length > 0
-                      ? role.allowedDomains.join(", ")
-                      : t("allDomains")}
-                  </span>
-                  <Button
-                    size="sm"
-                    variant={inCart ? "outline" : "default"}
-                    disabled={!buyable}
-                    onClick={() =>
-                      inCart ? removeFromCart(role.id) : addToCart(role.id)
-                    }
-                  >
-                    {inCart ? (
-                      <>
-                        <Trash2 className="mr-1 h-4 w-4" />
-                        {t("removeFromCart")}
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="mr-1 h-4 w-4" />
-                        {t("addToCart")}
-                      </>
-                    )}
-                  </Button>
+                <div className="mt-4 grid gap-2 border-t border-border/70 pt-3">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label className="text-xs text-muted-foreground">{t("duration")}</Label>
+                      <Select
+                        value={String(duration.days)}
+                        onValueChange={(value) =>
+                          setSelectedDurations((prev) => ({
+                            ...prev,
+                            [role.id]: Number(value),
+                          }))
+                        }
+                      >
+                        <SelectTrigger className="h-9 text-sm">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {options.map((option) => (
+                            <SelectItem key={option.days} value={String(option.days)}>
+                              {option.days === 0
+                                ? t("permanent")
+                                : t("daysValue", { days: option.days })}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">{t("paymentMethod")}</Label>
+                      <Select
+                        value={method}
+                        onValueChange={(value) =>
+                          setPaymentMethods((prev) => ({
+                            ...prev,
+                            [role.id]: value as PaymentMethod,
+                          }))
+                        }
+                      >
+                        <SelectTrigger className="h-9 text-sm">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="points">{t("methodPoints")}</SelectItem>
+                          <SelectItem value="wechat">{t("methodWechat")}</SelectItem>
+                          <SelectItem value="alipay">{t("methodAlipay")}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-bold text-primary">{duration.price}</span>
+                    <Button
+                      size="sm"
+                      disabled={!buyable || purchasingRoleId === role.id}
+                      onClick={() => handlePurchase(role)}
+                    >
+                      {purchasingRoleId === role.id && (
+                        <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                      )}
+                      {t("buyNow")}
+                    </Button>
+                  </div>
                 </div>
               </div>
             )
           })}
         </div>
       )}
-
-      <div className="mt-6 flex flex-wrap items-center gap-3 rounded-lg border border-primary/25 bg-primary/5 p-4">
-        <ShoppingCart className="h-5 w-5 text-primary" />
-        <span className="text-sm font-medium">
-          {t("cartCount", { count: cartRoles.length })}
-        </span>
-        <span className="text-sm text-muted-foreground">
-          {t("total")}: <strong className="text-foreground">{totalPrice}</strong>
-        </span>
-        <Button
-          className="ml-auto"
-          disabled={checkingOut || cartRoles.length === 0 || points < totalPrice}
-          onClick={handleCheckout}
-        >
-          {checkingOut && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {checkingOut ? t("checkingOut") : t("checkout")}
-        </Button>
-      </div>
     </div>
   )
 }

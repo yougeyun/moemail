@@ -209,7 +209,15 @@
     "maxEmails": "최대 메일 수",
     "maxEmailsPlaceholder": "비우면 사이트 기본값 사용",
     "maxEmailsHint": "이 등급의 회원이 만들 수 있는 최대 메일 수",
-    "noDomains": "사용 가능한 도메인이 없습니다. 사이트 설정에서 추가해 주세요"
+    "noDomains": "사용 가능한 도메인이 없습니다. 사이트 설정에서 추가해 주세요",
+    "durationOptions": "구매 기간",
+    "addDuration": "기간 추가",
+    "durationEmpty": "구매 기간이 설정되지 않았습니다",
+    "days": "일",
+    "pointsUnit": "포인트",
+    "durationHint": "구매할 수 있는 기간과 가격을 설정합니다. 구매 시 하나를 선택해야 합니다",
+    "showUpperDomains": "상위 회원 도메인 표시",
+    "showUpperDomainsHint": "켜면 메일 생성 시 상위 회원 전용 도메인을 표시하지만 선택할 수 없습니다"
   },
   "shop": {
     "title": "회원 상점",
@@ -226,7 +234,18 @@
     "buySuccess": "구매 완료, 회원 등급이 올랐습니다",
     "checkoutFailed": "구매에 실패했습니다",
     "insufficientPoints": "포인트가 부족합니다",
-    "loadFailed": "회원 상점을 불러오지 못했습니다"
+    "loadFailed": "회원 상점을 불러오지 못했습니다",
+    "duration": "구매 기간",
+    "permanent": "영구",
+    "daysValue": "{days}일",
+    "daysValue": "{days}일",
+    "paymentMethod": "결제 방법",
+    "methodPoints": "포인트 결제",
+    "methodWechat": "위챗페이",
+    "methodAlipay": "알리페이",
+    "buyNow": "바로 구매",
+    "currentExpiresAt": "현재 등급 만료: {date}",
+    "paymentQrHint": "QR코드로 결제를 완료해 주세요"
   },
   "promote": {
     "title": "역할 관리",
@@ -258,5 +277,32 @@
     "pointsInvalid": "포인트는 0 이상의 정수여야 합니다",
     "pointsSaved": "포인트가 업데이트되었습니다",
     "pointsSaveFailed": "포인트 업데이트에 실패했습니다"
+  },
+  "payment": {
+    "title": "결제 설정",
+    "wechat": "위챗페이",
+    "wechatHint": "위챗페이 Native QR 결제를 사용하려면 가맹점 정보가 필요합니다",
+    "alipay": "알리페이",
+    "alipayHint": "알리페이 PC 웹 결제를 사용합니다",
+    "appId": "AppID",
+    "mchId": "가맹점 번호",
+    "serialNo": "인증서 일련번호",
+    "notifyUrl": "비동기 콜백 URL",
+    "privateKey": "가맹점 개인키",
+    "privateKeyPlaceholder": "PKCS8 개인키를 붙여넣기",
+    "publicKey": "알리페이 공개키",
+    "publicKeyPlaceholder": "알리페이 공개키를 붙여넣기",
+    "keyConfigured": "설정됨. 비우면 유지됩니다",
+    "save": "결제 설정 저장",
+    "saving": "저장 중...",
+    "saveSuccess": "결제 설정이 저장되었습니다",
+    "saveFailed": "저장에 실패했습니다",
+    "loadFailed": "결제 설정을 불러오지 못했습니다",
+    "pendingOrders": "확인 대기 결제 주문",
+    "confirmOrder": "입금 확인",
+    "orderConfirmed": "주문이 확인되어 회원 등급이 적용되었습니다",
+    "orderConfirmFailed": "주문 확인에 실패했습니다",
+    "pendingOrdersHint": "콜백 검증 설정 후 자동으로 적용됩니다. 현재는 수동 확인할 수 있습니다",
+    "permanent": "영구"
   }
 }

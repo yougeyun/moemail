@@ -5,10 +5,11 @@ import { checkPermission } from "@/lib/auth"
 import { isTemplateId } from "@/templates/configs"
 import { DEFAULT_SITE_NAME } from "@/lib/site-config"
 import { createDb } from "@/lib/db"
-import { roles, userRoles } from "@/lib/schema"
-import { eq } from "drizzle-orm"
+import { roles } from "@/lib/schema"
+import { eq, lt } from "drizzle-orm"
 import { getUserId } from "@/lib/apiKey"
 import { getRoleEmailRules } from "@/lib/role-rules"
+import { getActiveUserRole } from "@/lib/role-access"
 
 export const runtime = "edge"
 
@@ -69,14 +70,12 @@ export async function GET() {
     allowedDomains: null as string[] | null,
     allowedExpiries: null as number[] | null,
     defaultExpiry: null as number | null,
+    visibleUpperDomains: [] as string[],
   }
 
   if (userId) {
     const db = createDb()
-    const userRole = await db.query.userRoles.findFirst({
-      where: eq(userRoles.userId, userId),
-      with: { role: true },
-    })
+    const userRole = await getActiveUserRole(db, userId)
 
     if (userRole) {
       const rules = getRoleEmailRules({
@@ -90,6 +89,27 @@ export async function GET() {
           : null,
         allowedExpiries: rules.allowedExpiries,
         defaultExpiry: rules.defaultExpiry,
+        visibleUpperDomains: [],
+      }
+
+      if (userRole.role.showUpperDomains && userRole.role.sortOrder < 999) {
+        const higherRoles = await db.query.roles.findMany({
+          where: lt(roles.sortOrder, userRole.role.sortOrder),
+        })
+        const visible: string[] = []
+        for (const higherRole of higherRoles) {
+          const higherRules = getRoleEmailRules({
+            allowedDomains: higherRole.allowedDomains,
+          })
+          if (higherRules.allowedDomains === null) {
+            visible.push(...domains)
+            break
+          }
+          visible.push(
+            ...higherRules.allowedDomains.filter((domain) => domains.includes(domain))
+          )
+        }
+        emailRules.visibleUpperDomains = Array.from(new Set(visible))
       }
     }
   }

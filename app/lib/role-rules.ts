@@ -58,3 +58,37 @@ export function parseNumberList(value: unknown): number[] | null {
   }
   return null
 }
+
+export interface RoleDurationOption {
+  days: number
+  price: number
+}
+
+export function getRoleDurationOptions(
+  value: string | RoleDurationOption[] | null | undefined
+): RoleDurationOption[] {
+  if (Array.isArray(value)) {
+    return value.filter(
+      (item): item is RoleDurationOption =>
+        typeof item === "object" &&
+        item !== null &&
+        Number.isInteger(item.days) &&
+        item.days >= 1 &&
+        Number.isInteger(item.price) &&
+        item.price >= 0
+    )
+  }
+
+  if (typeof value === "string" && value) {
+    try {
+      const parsed = JSON.parse(value) as unknown
+      if (Array.isArray(parsed)) {
+        return getRoleDurationOptions(parsed)
+      }
+    } catch {
+      return []
+    }
+  }
+
+  return []
+}

@@ -21,6 +21,7 @@ import { generateAvatarUrl } from "./avatar"
 import { getUserId } from "./apiKey"
 import { verifyTurnstileToken } from "./turnstile"
 import { getRoleEmailRules } from "./role-rules"
+import { getActiveUserRole } from "./role-access"
 
 const ROLE_DESCRIPTIONS: Record<Role, string> = {
   [ROLES.EMPEROR]: "皇帝（网站所有者）",
@@ -66,7 +67,12 @@ async function findOrCreateRole(db: Db, roleName: string) {
   return role
 }
 
-export async function assignRoleToUser(db: Db, userId: string, roleId: string) {
+export async function assignRoleToUser(
+  db: Db,
+  userId: string,
+  roleId: string,
+  expiresAt?: Date
+) {
   await db.delete(userRoles)
     .where(eq(userRoles.userId, userId))
 
@@ -74,16 +80,8 @@ export async function assignRoleToUser(db: Db, userId: string, roleId: string) {
     .values({
       userId,
       roleId,
+      expiresAt: expiresAt ?? null,
     })
-}
-
-export async function getUserRole(userId: string) {
-  const db = createDb()
-  const userRoleRecords = await db.query.userRoles.findMany({
-    where: eq(userRoles.userId, userId),
-    with: { role: true },
-  })
-  return userRoleRecords[0].role.name
 }
 
 export async function checkPermission(permission: Permission) {
@@ -92,18 +90,14 @@ export async function checkPermission(permission: Permission) {
   if (!userId) return false
 
   const db = createDb()
-  const userRoleRecords = await db.query.userRoles.findMany({
-    where: eq(userRoles.userId, userId),
-    with: { role: true },
-  })
+  const activeUserRole = await getActiveUserRole(db, userId)
 
-  return hasPermission(
-    userRoleRecords.map(ur => ({
-      name: ur.role.name,
-      permissions: ur.role.permissions,
-    })),
-    permission
-  )
+  if (!activeUserRole) return false
+
+  return hasPermission([{
+    name: activeUserRole.role.name,
+    permissions: activeUserRole.role.permissions,
+  }], permission)
 }
 
 export const {
@@ -229,10 +223,8 @@ export const {
         const userRecord = await db.query.users.findFirst({
           where: eq(users.id, session.user.id),
         })
-        let userRoleRecords = await db.query.userRoles.findMany({
-          where: eq(userRoles.userId, session.user.id),
-          with: { role: true },
-        })
+        const activeUserRole = await getActiveUserRole(db, session.user.id)
+        let userRoleRecords = activeUserRole ? [activeUserRole] : []
 
         if (!userRoleRecords.length) {
           const defaultRole = await getDefaultRole()
@@ -241,6 +233,7 @@ export const {
           userRoleRecords = [{
             userId: session.user.id,
             roleId: role.id,
+            expiresAt: null,
             createdAt: new Date(),
             role: role
           }]

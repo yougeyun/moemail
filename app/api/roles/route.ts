@@ -12,6 +12,7 @@ import {
   normalizeDailyLimit,
   normalizeDefaultExpiry,
   normalizeDomains,
+  normalizeDurationOptions,
   normalizeExpiries,
   normalizeMaxEmails,
   normalizePrice,
@@ -51,6 +52,8 @@ export async function GET() {
         allowedDomains: roles.allowedDomains,
         allowedExpiries: roles.allowedExpiries,
         defaultExpiry: roles.defaultExpiry,
+        durationOptions: roles.durationOptions,
+        showUpperDomains: roles.showUpperDomains,
         price: roles.price,
         purchasable: roles.purchasable,
         sortOrder: roles.sortOrder,
@@ -75,6 +78,8 @@ export async function GET() {
           allowedExpiries: role.allowedExpiries,
           defaultExpiry: role.defaultExpiry,
         }),
+        durationOptions: normalizeDurationOptions(role.durationOptions),
+        showUpperDomains: role.showUpperDomains,
         price: role.price,
         purchasable: role.purchasable,
         maxEmails: role.maxEmails,
@@ -104,6 +109,8 @@ export async function POST(request: Request) {
       allowedDomains?: unknown
       allowedExpiries?: unknown
       defaultExpiry?: number
+      durationOptions?: unknown
+      showUpperDomains?: boolean
       price?: number
       purchasable?: boolean
       sortOrder?: number
@@ -147,6 +154,11 @@ export async function POST(request: Request) {
         allowedDomains: allowedDomains.length > 0 ? JSON.stringify(allowedDomains) : undefined,
         allowedExpiries: allowedExpiries.length > 0 ? JSON.stringify(allowedExpiries) : undefined,
         defaultExpiry: normalizeDefaultExpiry(body.defaultExpiry, allowedExpiries),
+        durationOptions:
+          normalizeDurationOptions(body.durationOptions).length > 0
+            ? JSON.stringify(normalizeDurationOptions(body.durationOptions))
+            : undefined,
+        showUpperDomains: normalizeBoolean(body.showUpperDomains),
         price: normalizePrice(body.price),
         purchasable: normalizeBoolean(body.purchasable),
         sortOrder: Number.isInteger(body.sortOrder) ? Math.max(0, body.sortOrder as number) : 0,
@@ -166,6 +178,8 @@ export async function POST(request: Request) {
           allowedExpiries: role.allowedExpiries,
           defaultExpiry: role.defaultExpiry,
         }),
+        durationOptions: normalizeDurationOptions(role.durationOptions),
+        showUpperDomains: role.showUpperDomains,
         price: role.price,
         purchasable: role.purchasable,
         maxEmails: role.maxEmails,

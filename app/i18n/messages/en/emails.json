@@ -44,7 +44,9 @@
     "create": "Create",
     "creating": "Creating...",
     "success": "Email created successfully",
-    "failed": "Failed to create email"
+    "failed": "Failed to create email",
+    "visibleUpperDomains": "Upper level domains (not selectable)",
+    "visibleUpperDomainsHint": "Only upper level members can use these domains."
   },
   "messages": {
     "received": "Received",

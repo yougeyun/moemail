@@ -1,8 +1,9 @@
 import { createDb } from "@/lib/db"
-import { userRoles, roles, messages, emails } from "@/lib/schema"
+import { messages, emails } from "@/lib/schema"
 import { eq, and, gte } from "drizzle-orm"
 import { getRequestContext } from "@cloudflare/next-on-pages"
 import { EMAIL_CONFIG } from "@/config"
+import { getActiveUserRole } from "@/lib/role-access"
 
 export interface SendPermissionResult {
   canSend: boolean
@@ -83,13 +84,13 @@ async function getUserDailyLimit(userId: string): Promise<number> {
   try {
     const db = createDb()
     
-    const userRoleData = await db
-      .select({ roleName: roles.name, dailyLimit: roles.dailyLimit })
-      .from(userRoles)
-      .innerJoin(roles, eq(userRoles.roleId, roles.id))
-      .where(eq(userRoles.userId, userId))
-
-    const userRole = userRoleData[0]
+    const activeUserRole = await getActiveUserRole(db, userId)
+    const userRole = activeUserRole
+      ? {
+          roleName: activeUserRole.role.name,
+          dailyLimit: activeUserRole.role.dailyLimit,
+        }
+      : null
     if (!userRole) {
       return -1
     }

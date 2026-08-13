@@ -1,10 +1,13 @@
 import { createDb } from "@/lib/db"
-import { roleOrders, roles, userRoles, users } from "@/lib/schema"
+import { roleOrders, roles, users } from "@/lib/schema"
 import { eq } from "drizzle-orm"
 import { getUserId } from "@/lib/apiKey"
 import { assignRoleToUser } from "@/lib/auth"
 import { getRolePermissions } from "@/lib/permissions"
-import { getRoleEmailRules } from "@/lib/role-rules"
+import { getRoleEmailRules, getRoleDurationOptions } from "@/lib/role-rules"
+import { getActiveUserRole } from "@/lib/role-access"
+import { getRequestContext } from "@cloudflare/next-on-pages"
+import { createProviderPayment, getPaymentConfig } from "@/lib/payment"
 
 export const runtime = "edge"
 
@@ -24,16 +27,16 @@ export async function GET() {
       db.query.users.findFirst({
         where: eq(users.id, userId),
       }),
-      db.query.userRoles.findFirst({
-        where: eq(userRoles.userId, userId),
-        with: { role: true },
-      }),
+      getActiveUserRole(db, userId),
     ])
 
     return Response.json({
       points: user?.points ?? 0,
       currentRoleId: currentRole?.roleId ?? null,
       currentRoleSort: currentRole?.role.sortOrder ?? 999,
+      currentExpiresAt: currentRole?.expiresAt
+        ? currentRole.expiresAt.toISOString()
+        : null,
       roles: roleRows.map((role) => ({
         id: role.id,
         name: role.name,
@@ -42,6 +45,8 @@ export async function GET() {
         icon: role.icon,
         price: role.price,
         sortOrder: role.sortOrder,
+        durationOptions: getRoleDurationOptions(role.durationOptions),
+        showUpperDomains: role.showUpperDomains,
         permissions: getRolePermissions({
           name: role.name,
           permissions: role.permissions,
@@ -66,8 +71,12 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { roleId } = await request.json() as { roleId: string }
-    if (!roleId) {
+    const { roleId, durationDays, paymentMethod } = await request.json() as {
+      roleId: string
+      durationDays?: number
+      paymentMethod?: "points" | "wechat" | "alipay"
+    }
+    if (!roleId || durationDays === undefined) {
       return Response.json({ error: "缺少会员等级" }, { status: 400 })
     }
 
@@ -79,10 +88,7 @@ export async function POST(request: Request) {
       db.query.users.findFirst({
         where: eq(users.id, userId),
       }),
-      db.query.userRoles.findFirst({
-        where: eq(userRoles.userId, userId),
-        with: { role: true },
-      }),
+      getActiveUserRole(db, userId),
     ])
 
     if (!targetRole || !targetRole.purchasable) {
@@ -93,22 +99,101 @@ export async function POST(request: Request) {
       return Response.json({ error: "用户不存在" }, { status: 404 })
     }
 
-    const currentSort = currentRole?.role.sortOrder ?? 999
-    if (targetRole.sortOrder >= currentSort) {
+    const durationOptions = getRoleDurationOptions(targetRole.durationOptions)
+    let selectedDuration: { days: number; price: number }
+
+    if (durationOptions.length > 0) {
+      const found = durationOptions.find((option) => option.days === durationDays)
+      if (!found) {
+        return Response.json({ error: "该会员等级没有这个购买时长" }, { status: 400 })
+      }
+      selectedDuration = found
+    } else if (durationDays === 0) {
+      selectedDuration = { days: 0, price: targetRole.price }
+    } else {
       return Response.json(
-        { error: "只能购买比当前等级更高的会员等级" },
+        { error: "该会员等级未配置购买时长，仅支持永久购买" },
         { status: 400 }
       )
     }
 
-    if (user.points < targetRole.price) {
+    const currentSort = currentRole?.role.sortOrder ?? 999
+    if (targetRole.sortOrder > currentSort) {
+      return Response.json(
+        { error: "只能购买当前等级或更高等级的会员" },
+        { status: 400 }
+      )
+    }
+
+    if (targetRole.sortOrder === currentSort && !currentRole?.expiresAt) {
+      return Response.json(
+        { error: "当前等级已是永久，无需重复购买" },
+        { status: 400 }
+      )
+    }
+
+    const now = new Date()
+    let expiresAt: Date | null
+
+    if (targetRole.sortOrder === currentSort) {
+      const base =
+        currentRole?.expiresAt && currentRole.expiresAt.getTime() > now.getTime()
+          ? currentRole.expiresAt
+          : now
+      expiresAt =
+        selectedDuration.days === 0
+          ? null
+          : new Date(base.getTime() + selectedDuration.days * 24 * 60 * 60 * 1000)
+    } else {
+      expiresAt =
+        selectedDuration.days === 0
+          ? null
+          : new Date(now.getTime() + selectedDuration.days * 24 * 60 * 60 * 1000)
+    }
+
+    if (paymentMethod === "wechat" || paymentMethod === "alipay") {
+      const env = getRequestContext().env
+      const paymentConfig = await getPaymentConfig(env)
+      const orderId = crypto.randomUUID()
+
+      await db.insert(roleOrders)
+        .values({
+          id: orderId,
+          userId,
+          roleId: targetRole.id,
+          roleName: targetRole.name,
+          roleDisplayName: targetRole.displayName,
+          durationDays: selectedDuration.days,
+          expiresAt,
+          price: selectedDuration.price,
+          status: "pending",
+          paymentMethod,
+        })
+
+      const payment = await createProviderPayment({
+        orderId,
+        amountYuan: selectedDuration.price,
+        title: `会员等级-${targetRole.displayName || targetRole.name}`,
+        method: paymentMethod,
+        config: paymentConfig,
+      })
+
+      return Response.json({
+        success: true,
+        orderId,
+        paymentUrl: payment.paymentUrl,
+        paymentQr: payment.paymentQr,
+      })
+    }
+
+    if (user.points < selectedDuration.price) {
       return Response.json(
         { error: "积分不足，请先联系管理员获取积分" },
         { status: 400 }
       )
     }
 
-    const remainingPoints = user.points - targetRole.price
+    const remainingPoints = user.points - selectedDuration.price
 
     await db.insert(roleOrders)
       .values({
@@ -116,11 +201,14 @@ export async function POST(request: Request) {
         roleId: targetRole.id,
         roleName: targetRole.name,
         roleDisplayName: targetRole.displayName,
-        price: targetRole.price,
+        durationDays: selectedDuration.days,
+        expiresAt,
+        price: selectedDuration.price,
         status: "completed",
+        paymentMethod: "points",
       })
 
-    await assignRoleToUser(db, userId, targetRole.id)
+    await assignRoleToUser(db, userId, targetRole.id, expiresAt ?? undefined)
     await db.update(users)
       .set({ points: remainingPoints })
       .where(eq(users.id, userId))

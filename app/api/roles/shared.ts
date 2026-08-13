@@ -96,6 +96,34 @@ export function normalizePrice(value: unknown): number {
   return parsed
 }
 
+export interface RoleDurationOption {
+  days: number
+  price: number
+}
+
+export function normalizeDurationOptions(value: unknown): RoleDurationOption[] {
+  if (!Array.isArray(value)) {
+    return []
+  }
+
+  return value
+    .filter(
+      (item): item is { days?: unknown; price?: unknown } =>
+        typeof item === "object" && item !== null
+    )
+    .map((item) => ({
+      days: Number(item.days),
+      price: Number(item.price),
+    }))
+    .filter(
+      (item) =>
+        Number.isInteger(item.days) &&
+        item.days >= 1 &&
+        Number.isInteger(item.price) &&
+        item.price >= 0
+    )
+}
+
 export function normalizeBoolean(value: unknown): boolean {
   return value === true
 }

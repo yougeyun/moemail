@@ -105,6 +105,8 @@ export const roles = sqliteTable("role", {
   allowedDomains: text("allowed_domains"),
   allowedExpiries: text("allowed_expiries"),
   defaultExpiry: integer("default_expiry"),
+  durationOptions: text("duration_options"),
+  showUpperDomains: integer("show_upper_domains", { mode: "boolean" }).notNull().default(false),
   price: integer("price").notNull().default(0),
   purchasable: integer("purchasable", { mode: "boolean" }).notNull().default(false),
   sortOrder: integer("sort_order").notNull().default(0),
@@ -116,6 +118,7 @@ export const roles = sqliteTable("role", {
 export const userRoles = sqliteTable("user_role", {
   userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   roleId: text("role_id").notNull().references(() => roles.id, { onDelete: "cascade" }),
+  expiresAt: integer("expires_at", { mode: "timestamp_ms" }),
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
 }, (table) => ({
   pk: primaryKey({ columns: [table.userId, table.roleId] }),
@@ -145,8 +148,11 @@ export const roleOrders = sqliteTable("role_order", {
     .references(() => roles.id, { onDelete: "restrict" }),
   roleName: text("role_name").notNull(),
   roleDisplayName: text("role_display_name"),
+  durationDays: integer("duration_days"),
+  expiresAt: integer("expires_at", { mode: "timestamp_ms" }),
   price: integer("price").notNull(),
   status: text("status").notNull().default("completed"),
+  paymentMethod: text("payment_method"),
   createdAt: integer("created_at", { mode: "timestamp_ms" })
     .notNull()
     .$defaultFn(() => new Date()),

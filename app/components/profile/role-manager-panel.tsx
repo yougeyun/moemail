@@ -62,11 +62,18 @@ interface RoleItem {
   allowedDomains: string[] | null
   allowedExpiries: number[] | null
   defaultExpiry: number | null
+  durationOptions: RoleDurationOption[]
+  showUpperDomains: boolean
   price: number
   purchasable: boolean
   sortOrder: number
   isSystem: boolean
   userCount: number
+}
+
+interface RoleDurationOption {
+  days: number
+  price: number
 }
 
 interface RoleForm {
@@ -80,6 +87,8 @@ interface RoleForm {
   allowedDomains: string[]
   allowedExpiries: number[]
   defaultExpiry: string
+  durationOptions: RoleDurationOption[]
+  showUpperDomains: boolean
   price: string
   purchasable: boolean
   sortOrder: string
@@ -96,6 +105,8 @@ const EMPTY_FORM: RoleForm = {
   allowedDomains: [],
   allowedExpiries: [],
   defaultExpiry: "",
+  durationOptions: [],
+  showUpperDomains: false,
   price: "0",
   purchasable: false,
   sortOrder: "0",
@@ -186,6 +197,8 @@ export function RoleManagerPanel() {
       defaultExpiry: role.defaultExpiry !== null && role.defaultExpiry !== undefined
         ? String(role.defaultExpiry)
         : "",
+      durationOptions: (role.durationOptions || []).map((item) => ({ ...item })),
+      showUpperDomains: role.showUpperDomains,
       price: String(role.price),
       purchasable: role.purchasable,
       sortOrder: String(role.sortOrder),
@@ -220,6 +233,33 @@ export function RoleManagerPanel() {
     }))
   }
 
+  const addDurationOption = () => {
+    setForm((prev) => ({
+      ...prev,
+      durationOptions: [...prev.durationOptions, { days: 30, price: 0 }],
+    }))
+  }
+
+  const removeDurationOption = (index: number) => {
+    setForm((prev) => ({
+      ...prev,
+      durationOptions: prev.durationOptions.filter((_, itemIndex) => itemIndex !== index),
+    }))
+  }
+
+  const updateDurationOption = (
+    index: number,
+    field: "days" | "price",
+    value: string
+  ) => {
+    setForm((prev) => ({
+      ...prev,
+      durationOptions: prev.durationOptions.map((item, itemIndex) =>
+        itemIndex === index ? { ...item, [field]: Number(value) || 0 } : item
+      ),
+    }))
+  }
+
   const handleSave = async () => {
     setSaving(true)
     try {
@@ -234,6 +274,8 @@ export function RoleManagerPanel() {
         allowedDomains: form.allowedDomains,
         allowedExpiries: form.allowedExpiries,
         defaultExpiry: form.defaultExpiry ? Number(form.defaultExpiry) : null,
+        durationOptions: form.durationOptions,
+        showUpperDomains: form.showUpperDomains,
         price: Number(form.price),
         purchasable: form.purchasable,
         sortOrder: Number(form.sortOrder),
@@ -253,6 +295,8 @@ export function RoleManagerPanel() {
           delete payload.allowedDomains
           delete payload.allowedExpiries
           delete payload.defaultExpiry
+          delete payload.durationOptions
+          delete payload.showUpperDomains
         }
       }
 
@@ -316,6 +360,7 @@ export function RoleManagerPanel() {
   const lockedShopEditing = editing
     ? editing.name === ROLES.EMPEROR || editing.name === ROLES.CIVILIAN
     : false
+  const lockedDurationEditing = lockedShopEditing
   const lockedEmailRulesEditing = lockedPermissionEditing
   const lockedSortEditing = lockedPermissionEditing
   const domainOptions = Array.from(
@@ -428,6 +473,15 @@ export function RoleManagerPanel() {
                     <span className="text-xs text-muted-foreground">
                       {t("allowedExpiriesLabel")}: {role.allowedExpiries.length}
                     </span>
+                  )}
+                  {role.durationOptions.length > 0 && (
+                    <span className="text-xs text-muted-foreground">
+                      {t("durationOptions")}:{" "}
+                      {role.durationOptions.map((option) => `${option.days}${t("days")}/${option.price}`).join(", ")}
+                    </span>
+                  )}
+                  {role.showUpperDomains && (
+                    <span className="text-xs text-muted-foreground">{t("showUpperDomains")}</span>
                   )}
                   {role.maxEmails !== null && role.maxEmails !== undefined && (
                     <span className="text-xs text-muted-foreground">
@@ -667,6 +721,78 @@ export function RoleManagerPanel() {
                 />
                 <p className="text-xs text-muted-foreground">{t("priceHint")}</p>
               </div>
+            </div>
+
+            <div className="grid gap-2">
+              <div className="flex items-center justify-between">
+                <Label>{t("durationOptions")}</Label>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={addDurationOption}
+                  disabled={lockedDurationEditing}
+                >
+                  <Plus className="mr-1 h-4 w-4" />
+                  {t("addDuration")}
+                </Button>
+              </div>
+              <div className="space-y-2 rounded-lg border border-border/70 p-3">
+                {form.durationOptions.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">{t("durationEmpty")}</p>
+                ) : (
+                  form.durationOptions.map((option, index) => (
+                    <div key={index} className="flex flex-wrap items-center gap-2">
+                      <Input
+                        type="number"
+                        min="1"
+                        value={option.days}
+                        disabled={lockedDurationEditing}
+                        onChange={(e) => updateDurationOption(index, "days", e.target.value)}
+                        className="w-24"
+                      />
+                      <span className="text-sm text-muted-foreground">{t("days")}</span>
+                      <Input
+                        type="number"
+                        min="0"
+                        value={option.price}
+                        disabled={lockedDurationEditing}
+                        onChange={(e) => updateDurationOption(index, "price", e.target.value)}
+                        className="w-28"
+                      />
+                      <span className="text-sm text-muted-foreground">{t("pointsUnit")}</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                        disabled={lockedDurationEditing}
+                        onClick={() => removeDurationOption(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">{t("durationHint")}</p>
+            </div>
+
+            <div className="flex items-center justify-between rounded-lg border border-border/70 p-4">
+              <div>
+                <Label htmlFor="role-show-upper-domains" className="text-sm font-medium">
+                  {t("showUpperDomains")}
+                </Label>
+                <p className="text-xs text-muted-foreground">{t("showUpperDomainsHint")}</p>
+              </div>
+              <Switch
+                id="role-show-upper-domains"
+                checked={form.showUpperDomains}
+                onCheckedChange={(checked) =>
+                  setForm((prev) => ({ ...prev, showUpperDomains: checked }))
+                }
+                disabled={lockedEmailRulesEditing}
+              />
             </div>
 
             <div className="flex items-center justify-between rounded-lg border border-border/70 p-4">

@@ -44,7 +44,9 @@
     "create": "创建",
     "creating": "创建中...",
     "success": "邮箱创建成功",
-    "failed": "创建邮箱失败"
+    "failed": "创建邮箱失败",
+    "visibleUpperDomains": "上一级会员专属域名（不可选）",
+    "visibleUpperDomainsHint": "该域名仅上一级会员可使用"
   },
   "messages": {
     "received": "收件箱",

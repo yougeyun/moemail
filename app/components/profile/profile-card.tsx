@@ -19,6 +19,7 @@ import { TemplateManagerPanel } from "./template-manager-panel"
 import { RoleManagerPanel } from "./role-manager-panel"
 import { ROLE_ICON_MAP } from "./role-ui"
 import { MembershipShopPanel } from "./membership-shop-panel"
+import { PaymentSettingsPanel } from "./payment-settings-panel"
 
 interface ProfileCardProps {
   user: User
@@ -165,6 +166,7 @@ export function ProfileCard({ user }: ProfileCardProps) {
       {canManageConfig && <WebsiteConfigPanel />}
       {canManageConfig && <BrandSettingsPanel />}
       {canManageConfig && <TemplateManagerPanel />}
+      {canManageConfig && <PaymentSettingsPanel />}
       {canManageConfig && <EmailServiceConfig />}
       {canManageRoles && <RoleManagerPanel />}
       {canPromote && <PromotePanel />}

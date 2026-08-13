@@ -209,7 +209,15 @@
     "maxEmails": "最大メール数",
     "maxEmailsPlaceholder": "空欄でサイトのデフォルトを使用",
     "maxEmailsHint": "このレベルの会員が作成できる最大メール数",
-    "noDomains": "利用可能なドメインがありません。サイト設定で追加してください"
+    "noDomains": "利用可能なドメインがありません。サイト設定で追加してください",
+    "durationOptions": "購入期間",
+    "addDuration": "期間を追加",
+    "durationEmpty": "購入期間が設定されていません",
+    "days": "日",
+    "pointsUnit": "ポイント",
+    "durationHint": "購入できる期間と価格を設定します。購入時はどれか1つを選択します",
+    "showUpperDomains": "上位会員の利用ドメインを表示",
+    "showUpperDomainsHint": "有効にするとメール作成時に上位会員専用ドメインを表示しますが、選択はできません"
   },
   "shop": {
     "title": "会員ショップ",
@@ -226,7 +234,18 @@
     "buySuccess": "購入が完了し、会員レベルがアップしました",
     "checkoutFailed": "購入に失敗しました",
     "insufficientPoints": "ポイントが不足しています",
-    "loadFailed": "会員ショップの読み込みに失敗しました"
+    "loadFailed": "会員ショップの読み込みに失敗しました",
+    "duration": "購入期間",
+    "permanent": "永久",
+    "daysValue": "{days} 日",
+    "daysValue": "{days} 日",
+    "paymentMethod": "支払い方法",
+    "methodPoints": "ポイント",
+    "methodWechat": "WeChat Pay",
+    "methodAlipay": "Alipay",
+    "buyNow": "今すぐ購入",
+    "currentExpiresAt": "現在の期限：{date}",
+    "paymentQrHint": "QRコードで支払いを完了してください"
   },
   "promote": {
     "title": "ロール管理",
@@ -258,5 +277,32 @@
     "pointsInvalid": "ポイントは0以上の整数で入力してください",
     "pointsSaved": "ポイントを更新しました",
     "pointsSaveFailed": "ポイントの更新に失敗しました"
+  },
+  "payment": {
+    "title": "支払い設定",
+    "wechat": "WeChat Pay",
+    "wechatHint": "WeChat Pay Native QR決済を使用するには商户情報が必要です",
+    "alipay": "Alipay",
+    "alipayHint": "Alipay 電腦サイト決済を使用します",
+    "appId": "AppID",
+    "mchId": "商户ID",
+    "serialNo": "証明書シリアル番号",
+    "notifyUrl": "非同期コールバックURL",
+    "privateKey": "商户秘密鍵",
+    "privateKeyPlaceholder": "PKCS8秘密鍵を貼り付け",
+    "publicKey": "Alipay公開鍵",
+    "publicKeyPlaceholder": "Alipay公開鍵を貼り付け",
+    "keyConfigured": "設定済み。空欄の場合は変更しません",
+    "save": "支払い設定を保存",
+    "saving": "保存中...",
+    "saveSuccess": "支払い設定を保存しました",
+    "saveFailed": "保存に失敗しました",
+    "loadFailed": "支払い設定の読み込みに失敗しました",
+    "pendingOrders": "未確認の支払い注文",
+    "confirmOrder": "入金確認",
+    "orderConfirmed": "注文を確認し、会員レベルを有効化しました",
+    "orderConfirmFailed": "注文の確認に失敗しました",
+    "pendingOrdersHint": "コールバック検証を設定すると自動で有効化されます。現在は手動確認できます",
+    "permanent": "永久"
   }
 }

@@ -16,6 +16,7 @@ interface Config {
     allowedDomains: string[] | null
     allowedExpiries: number[] | null
     defaultExpiry: number | null
+    visibleUpperDomains?: string[]
   }
 }
 
@@ -48,6 +49,7 @@ const useConfigStore = create<ConfigStore>((set) => ({
             allowedDomains: null,
             allowedExpiries: null,
             defaultExpiry: null,
+            visibleUpperDomains: [],
           },
         },
         loading: false

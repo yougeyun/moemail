@@ -155,6 +155,13 @@
       "when": 1786586311657,
       "tag": "0021_classy_wild_child",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "6",
+      "when": 1786589792790,
+      "tag": "0022_loud_prism",
+      "breakpoints": true
     }
   ]
 }
