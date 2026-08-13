@@ -26,6 +26,7 @@ declare module "next-auth" {
       icon?: string | null
       price?: number
       purchasable?: boolean
+      maxEmails?: number | null
       allowedDomains?: string[] | null
       allowedExpiries?: number[] | null
       defaultExpiry?: number | null

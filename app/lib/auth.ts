@@ -252,6 +252,7 @@ export const {
           icon: ur.role.icon,
           price: ur.role.price,
           purchasable: ur.role.purchasable,
+          maxEmails: ur.role.maxEmails,
           ...getRoleEmailRules({
             allowedDomains: ur.role.allowedDomains,
             allowedExpiries: ur.role.allowedExpiries,

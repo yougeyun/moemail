@@ -101,6 +101,7 @@ export const roles = sqliteTable("role", {
   icon: text("icon").notNull().default("User2"),
   permissions: text("permissions"),
   dailyLimit: integer("daily_limit"),
+  maxEmails: integer("max_emails"),
   allowedDomains: text("allowed_domains"),
   allowedExpiries: text("allowed_expiries"),
   defaultExpiry: integer("default_expiry"),

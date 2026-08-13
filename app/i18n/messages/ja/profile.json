@@ -107,7 +107,7 @@
     "emailDomainsPlaceholder": "複数のドメインはカンマで区切ります",
     "adminContact": "管理者連絡先",
     "adminContactPlaceholder": "メールまたはその他の連絡先",
-    "maxEmails": "ユーザーあたりの最大メールボックス数",
+    "maxEmails": "デフォルトの最大メール数（レベル未設定時）",
     "turnstile": {
       "enable": "Cloudflare Turnstile を有効化",
       "enableDescription": "有効にすると、ユーザー名とパスワードでのログイン・登録に Turnstile 認証が必要になります",
@@ -195,7 +195,7 @@
     },
     "allowedDomains": "利用可能なメールドメイン",
     "allowedDomainsPlaceholder": "複数ドメインはカンマ区切り。空欄で全て",
-    "allowedDomainsHint": "このレベルはここで設定したドメインのみメールを作成できます",
+    "allowedDomainsHint": "チェックしたドメインのみ使用可能。未選択ならすべてのドメイン",
     "allowedExpiries": "利用可能なメール有効期限",
     "allowedExpiriesHint": "未選択の場合はすべての有効期限を使用できます",
     "defaultExpiry": "デフォルト有効期限",
@@ -205,7 +205,11 @@
     "purchasable": "購入可能",
     "purchasableHint": "有効にすると一般会員が会員ショップで購入できます",
     "allowedDomainsLabel": "利用ドメイン",
-    "allowedExpiriesLabel": "有効期限オプション"
+    "allowedExpiriesLabel": "有効期限オプション",
+    "maxEmails": "最大メール数",
+    "maxEmailsPlaceholder": "空欄でサイトのデフォルトを使用",
+    "maxEmailsHint": "このレベルの会員が作成できる最大メール数",
+    "noDomains": "利用可能なドメインがありません。サイト設定で追加してください"
   },
   "shop": {
     "title": "会員ショップ",

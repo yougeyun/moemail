@@ -38,6 +38,17 @@ export function normalizeDailyLimit(value: unknown): number {
   return parsed
 }
 
+export function normalizeMaxEmails(value: unknown): number | null {
+  if (value === null || value === undefined || value === "") {
+    return null
+  }
+  const parsed = Number(value)
+  if (!Number.isInteger(parsed) || parsed < 1) {
+    return null
+  }
+  return parsed
+}
+
 export function normalizeDomains(value: unknown): string[] {
   if (!Array.isArray(value)) {
     return []

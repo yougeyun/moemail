@@ -107,7 +107,7 @@
     "emailDomainsPlaceholder": "쉼표로 여러 도메인 구분",
     "adminContact": "관리자 연락처",
     "adminContactPlaceholder": "이메일 또는 기타 연락 방법",
-    "maxEmails": "사용자당 최대 이메일 수",
+    "maxEmails": "기본 최대 메일 수（등급 미설정 시）",
     "turnstile": {
       "enable": "Cloudflare Turnstile 활성화",
       "enableDescription": "활성화되면 사용자 이름/비밀번호 로그인 및 회원가입에 Turnstile 인증이 필요합니다",
@@ -195,7 +195,7 @@
     },
     "allowedDomains": "사용 가능한 메일 도메인",
     "allowedDomainsPlaceholder": "여러 도메인은 쉼표로 구분. 비우면 전체",
-    "allowedDomainsHint": "이 등급은 여기에 입력한 도메인으로만 메일을 생성할 수 있습니다",
+    "allowedDomainsHint": "선택한 도메인만 사용 가능하며, 선택하지 않으면 전체 도메인",
     "allowedExpiries": "사용 가능한 메일 유효기간",
     "allowedExpiriesHint": "선택하지 않으면 모든 유효기간을 사용할 수 있습니다",
     "defaultExpiry": "기본 유효기간",
@@ -205,7 +205,11 @@
     "purchasable": "구매 허용",
     "purchasableHint": "활성화하면 일반 회원이 회원 상점에서 구매할 수 있습니다",
     "allowedDomainsLabel": "사용 도메인",
-    "allowedExpiriesLabel": "유효기간 옵션"
+    "allowedExpiriesLabel": "유효기간 옵션",
+    "maxEmails": "최대 메일 수",
+    "maxEmailsPlaceholder": "비우면 사이트 기본값 사용",
+    "maxEmailsHint": "이 등급의 회원이 만들 수 있는 최대 메일 수",
+    "noDomains": "사용 가능한 도메인이 없습니다. 사이트 설정에서 추가해 주세요"
   },
   "shop": {
     "title": "회원 상점",

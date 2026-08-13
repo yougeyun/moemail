@@ -148,6 +148,13 @@
       "when": 1786584424303,
       "tag": "0020_wild_logan",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "6",
+      "when": 1786586311657,
+      "tag": "0021_classy_wild_child",
+      "breakpoints": true
     }
   ]
 }

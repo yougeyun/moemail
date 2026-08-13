@@ -25,7 +25,12 @@ export async function POST(request: Request) {
 
   try {
     if (userRole?.name !== ROLES.EMPEROR) {
-      const maxEmails = await env.SITE_CONFIG.get("MAX_EMAILS") || EMAIL_CONFIG.MAX_ACTIVE_EMAILS.toString()
+      const globalMaxEmails = Number(await env.SITE_CONFIG.get("MAX_EMAILS"))
+      const maxEmails =
+        userRole?.maxEmails ??
+        (Number.isFinite(globalMaxEmails) && globalMaxEmails > 0
+          ? globalMaxEmails
+          : EMAIL_CONFIG.MAX_ACTIVE_EMAILS)
       const activeEmailsCount = await db
         .select({ count: sql<number>`count(*)` })
         .from(emails)

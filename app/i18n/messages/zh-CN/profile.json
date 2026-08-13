@@ -107,7 +107,7 @@
     "emailDomainsPlaceholder": "多个域名用逗号分隔",
     "adminContact": "管理员联系方式",
     "adminContactPlaceholder": "邮箱或其他联系方式",
-    "maxEmails": "每个用户最大邮箱数",
+    "maxEmails": "默认最大邮箱数（用户组未设置时）",
     "turnstile": {
       "enable": "启用 Cloudflare Turnstile",
       "enableDescription": "开启后，账号登录与注册将需要通过 Turnstile 验证",
@@ -195,7 +195,7 @@
     },
     "allowedDomains": "可用邮箱域名",
     "allowedDomainsPlaceholder": "多个域名用逗号分隔，留空表示全部",
-    "allowedDomainsHint": "该等级的会员只能使用这里填写的域名生成邮箱",
+    "allowedDomainsHint": "勾选后该等级只能使用这些域名；不勾选表示全部域名",
     "allowedExpiries": "可用邮箱有效期",
     "allowedExpiriesHint": "不勾选表示可以使用全部有效期",
     "defaultExpiry": "默认有效期",
@@ -205,7 +205,11 @@
     "purchasable": "允许购买",
     "purchasableHint": "开启后普通会员可在会员商城购买该等级",
     "allowedDomainsLabel": "可用域名",
-    "allowedExpiriesLabel": "有效期选项"
+    "allowedExpiriesLabel": "有效期选项",
+    "maxEmails": "最大邮箱数",
+    "maxEmailsPlaceholder": "留空使用网站默认值",
+    "maxEmailsHint": "该等级的会员最多可创建的邮箱数量",
+    "noDomains": "暂无可用域名，请先在网站配置中添加域名"
   },
   "shop": {
     "title": "会员商城",

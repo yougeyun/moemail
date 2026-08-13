@@ -13,6 +13,7 @@ import {
   normalizeDefaultExpiry,
   normalizeDomains,
   normalizeExpiries,
+  normalizeMaxEmails,
   normalizePrice,
   parseRolePermissions,
 } from "../shared"
@@ -37,6 +38,7 @@ export async function PATCH(
       icon?: string
       permissions?: unknown
       dailyLimit?: number
+      maxEmails?: number
       allowedDomains?: unknown
       allowedExpiries?: unknown
       defaultExpiry?: number
@@ -61,6 +63,7 @@ export async function PATCH(
         body.name !== undefined ||
         body.permissions !== undefined ||
         body.dailyLimit !== undefined ||
+        body.maxEmails !== undefined ||
         body.sortOrder !== undefined ||
         body.allowedDomains !== undefined ||
         body.allowedExpiries !== undefined ||
@@ -69,7 +72,7 @@ export async function PATCH(
         body.purchasable !== undefined
       ) {
         return Response.json(
-          { error: "皇帝角色的标识、权限、发信规则、价格和排序不可修改" },
+          { error: "皇帝角色的标识、权限、发信、邮箱上限、域名规则、价格和排序不可修改" },
           { status: 400 }
         )
       }
@@ -78,13 +81,11 @@ export async function PATCH(
     if (existing.name === ROLES.CIVILIAN) {
       if (
         body.name !== undefined ||
-        body.permissions !== undefined ||
-        body.dailyLimit !== undefined ||
         body.price !== undefined ||
         body.purchasable !== undefined
       ) {
         return Response.json(
-          { error: "平民角色的标识、权限、发信上限和价格不可修改" },
+          { error: "平民角色的标识、价格和购买状态不可修改" },
           { status: 400 }
         )
       }
@@ -138,6 +139,10 @@ export async function PATCH(
 
     if (body.dailyLimit !== undefined) {
       updates.dailyLimit = normalizeDailyLimit(body.dailyLimit)
+    }
+
+    if (body.maxEmails !== undefined) {
+      updates.maxEmails = normalizeMaxEmails(body.maxEmails)
     }
 
     const nextAllowedExpiries =
@@ -202,6 +207,7 @@ export async function PATCH(
         }),
         price: role.price,
         purchasable: role.purchasable,
+        maxEmails: role.maxEmails,
       },
     })
   } catch (error) {

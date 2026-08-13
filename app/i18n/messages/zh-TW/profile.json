@@ -107,7 +107,7 @@
     "emailDomainsPlaceholder": "多個網域以逗號分隔",
     "adminContact": "管理員聯絡方式",
     "adminContactPlaceholder": "郵箱或其他聯絡方式",
-    "maxEmails": "每個使用者最大郵箱數",
+    "maxEmails": "預設最大郵箱數（會員組未設定時）",
     "turnstile": {
       "enable": "啟用 Cloudflare Turnstile",
       "enableDescription": "啟用後，使用者名稱與密碼的登入／註冊需要通過 Turnstile 驗證",
@@ -195,7 +195,7 @@
     },
     "allowedDomains": "可用郵箱網域",
     "allowedDomainsPlaceholder": "多個網域用逗號分隔，留空表示全部",
-    "allowedDomainsHint": "該等級的會員只能使用這裡填寫的網域產生郵箱",
+    "allowedDomainsHint": "勾選後該等級只能使用這些網域；不勾選表示全部網域",
     "allowedExpiries": "可用郵箱有效期",
     "allowedExpiriesHint": "不勾選表示可以使用全部有效期",
     "defaultExpiry": "預設有效期",
@@ -205,7 +205,11 @@
     "purchasable": "允許購買",
     "purchasableHint": "開啟後普通會員可在會員商城購買該等級",
     "allowedDomainsLabel": "可用網域",
-    "allowedExpiriesLabel": "有效期選項"
+    "allowedExpiriesLabel": "有效期選項",
+    "maxEmails": "最大郵箱數",
+    "maxEmailsPlaceholder": "留空使用網站預設值",
+    "maxEmailsHint": "該等級的會員最多可建立的郵箱數量",
+    "noDomains": "暫無可用網域，請先在網站設定中新增網域"
   },
   "shop": {
     "title": "會員商城",

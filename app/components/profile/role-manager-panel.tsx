@@ -58,6 +58,7 @@ interface RoleItem {
   icon: string | null
   permissions: string[]
   dailyLimit: number | null
+  maxEmails: number | null
   allowedDomains: string[] | null
   allowedExpiries: number[] | null
   defaultExpiry: number | null
@@ -75,7 +76,8 @@ interface RoleForm {
   icon: string
   permissions: string[]
   dailyLimit: string
-  allowedDomains: string
+  maxEmails: string
+  allowedDomains: string[]
   allowedExpiries: number[]
   defaultExpiry: string
   price: string
@@ -90,7 +92,8 @@ const EMPTY_FORM: RoleForm = {
   icon: "User2",
   permissions: [],
   dailyLimit: "-1",
-  allowedDomains: "",
+  maxEmails: "",
+  allowedDomains: [],
   allowedExpiries: [],
   defaultExpiry: "",
   price: "0",
@@ -104,6 +107,7 @@ export function RoleManagerPanel() {
   const tExpiry = useTranslations("emails.create")
   const { toast } = useToast()
   const [roles, setRoles] = useState<RoleItem[]>([])
+  const [availableDomains, setAvailableDomains] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -117,8 +121,12 @@ export function RoleManagerPanel() {
     try {
       const res = await fetch("/api/roles")
       if (!res.ok) throw new Error("Failed to fetch roles")
-      const data = await res.json() as { roles: RoleItem[] }
+      const data = await res.json() as {
+        roles: RoleItem[]
+        availableDomains?: string[]
+      }
       setRoles(data.roles)
+      setAvailableDomains(data.availableDomains || [])
     } catch {
       toast({ title: t("loadFailed"), variant: "destructive" })
     } finally {
@@ -170,7 +178,10 @@ export function RoleManagerPanel() {
       icon: getRoleIcon(role),
       permissions: [...role.permissions],
       dailyLimit: String(effectiveLimit),
-      allowedDomains: role.allowedDomains?.join(", ") || "",
+      maxEmails: role.maxEmails !== null && role.maxEmails !== undefined
+        ? String(role.maxEmails)
+        : "",
+      allowedDomains: [...(role.allowedDomains ?? [])],
       allowedExpiries: [...(role.allowedExpiries ?? [])],
       defaultExpiry: role.defaultExpiry !== null && role.defaultExpiry !== undefined
         ? String(role.defaultExpiry)
@@ -200,6 +211,15 @@ export function RoleManagerPanel() {
     }))
   }
 
+  const toggleDomain = (domain: string) => {
+    setForm((prev) => ({
+      ...prev,
+      allowedDomains: prev.allowedDomains.includes(domain)
+        ? prev.allowedDomains.filter((item) => item !== domain)
+        : [...prev.allowedDomains, domain],
+    }))
+  }
+
   const handleSave = async () => {
     setSaving(true)
     try {
@@ -210,10 +230,8 @@ export function RoleManagerPanel() {
         icon: form.icon,
         permissions: form.permissions,
         dailyLimit: Number(form.dailyLimit),
-        allowedDomains: form.allowedDomains
-          .split(",")
-          .map((item) => item.trim())
-          .filter(Boolean),
+        maxEmails: form.maxEmails ? Number(form.maxEmails) : null,
+        allowedDomains: form.allowedDomains,
         allowedExpiries: form.allowedExpiries,
         defaultExpiry: form.defaultExpiry ? Number(form.defaultExpiry) : null,
         price: Number(form.price),
@@ -224,12 +242,13 @@ export function RoleManagerPanel() {
       if (editing) {
         if (editing.name === ROLES.EMPEROR || editing.name === ROLES.CIVILIAN) {
           delete payload.name
-          delete payload.permissions
-          delete payload.dailyLimit
           delete payload.price
           delete payload.purchasable
         }
         if (editing.name === ROLES.EMPEROR) {
+          delete payload.permissions
+          delete payload.dailyLimit
+          delete payload.maxEmails
           delete payload.sortOrder
           delete payload.allowedDomains
           delete payload.allowedExpiries
@@ -291,13 +310,17 @@ export function RoleManagerPanel() {
 
   const isProtected = (role: RoleItem) =>
     role.name === ROLES.EMPEROR || role.name === ROLES.CIVILIAN
-  const lockedPermissionEditing = editing
+  const lockedPermissionEditing = editing?.name === ROLES.EMPEROR
+  const lockedLimitEditing = lockedPermissionEditing
+  const lockedMaxEmailsEditing = lockedPermissionEditing
+  const lockedShopEditing = editing
     ? editing.name === ROLES.EMPEROR || editing.name === ROLES.CIVILIAN
     : false
-  const lockedLimitEditing = lockedPermissionEditing
-  const lockedShopEditing = lockedPermissionEditing
-  const lockedEmailRulesEditing = editing?.name === ROLES.EMPEROR
-  const lockedSortEditing = editing?.name === ROLES.EMPEROR
+  const lockedEmailRulesEditing = lockedPermissionEditing
+  const lockedSortEditing = lockedPermissionEditing
+  const domainOptions = Array.from(
+    new Set([...availableDomains, ...form.allowedDomains])
+  ).filter(Boolean)
 
   return (
     <div className="panel-card">
@@ -406,6 +429,11 @@ export function RoleManagerPanel() {
                       {t("allowedExpiriesLabel")}: {role.allowedExpiries.length}
                     </span>
                   )}
+                  {role.maxEmails !== null && role.maxEmails !== undefined && (
+                    <span className="text-xs text-muted-foreground">
+                      {t("maxEmails")}: {role.maxEmails}
+                    </span>
+                  )}
                   <span className="ml-auto text-xs text-muted-foreground">
                     {t("dailyLimitLabel")}:{" "}
                     <strong>
@@ -509,7 +537,7 @@ export function RoleManagerPanel() {
               </div>
             </div>
 
-            <div className="grid gap-2 sm:grid-cols-2">
+            <div className="grid gap-2 sm:grid-cols-3">
               <div className="grid gap-2">
                 <Label htmlFor="role-daily-limit">{t("dailyLimit")}</Label>
                 <Input
@@ -521,6 +549,19 @@ export function RoleManagerPanel() {
                   onChange={(e) => setForm((prev) => ({ ...prev, dailyLimit: e.target.value }))}
                 />
                 <p className="text-xs text-muted-foreground">{t("dailyLimitHint")}</p>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="role-max-emails">{t("maxEmails")}</Label>
+                <Input
+                  id="role-max-emails"
+                  type="number"
+                  min="1"
+                  value={form.maxEmails}
+                  disabled={lockedMaxEmailsEditing}
+                  onChange={(e) => setForm((prev) => ({ ...prev, maxEmails: e.target.value }))}
+                  placeholder={t("maxEmailsPlaceholder")}
+                />
+                <p className="text-xs text-muted-foreground">{t("maxEmailsHint")}</p>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="role-sort-order">{t("sortOrder")}</Label>
@@ -536,14 +577,26 @@ export function RoleManagerPanel() {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="role-allowed-domains">{t("allowedDomains")}</Label>
-              <Input
-                id="role-allowed-domains"
-                value={form.allowedDomains}
-                disabled={lockedEmailRulesEditing}
-                onChange={(e) => setForm((prev) => ({ ...prev, allowedDomains: e.target.value }))}
-                placeholder={t("allowedDomainsPlaceholder")}
-              />
+              <Label>{t("allowedDomains")}</Label>
+              <div className="grid gap-2 rounded-lg border border-border/70 p-3 sm:grid-cols-2">
+                {domainOptions.length > 0 ? (
+                  domainOptions.map((domain) => (
+                    <label
+                      key={domain}
+                      className="flex cursor-pointer items-center gap-2 text-sm text-foreground"
+                    >
+                      <Checkbox
+                        checked={form.allowedDomains.includes(domain)}
+                        onChange={() => toggleDomain(domain)}
+                        disabled={lockedEmailRulesEditing}
+                      />
+                      @{domain}
+                    </label>
+                  ))
+                ) : (
+                  <span className="text-sm text-muted-foreground">{t("noDomains")}</span>
+                )}
+              </div>
               <p className="text-xs text-muted-foreground">{t("allowedDomainsHint")}</p>
             </div>
 

@@ -1,6 +1,7 @@
 import { createDb } from "@/lib/db"
 import { roles, userRoles } from "@/lib/schema"
 import { eq, sql } from "drizzle-orm"
+import { getRequestContext } from "@cloudflare/next-on-pages"
 import { checkPermission } from "@/lib/auth"
 import { PERMISSIONS, getRolePermissions } from "@/lib/permissions"
 import { getRoleEmailRules } from "@/lib/role-rules"
@@ -12,6 +13,7 @@ import {
   normalizeDefaultExpiry,
   normalizeDomains,
   normalizeExpiries,
+  normalizeMaxEmails,
   normalizePrice,
   parseRolePermissions,
 } from "./shared"
@@ -30,6 +32,12 @@ export async function GET() {
 
   try {
     const db = createDb()
+    const env = getRequestContext().env
+    const domainString = await env.SITE_CONFIG.get("EMAIL_DOMAINS")
+    const availableDomains = (domainString || "moemail.app")
+      .split(",")
+      .map((domain) => domain.trim())
+      .filter(Boolean)
     const rows = await db
       .select({
         id: roles.id,
@@ -39,6 +47,7 @@ export async function GET() {
         icon: roles.icon,
         permissions: roles.permissions,
         dailyLimit: roles.dailyLimit,
+        maxEmails: roles.maxEmails,
         allowedDomains: roles.allowedDomains,
         allowedExpiries: roles.allowedExpiries,
         defaultExpiry: roles.defaultExpiry,
@@ -54,6 +63,7 @@ export async function GET() {
       .orderBy(roles.sortOrder)
 
     return Response.json({
+      availableDomains,
       roles: rows.map((role) => ({
         ...role,
         permissions: getRolePermissions({
@@ -67,6 +77,7 @@ export async function GET() {
         }),
         price: role.price,
         purchasable: role.purchasable,
+        maxEmails: role.maxEmails,
       })),
     })
   } catch (error) {
@@ -89,6 +100,7 @@ export async function POST(request: Request) {
       icon?: string
       permissions?: unknown
       dailyLimit?: number
+      maxEmails?: number
       allowedDomains?: unknown
       allowedExpiries?: unknown
       defaultExpiry?: number
@@ -131,6 +143,7 @@ export async function POST(request: Request) {
         icon: isRoleIcon(body.icon) ? body.icon : "User2",
         permissions: JSON.stringify(parseRolePermissions(body.permissions)),
         dailyLimit: normalizeDailyLimit(body.dailyLimit),
+        maxEmails: normalizeMaxEmails(body.maxEmails),
         allowedDomains: allowedDomains.length > 0 ? JSON.stringify(allowedDomains) : undefined,
         allowedExpiries: allowedExpiries.length > 0 ? JSON.stringify(allowedExpiries) : undefined,
         defaultExpiry: normalizeDefaultExpiry(body.defaultExpiry, allowedExpiries),
@@ -155,6 +168,7 @@ export async function POST(request: Request) {
         }),
         price: role.price,
         purchasable: role.purchasable,
+        maxEmails: role.maxEmails,
       },
     })
   } catch (error) {

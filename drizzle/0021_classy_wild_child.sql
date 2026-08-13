@@ -1,0 +1,1 @@
+ALTER TABLE `role` ADD `max_emails` integer;

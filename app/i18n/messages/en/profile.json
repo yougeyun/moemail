@@ -107,7 +107,7 @@
     "emailDomainsPlaceholder": "Separate multiple domains with commas",
     "adminContact": "Admin Contact",
     "adminContactPlaceholder": "Email or other contact method",
-    "maxEmails": "Max Emails per User",
+    "maxEmails": "Default Max Emails (fallback)",
     "turnstile": {
       "enable": "Enable Cloudflare Turnstile",
       "enableDescription": "When enabled, username/password login and registration require Turnstile verification",
@@ -195,7 +195,7 @@
     },
     "allowedDomains": "Allowed Email Domains",
     "allowedDomainsPlaceholder": "Separate domains with commas. Leave empty for all.",
-    "allowedDomainsHint": "Members of this level can only create emails on these domains.",
+    "allowedDomainsHint": "Check domains to restrict this level. Leave unchecked for all domains.",
     "allowedExpiries": "Allowed Email Expiries",
     "allowedExpiriesHint": "Leave unchecked to allow every expiry option.",
     "defaultExpiry": "Default Expiry",
@@ -205,7 +205,11 @@
     "purchasable": "Purchasable",
     "purchasableHint": "Allow normal members to buy this level in the member shop.",
     "allowedDomainsLabel": "Domains",
-    "allowedExpiriesLabel": "Expiries"
+    "allowedExpiriesLabel": "Expiries",
+    "maxEmails": "Max Emails",
+    "maxEmailsPlaceholder": "Leave empty to use site default",
+    "maxEmailsHint": "Maximum number of email addresses this level can create.",
+    "noDomains": "No domains available. Add domains in site settings first."
   },
   "shop": {
     "title": "Member Shop",
