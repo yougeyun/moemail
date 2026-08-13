@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { nanoid } from "nanoid"
 import { createDb } from "@/lib/db"
-import { emails, users } from "@/lib/schema"
+import { emails, userEmailQuotas, users } from "@/lib/schema"
 import { eq, and, gt, sql } from "drizzle-orm"
 import { EXPIRY_OPTIONS } from "@/types/email"
 import { EMAIL_CONFIG } from "@/config"
@@ -24,16 +24,26 @@ export async function POST(request: Request) {
     where: eq(users.id, userId!),
   })
 
+  let activeEmailsCount = 0
+  let freeLimit = Number.MAX_SAFE_INTEGER
+  const redeemedEmailQuota = userRecord?.redeemedEmailQuota ?? 0
+  let usedQuotaExpiryDays = 30
+  let quotaRowToConsume: {
+    id: string
+    quota: number
+    expiryDays: number
+  } | null = null
+  let legacyQuotaConsumed = false
+
   try {
     if (userRole?.name !== ROLES.EMPEROR) {
       const globalMaxEmails = Number(await env.SITE_CONFIG.get("MAX_EMAILS"))
-      const maxEmails =
-        (userRole?.maxEmails ??
-          (Number.isFinite(globalMaxEmails) && globalMaxEmails > 0
-            ? globalMaxEmails
-            : EMAIL_CONFIG.MAX_ACTIVE_EMAILS)) +
-        (userRecord?.redeemedEmailQuota ?? 0)
-      const activeEmailsCount = await db
+      freeLimit =
+        userRole?.maxEmails ??
+        (Number.isFinite(globalMaxEmails) && globalMaxEmails > 0
+          ? globalMaxEmails
+          : EMAIL_CONFIG.MAX_ACTIVE_EMAILS)
+      const activeCountResult = await db
         .select({ count: sql<number>`count(*)` })
         .from(emails)
         .where(
@@ -42,8 +52,10 @@ export async function POST(request: Request) {
             gt(emails.expiresAt, new Date())
           )
         )
-      
-      if (Number(activeEmailsCount[0].count) >= Number(maxEmails)) {
+      activeEmailsCount = Number(activeCountResult[0].count)
+
+      const maxEmails = freeLimit + redeemedEmailQuota
+      if (activeEmailsCount >= maxEmails) {
         return NextResponse.json(
           { error: `已达到最大邮箱数量限制 (${maxEmails})` },
           { status: 403 }
@@ -113,9 +125,39 @@ export async function POST(request: Request) {
     }
 
     const now = new Date()
-    const expires = expiryTime === 0 
-      ? new Date('9999-01-01T00:00:00.000Z')
-      : new Date(now.getTime() + expiryTime)
+    let expires: Date | undefined
+    if (
+      userRole?.name !== ROLES.EMPEROR &&
+      activeEmailsCount >= freeLimit &&
+      redeemedEmailQuota > 0
+    ) {
+      const quotaRow = await db.query.userEmailQuotas.findFirst({
+        where: and(
+          eq(userEmailQuotas.userId, userId!),
+          gt(userEmailQuotas.quota, 0)
+        ),
+        orderBy: (quotas, { asc }) => [asc(quotas.createdAt)],
+      })
+
+      if (quotaRow) {
+        usedQuotaExpiryDays = quotaRow.expiryDays
+        quotaRowToConsume = quotaRow
+      } else {
+        legacyQuotaConsumed = true
+      }
+
+      expires =
+        usedQuotaExpiryDays === 0
+          ? new Date("9999-01-01T00:00:00.000Z")
+          : new Date(now.getTime() + usedQuotaExpiryDays * 24 * 60 * 60 * 1000)
+    }
+
+    if (!expires) {
+      expires =
+        expiryTime === 0
+          ? new Date("9999-01-01T00:00:00.000Z")
+          : new Date(now.getTime() + expiryTime)
+    }
     
     const emailData: typeof emails.$inferInsert = {
       address,
@@ -127,6 +169,19 @@ export async function POST(request: Request) {
     const result = await db.insert(emails)
       .values(emailData)
       .returning({ id: emails.id, address: emails.address })
+
+    if (quotaRowToConsume) {
+      await db.update(userEmailQuotas)
+        .set({ quota: quotaRowToConsume.quota - 1 })
+        .where(eq(userEmailQuotas.id, quotaRowToConsume.id))
+      await db.update(users)
+        .set({ redeemedEmailQuota: Math.max(0, redeemedEmailQuota - 1) })
+        .where(eq(users.id, userId!))
+    } else if (legacyQuotaConsumed) {
+      await db.update(users)
+        .set({ redeemedEmailQuota: Math.max(0, redeemedEmailQuota - 1) })
+        .where(eq(users.id, userId!))
+    }
     
     return NextResponse.json({ 
       id: result[0].id,

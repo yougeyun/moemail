@@ -168,6 +168,7 @@ export const activationCodes = sqliteTable("activation_code", {
   code: text("code").notNull().unique(),
   emailQuota: integer("email_quota").notNull().default(0),
   sendQuota: integer("send_quota").notNull().default(0),
+  emailExpiryDays: integer("email_expiry_days").notNull().default(30),
   createdBy: text("created_by")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
@@ -180,6 +181,22 @@ export const activationCodes = sqliteTable("activation_code", {
 }, (table) => ({
   codeIdx: index("activation_code_code_idx").on(table.code),
   usedByIdx: index("activation_code_used_by_idx").on(table.usedBy),
+}))
+
+export const userEmailQuotas = sqliteTable("user_email_quota", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  quota: integer("quota").notNull().default(0),
+  expiryDays: integer("expiry_days").notNull().default(30),
+  sourceCodeId: text("source_code_id").references(() => activationCodes.id, { onDelete: "set null" }),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+}, (table) => ({
+  userIdIdx: index("user_email_quota_user_id_idx").on(table.userId),
+  sourceCodeIdIdx: index("user_email_quota_source_code_id_idx").on(table.sourceCodeId),
 }))
 
 export const emailShares = sqliteTable('email_share', {

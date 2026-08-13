@@ -1,5 +1,5 @@
 import { createDb } from "@/lib/db"
-import { activationCodes, users } from "@/lib/schema"
+import { activationCodes, userEmailQuotas, users } from "@/lib/schema"
 import { eq } from "drizzle-orm"
 import { getUserId } from "@/lib/apiKey"
 
@@ -59,6 +59,13 @@ export async function POST(request: Request) {
       db.update(activationCodes)
         .set({ usedBy: userId, usedAt: new Date() })
         .where(eq(activationCodes.id, activationCode.id)),
+      db.insert(userEmailQuotas)
+        .values({
+          userId,
+          quota: activationCode.emailQuota,
+          expiryDays: activationCode.emailExpiryDays,
+          sourceCodeId: activationCode.id,
+        }),
     ])
 
     return Response.json({
@@ -67,6 +74,7 @@ export async function POST(request: Request) {
       redeemedSendQuota,
       addedEmailQuota: activationCode.emailQuota,
       addedSendQuota: activationCode.sendQuota,
+      addedEmailExpiryDays: activationCode.emailExpiryDays,
     })
   } catch (error) {
     console.error("Failed to redeem activation code:", error)

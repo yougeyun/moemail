@@ -21,6 +21,7 @@ export async function GET() {
         code: activationCodes.code,
         emailQuota: activationCodes.emailQuota,
         sendQuota: activationCodes.sendQuota,
+        emailExpiryDays: activationCodes.emailExpiryDays,
         usedBy: activationCodes.usedBy,
         usedAt: activationCodes.usedAt,
         createdAt: activationCodes.createdAt,
@@ -50,6 +51,7 @@ export async function POST(request: Request) {
       count?: number
       emailQuota?: number
       sendQuota?: number
+      emailExpiryDays?: number
       prefix?: string
       expiresInDays?: number
     }
@@ -57,6 +59,7 @@ export async function POST(request: Request) {
     const count = Math.min(500, Math.max(1, Number(body.count) || 1))
     const emailQuota = Math.max(0, Number(body.emailQuota) || 0)
     const sendQuota = Math.max(0, Number(body.sendQuota) || 0)
+    const emailExpiryDays = Math.max(0, Number(body.emailExpiryDays) || 0)
     const prefix = (body.prefix || "").replace(/[^A-Za-z0-9_-]/g, "").toUpperCase()
     const expiresAt =
       Number(body.expiresInDays) > 0
@@ -69,7 +72,14 @@ export async function POST(request: Request) {
     const codes = Array.from({ length: count }, () => {
       const randomPart = nanoid(10).toUpperCase().replace(/[^A-Z0-9]/g, "")
       const code = `${prefix ? `${prefix}-` : ""}${randomPart}`
-      return { code, emailQuota, sendQuota, createdBy: sessionUserId, expiresAt }
+      return {
+        code,
+        emailQuota,
+        sendQuota,
+        emailExpiryDays,
+        createdBy: sessionUserId,
+        expiresAt,
+      }
     })
 
     await db.insert(activationCodes)

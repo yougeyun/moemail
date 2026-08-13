@@ -13,6 +13,7 @@ interface ActivationCodeItem {
   code: string
   emailQuota: number
   sendQuota: number
+  emailExpiryDays: number
   usedAt: string | null
   expiresAt: string | null
   usedUsername: string | null
@@ -24,6 +25,7 @@ export function ActivationCodeManagerPanel() {
   const [count, setCount] = useState("10")
   const [emailQuota, setEmailQuota] = useState("0")
   const [sendQuota, setSendQuota] = useState("0")
+  const [emailExpiryDays, setEmailExpiryDays] = useState("30")
   const [prefix, setPrefix] = useState("")
   const [expiresInDays, setExpiresInDays] = useState("")
   const [generatedCodes, setGeneratedCodes] = useState<ActivationCodeItem[]>([])
@@ -59,6 +61,7 @@ export function ActivationCodeManagerPanel() {
           count: Number(count) || 1,
           emailQuota: Number(emailQuota) || 0,
           sendQuota: Number(sendQuota) || 0,
+          emailExpiryDays: Number(emailExpiryDays) || 0,
           prefix: prefix.trim(),
           expiresInDays: Number(expiresInDays) || 0,
         }),
@@ -102,7 +105,7 @@ export function ActivationCodeManagerPanel() {
         <h2 className="text-lg font-semibold">{t("title")}</h2>
       </div>
 
-      <div className="grid gap-3 rounded-lg border border-border/70 p-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-3 rounded-lg border border-border/70 p-4 sm:grid-cols-2 lg:grid-cols-6">
         <div className="grid gap-1.5">
           <Label>{t("count")}</Label>
           <Input type="number" min="1" max="500" value={count} onChange={(e) => setCount(e.target.value)} />
@@ -114,6 +117,10 @@ export function ActivationCodeManagerPanel() {
         <div className="grid gap-1.5">
           <Label>{t("sendQuota")}</Label>
           <Input type="number" min="0" value={sendQuota} onChange={(e) => setSendQuota(e.target.value)} />
+        </div>
+        <div className="grid gap-1.5">
+          <Label>{t("emailExpiryDays")}</Label>
+          <Input type="number" min="0" value={emailExpiryDays} onChange={(e) => setEmailExpiryDays(e.target.value)} />
         </div>
         <div className="grid gap-1.5">
           <Label>{t("prefix")}</Label>
@@ -162,6 +169,9 @@ export function ActivationCodeManagerPanel() {
                 <span className="font-mono">{item.code}</span>
                 <span className="text-xs text-muted-foreground">
                   {t("emailQuotaShort", { count: item.emailQuota })} · {t("sendQuotaShort", { count: item.sendQuota })}
+                  {item.emailExpiryDays > 0 && (
+                    <span> · {t("expiryDays", { days: item.emailExpiryDays })}</span>
+                  )}
                 </span>
                 <span className="ml-auto text-xs">
                   {item.usedAt

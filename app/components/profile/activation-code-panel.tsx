@@ -7,10 +7,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
+import { useConfig } from "@/hooks/use-config"
 
 export function ActivationCodePanel() {
   const t = useTranslations("profile.activationCode")
   const { toast } = useToast()
+  const { fetch: fetchConfig } = useConfig()
   const [emailQuota, setEmailQuota] = useState(0)
   const [sendQuota, setSendQuota] = useState(0)
   const [code, setCode] = useState("")
@@ -55,6 +57,7 @@ export function ActivationCodePanel() {
       setEmailQuota(data.redeemedEmailQuota ?? emailQuota)
       setSendQuota(data.redeemedSendQuota ?? sendQuota)
       setCode("")
+      await fetchConfig()
       toast({ title: t("redeemSuccess") })
     } catch (error) {
       toast({

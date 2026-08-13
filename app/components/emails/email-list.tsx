@@ -178,7 +178,12 @@ export function EmailList({ onEmailSelect, selectedEmailId }: EmailListProps) {
               {role === ROLES.EMPEROR ? (
                 t("emailCountUnlimited", { count: total })
               ) : (
-                t("emailCount", { count: total, max: config?.maxEmails || EMAIL_CONFIG.MAX_ACTIVE_EMAILS })
+                t("emailCount", {
+                  count: total,
+                  max:
+                    config?.emailLimit ??
+                    (config?.maxEmails || EMAIL_CONFIG.MAX_ACTIVE_EMAILS),
+                })
               )}
             </span>
           </div>

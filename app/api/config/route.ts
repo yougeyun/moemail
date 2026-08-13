@@ -5,7 +5,7 @@ import { checkPermission } from "@/lib/auth"
 import { isTemplateId } from "@/templates/configs"
 import { DEFAULT_SITE_NAME } from "@/lib/site-config"
 import { createDb } from "@/lib/db"
-import { roles } from "@/lib/schema"
+import { roles, users } from "@/lib/schema"
 import { eq, lt } from "drizzle-orm"
 import { getUserId } from "@/lib/apiKey"
 import { getRoleEmailRules } from "@/lib/role-rules"
@@ -72,12 +72,29 @@ export async function GET() {
     defaultExpiry: null as number | null,
     visibleUpperDomains: [] as string[],
   }
+  let emailLimit: number | null = null
 
   if (userId) {
     const db = createDb()
-    const userRole = await getActiveUserRole(db, userId)
+    const [userRole, user] = await Promise.all([
+      getActiveUserRole(db, userId),
+      db.query.users.findFirst({
+        where: eq(users.id, userId),
+      }),
+    ])
 
     if (userRole) {
+      const globalMax = Number(maxEmails)
+      const freeLimit =
+        userRole.role.maxEmails ??
+        (Number.isFinite(globalMax) && globalMax > 0
+          ? globalMax
+          : EMAIL_CONFIG.MAX_ACTIVE_EMAILS)
+      emailLimit =
+        userRole.role.name === ROLES.EMPEROR
+          ? null
+          : freeLimit + (user?.redeemedEmailQuota ?? 0)
+
       const rules = getRoleEmailRules({
         allowedDomains: userRole.role.allowedDomains,
         allowedExpiries: userRole.role.allowedExpiries,
@@ -121,6 +138,7 @@ export async function GET() {
     maxEmails: maxEmails || EMAIL_CONFIG.MAX_ACTIVE_EMAILS.toString(),
     initialPoints: initialPoints ? Number(initialPoints) : 0,
     emailRules,
+    emailLimit,
     siteName: siteName || DEFAULT_SITE_NAME,
     siteTitle: siteTitle || "",
     siteDescription: siteDescription || "",

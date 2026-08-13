@@ -336,6 +336,8 @@
     "used": "Used by: {user}",
     "unused": "Unused",
     "copied": "Copied to clipboard",
-    "copyFailed": "Copy failed"
+    "copyFailed": "Copy failed",
+    "emailExpiryDays": "Email Expiry (Days)",
+    "expiryDays": "Expires in {days} days"
   }
 }

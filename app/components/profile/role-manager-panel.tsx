@@ -474,10 +474,12 @@ export function RoleManagerPanel() {
                       {t("allowedExpiriesLabel")}: {role.allowedExpiries.length}
                     </span>
                   )}
-                  {role.durationOptions.length > 0 && (
+                  {(role.durationOptions || []).length > 0 && (
                     <span className="text-xs text-muted-foreground">
                       {t("durationOptions")}:{" "}
-                      {role.durationOptions.map((option) => `${option.days}${t("days")}/${option.price}`).join(", ")}
+                      {(role.durationOptions || [])
+                        .map((option) => `${option.days}${t("days")}/${option.price}`)
+                        .join(", ")}
                     </span>
                   )}
                   {role.showUpperDomains && (

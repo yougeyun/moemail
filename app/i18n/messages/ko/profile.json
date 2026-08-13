@@ -336,6 +336,8 @@
     "used": "사용됨: {user}",
     "unused": "미사용",
     "copied": "복사되었습니다",
-    "copyFailed": "복사 실패"
+    "copyFailed": "복사 실패",
+    "emailExpiryDays": "메일 유효기간(일)",
+    "expiryDays": "유효 {days}일"
   }
 }

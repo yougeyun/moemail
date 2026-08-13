@@ -336,6 +336,8 @@
     "used": "已使用：{user}",
     "unused": "未使用",
     "copied": "已复制到剪贴板",
-    "copyFailed": "复制失败"
+    "copyFailed": "复制失败",
+    "emailExpiryDays": "邮箱有效期（天）",
+    "expiryDays": "有效期 {days} 天"
   }
 }
