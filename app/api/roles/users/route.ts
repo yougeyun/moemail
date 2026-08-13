@@ -2,7 +2,7 @@ import { createDb } from "@/lib/db"
 import { users, userRoles, roles } from "@/lib/schema"
 import { eq, like, or, sql } from "drizzle-orm"
 import { checkPermission } from "@/lib/auth"
-import { PERMISSIONS, ROLES } from "@/lib/permissions"
+import { PERMISSIONS } from "@/lib/permissions"
 
 export const runtime = "edge"
 
@@ -34,14 +34,6 @@ export async function GET(request: Request) {
       .where(searchCondition)
     const total = Number(totalResult[0].count)
 
-    const roleRank = sql`CASE COALESCE(${roles.name}, ${ROLES.CIVILIAN})
-      WHEN ${ROLES.EMPEROR} THEN 0
-      WHEN ${ROLES.DUKE} THEN 1
-      WHEN ${ROLES.KNIGHT} THEN 2
-      WHEN ${ROLES.CIVILIAN} THEN 3
-      ELSE 4
-    END`
-
     const userList = await db
       .select({
         id: users.id,
@@ -49,13 +41,18 @@ export async function GET(request: Request) {
         username: users.username,
         email: users.email,
         image: users.image,
+        roleId: userRoles.roleId,
         role: roles.name,
       })
       .from(users)
       .leftJoin(userRoles, eq(userRoles.userId, users.id))
       .leftJoin(roles, eq(roles.id, userRoles.roleId))
       .where(searchCondition)
-      .orderBy(roleRank, sql`LENGTH(COALESCE(${users.username}, ${users.name}))`, sql`LOWER(COALESCE(${users.username}, ${users.name}))`)
+      .orderBy(
+        sql`COALESCE(${roles.sortOrder}, 999)`,
+        sql`LENGTH(COALESCE(${users.username}, ${users.name}))`,
+        sql`LOWER(COALESCE(${users.username}, ${users.name}))`
+      )
       .limit(pageSize)
       .offset((page - 1) * pageSize)
 
@@ -66,6 +63,7 @@ export async function GET(request: Request) {
         username: u.username,
         email: u.email,
         image: u.image,
+        roleId: u.roleId || null,
         role: u.role || null,
       })),
       total,
@@ -115,6 +113,7 @@ export async function POST(request: Request) {
         name: user.name,
         username: user.username,
         email: user.email,
+        roleId: user.userRoles[0]?.roleId,
         role: user.userRoles[0]?.role.name
       }
     })

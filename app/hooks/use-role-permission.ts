@@ -9,7 +9,7 @@ export function useRolePermission() {
 
   const checkPermission = (permission: Permission) => {
     if (!roles) return false
-    return hasPermission(roles.map(r => r.name) as Role[], permission)
+    return hasPermission(roles, permission)
   }
 
   const hasRole = (role: Role) => {

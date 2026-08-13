@@ -1,27 +1,25 @@
 import { createDb } from "@/lib/db";
 import { roles, userRoles } from "@/lib/schema";
 import { eq } from "drizzle-orm";
-import { ROLES } from "@/lib/permissions";
-import { assignRoleToUser } from "@/lib/auth";
+import { PERMISSIONS, ROLES } from "@/lib/permissions";
+import { assignRoleToUser, checkPermission } from "@/lib/auth";
 
 export const runtime = "edge";
 
 export async function POST(request: Request) {
   try {
-    const { userId, roleName } = await request.json() as { 
-      userId: string, 
-      roleName: typeof ROLES.DUKE | typeof ROLES.KNIGHT | typeof ROLES.CIVILIAN 
-    };
-    if (!userId || !roleName) {
-      return Response.json(
-        { error: "缺少必要参数" },
-        { status: 400 }
-      );
+    const canPromote = await checkPermission(PERMISSIONS.PROMOTE_USER)
+    if (!canPromote) {
+      return Response.json({ error: "权限不足" }, { status: 403 })
     }
 
-    if (![ROLES.DUKE, ROLES.KNIGHT, ROLES.CIVILIAN].includes(roleName)) {
+    const { userId, roleId } = await request.json() as {
+      userId: string,
+      roleId: string,
+    };
+    if (!userId || !roleId) {
       return Response.json(
-        { error: "角色不合法" },
+        { error: "缺少必要参数" },
         { status: 400 }
       );
     }
@@ -42,24 +40,19 @@ export async function POST(request: Request) {
       );
     }
 
-    let targetRole = await db.query.roles.findFirst({
-      where: eq(roles.name, roleName),
+    const targetRole = await db.query.roles.findFirst({
+      where: eq(roles.id, roleId),
     });
 
     if (!targetRole) {
-      const description = {
-        [ROLES.DUKE]: "超级用户",
-        [ROLES.KNIGHT]: "高级用户",
-        [ROLES.CIVILIAN]: "普通用户",
-      }[roleName];
+      return Response.json({ error: "角色不存在" }, { status: 404 });
+    }
 
-      const [newRole] = await db.insert(roles)
-        .values({
-          name: roleName,
-          description,
-        })
-        .returning();
-      targetRole = newRole;
+    if (targetRole.name === ROLES.EMPEROR) {
+      return Response.json(
+        { error: "不能将用户设置为皇帝" },
+        { status: 400 }
+      );
     }
 
     await assignRoleToUser(db, userId, targetRole.id);

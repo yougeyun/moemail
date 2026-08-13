@@ -11,11 +11,13 @@ import { WebhookConfig } from "./webhook-config"
 import { PromotePanel } from "./promote-panel"
 import { EmailServiceConfig } from "./email-service-config"
 import { useRolePermission } from "@/hooks/use-role-permission"
-import { PERMISSIONS } from "@/lib/permissions"
+import { PERMISSIONS, getRoleIcon } from "@/lib/permissions"
 import { WebsiteConfigPanel } from "./website-config-panel"
 import { ApiKeyPanel } from "./api-key-panel"
 import { BrandSettingsPanel } from "./brand-settings-panel"
 import { TemplateManagerPanel } from "./template-manager-panel"
+import { RoleManagerPanel } from "./role-manager-panel"
+import { ROLE_ICON_MAP } from "./role-ui"
 
 interface ProfileCardProps {
   user: User
@@ -71,6 +73,7 @@ export function ProfileCard({ user }: ProfileCardProps) {
   const canManageWebhook = checkPermission(PERMISSIONS.MANAGE_WEBHOOK)
   const canPromote = checkPermission(PERMISSIONS.PROMOTE_USER)
   const canManageConfig = checkPermission(PERMISSIONS.MANAGE_CONFIG)
+  const canManageRoles = checkPermission(PERMISSIONS.MANAGE_ROLES)
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -116,13 +119,15 @@ export function ProfileCard({ user }: ProfileCardProps) {
             </p>
             {user.roles && (
               <div className="flex gap-2 mt-2">
-                {user.roles.map(({ name }) => {
-                  const roleConfig = roleConfigs[name as keyof typeof roleConfigs]
-                  const Icon = roleConfig.icon
-                  const roleName = t(`roles.${roleConfig.key}` as any)
+                {user.roles.map((role) => {
+                  const roleConfig = roleConfigs[role.name as keyof typeof roleConfigs]
+                  const Icon = ROLE_ICON_MAP[getRoleIcon(role)] || User2
+                  const roleName =
+                    role.displayName ||
+                    (roleConfig ? t(`roles.${roleConfig.key}` as any) : role.name)
                   return (
                     <div
-                      key={name}
+                      key={role.name}
                       className="flex items-center gap-1 text-xs bg-primary/10 text-primary px-2 py-0.5 rounded"
                       title={roleName}
                     >
@@ -153,6 +158,7 @@ export function ProfileCard({ user }: ProfileCardProps) {
       {canManageConfig && <BrandSettingsPanel />}
       {canManageConfig && <TemplateManagerPanel />}
       {canManageConfig && <EmailServiceConfig />}
+      {canManageRoles && <RoleManagerPanel />}
       {canPromote && <PromotePanel />}
       {canManageWebhook && <ApiKeyPanel />}
 

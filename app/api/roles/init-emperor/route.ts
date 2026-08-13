@@ -1,7 +1,7 @@
 import { auth, assignRoleToUser } from "@/lib/auth";
 import { createDb } from "@/lib/db";
 import { roles, userRoles } from "@/lib/schema";
-import { ROLES } from "@/lib/permissions";
+import { PERMISSIONS, ROLES } from "@/lib/permissions";
 import { eq } from "drizzle-orm";
 
 export const runtime = "edge";
@@ -43,6 +43,11 @@ export async function GET() {
         .values({
           name: ROLES.EMPEROR,
           description: "皇帝（网站所有者）",
+          icon: "Crown",
+          permissions: JSON.stringify(Object.values(PERMISSIONS)),
+          dailyLimit: 0,
+          sortOrder: 0,
+          isSystem: true,
         })
         .returning({ id: roles.id });
       roleId = newRole.id;

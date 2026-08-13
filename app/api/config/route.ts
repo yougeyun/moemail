@@ -1,9 +1,12 @@
-import { PERMISSIONS, Role, ROLES } from "@/lib/permissions"
+import { PERMISSIONS, ROLES } from "@/lib/permissions"
 import { getRequestContext } from "@cloudflare/next-on-pages"
 import { EMAIL_CONFIG } from "@/config"
 import { checkPermission } from "@/lib/auth"
 import { isTemplateId } from "@/templates/configs"
 import { DEFAULT_SITE_NAME } from "@/lib/site-config"
+import { createDb } from "@/lib/db"
+import { roles } from "@/lib/schema"
+import { eq } from "drizzle-orm"
 
 export const runtime = "edge"
 
@@ -95,7 +98,7 @@ export async function POST(request: Request) {
     icons,
     activeTemplate
   } = await request.json() as { 
-    defaultRole: Exclude<Role, typeof ROLES.EMPEROR>,
+    defaultRole: string,
     emailDomains: string,
     adminContact: string,
     maxEmails: string,
@@ -113,7 +116,12 @@ export async function POST(request: Request) {
     }
   }
   
-  if (![ROLES.DUKE, ROLES.KNIGHT, ROLES.CIVILIAN].includes(defaultRole)) {
+  const db = createDb()
+  const defaultRoleRow = await db.query.roles.findFirst({
+    where: eq(roles.name, defaultRole),
+  })
+
+  if (!defaultRoleRow || defaultRoleRow.name === ROLES.EMPEROR) {
     return Response.json({ error: "无效的角色" }, { status: 400 })
   }
 

@@ -95,7 +95,13 @@ export const webhooks = sqliteTable('webhook', {
 export const roles = sqliteTable("role", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   name: text("name").notNull(),
+  displayName: text("display_name"),
   description: text("description"),
+  icon: text("icon").notNull().default("User2"),
+  permissions: text("permissions"),
+  dailyLimit: integer("daily_limit"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  isSystem: integer("is_system", { mode: "boolean" }).notNull().default(false),
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
   updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
 });

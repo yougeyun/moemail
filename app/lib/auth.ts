@@ -6,7 +6,14 @@ import { createDb, Db } from "./db"
 import { accounts, users, roles, userRoles } from "./schema"
 import { eq } from "drizzle-orm"
 import { getRequestContext } from "@cloudflare/next-on-pages"
-import { Permission, hasPermission, ROLES, Role } from "./permissions"
+import {
+  Permission,
+  Role,
+  hasPermission,
+  getRolePermissions,
+  getRoleIcon,
+  ROLES,
+} from "./permissions"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { hashPassword, comparePassword } from "@/lib/utils"
 import { authSchema, AuthSchema } from "@/lib/validation"
@@ -21,30 +28,35 @@ const ROLE_DESCRIPTIONS: Record<Role, string> = {
   [ROLES.CIVILIAN]: "平民（普通用户）",
 }
 
-const getDefaultRole = async (): Promise<Role> => {
+const getDefaultRole = async (): Promise<string> => {
   const defaultRole = await getRequestContext().env.SITE_CONFIG.get("DEFAULT_ROLE")
 
-  if (
-    defaultRole === ROLES.DUKE ||
-    defaultRole === ROLES.KNIGHT ||
-    defaultRole === ROLES.CIVILIAN
-  ) {
-    return defaultRole as Role
-  }
-
-  return ROLES.CIVILIAN
+  return defaultRole || ROLES.CIVILIAN
 }
 
-async function findOrCreateRole(db: Db, roleName: Role) {
+async function findOrCreateRole(db: Db, roleName: string) {
   let role = await db.query.roles.findFirst({
     where: eq(roles.name, roleName),
   })
 
   if (!role) {
+    const builtInSort: Record<string, number> = {
+      [ROLES.EMPEROR]: 0,
+      [ROLES.DUKE]: 1,
+      [ROLES.KNIGHT]: 2,
+      [ROLES.CIVILIAN]: 3,
+    }
+    const isBuiltIn = Object.values(ROLES).includes(roleName as Role)
     const [newRole] = await db.insert(roles)
       .values({
         name: roleName,
-        description: ROLE_DESCRIPTIONS[roleName],
+        displayName: isBuiltIn ? undefined : roleName,
+        description: ROLE_DESCRIPTIONS[roleName as keyof typeof ROLE_DESCRIPTIONS] || "自定义角色",
+        icon: getRoleIcon({ name: roleName, icon: "User2" }),
+        permissions: isBuiltIn ? undefined : JSON.stringify([]),
+        dailyLimit: isBuiltIn ? undefined : -1,
+        sortOrder: builtInSort[roleName] ?? 999,
+        isSystem: isBuiltIn,
       })
       .returning()
     role = newRole
@@ -84,8 +96,13 @@ export async function checkPermission(permission: Permission) {
     with: { role: true },
   })
 
-  const userRoleNames = userRoleRecords.map(ur => ur.role.name)
-  return hasPermission(userRoleNames as Role[], permission)
+  return hasPermission(
+    userRoleRecords.map(ur => ({
+      name: ur.role.name,
+      permissions: ur.role.permissions,
+    })),
+    permission
+  )
 }
 
 export const {
@@ -218,6 +235,12 @@ export const {
 
         session.user.roles = userRoleRecords.map(ur => ({
           name: ur.role.name,
+          displayName: ur.role.displayName,
+          icon: ur.role.icon,
+          permissions: getRolePermissions({
+            name: ur.role.name,
+            permissions: ur.role.permissions,
+          }),
         }))
 
         const userAccounts = await db.query.accounts.findMany({

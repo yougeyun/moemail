@@ -2,11 +2,11 @@
 
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
-import { Crown, Gem, Sword, User2, Loader2, Search, ChevronLeft, ChevronRight, Users, Trash2 } from "lucide-react"
+import { Crown, User2, Loader2, Search, ChevronLeft, ChevronRight, Users, Trash2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect, useCallback } from "react"
 import { useToast } from "@/components/ui/use-toast"
-import { ROLES, Role } from "@/lib/permissions"
+import { ROLES, getRoleIcon } from "@/lib/permissions"
 import {
   Select,
   SelectContent,
@@ -24,15 +24,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { ROLE_ICON_MAP } from "./role-ui"
 
-const roleIcons = {
-  [ROLES.EMPEROR]: Crown,
-  [ROLES.DUKE]: Gem,
-  [ROLES.KNIGHT]: Sword,
-  [ROLES.CIVILIAN]: User2,
-} as const
-
-type RoleWithoutEmperor = Exclude<Role, typeof ROLES.EMPEROR>
+interface RoleOption {
+  id: string
+  name: string
+  displayName: string | null
+  icon: string | null
+}
 
 interface UserItem {
   id: string
@@ -40,6 +39,7 @@ interface UserItem {
   username: string | null
   email: string | null
   image: string | null
+  roleId: string | null
   role: string | null
 }
 
@@ -49,6 +49,7 @@ export function PromotePanel() {
   const t = useTranslations("profile.promote")
   const tCard = useTranslations("profile.card")
   const [users, setUsers] = useState<UserItem[]>([])
+  const [roles, setRoles] = useState<RoleOption[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState("")
@@ -58,14 +59,29 @@ export function PromotePanel() {
   const [userToDelete, setUserToDelete] = useState<UserItem | null>(null)
   const { toast } = useToast()
 
-  const roleNames = {
-    [ROLES.EMPEROR]: tCard("roles.EMPEROR"),
-    [ROLES.DUKE]: tCard("roles.DUKE"),
-    [ROLES.KNIGHT]: tCard("roles.KNIGHT"),
-    [ROLES.CIVILIAN]: tCard("roles.CIVILIAN"),
-  } as const
-
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+
+  const builtInName = (name: string) => {
+    if (name === ROLES.EMPEROR) return tCard("roles.EMPEROR")
+    if (name === ROLES.DUKE) return tCard("roles.DUKE")
+    if (name === ROLES.KNIGHT) return tCard("roles.KNIGHT")
+    if (name === ROLES.CIVILIAN) return tCard("roles.CIVILIAN")
+    return name
+  }
+
+  const roleDisplayName = (role?: RoleOption) =>
+    role?.displayName || (role ? builtInName(role.name) : "")
+
+  const fetchRoles = useCallback(async () => {
+    try {
+      const res = await fetch("/api/roles")
+      if (!res.ok) return
+      const data = await res.json() as { roles: RoleOption[] }
+      setRoles(data.roles)
+    } catch {
+      // Role list failure should not block the user list.
+    }
+  }, [])
 
   const fetchUsers = useCallback(async () => {
     setLoading(true)
@@ -102,23 +118,32 @@ export function PromotePanel() {
   }, [fetchUsers])
 
   useEffect(() => {
+    fetchRoles()
+  }, [fetchRoles])
+
+  useEffect(() => {
     setPage(1)
   }, [search])
 
-  const handleRoleChange = async (userId: string, newRole: RoleWithoutEmperor) => {
+  const handleRoleChange = async (userId: string, roleId: string) => {
     setUpdatingUserId(userId)
     try {
       const res = await fetch("/api/roles/promote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, roleName: newRole }),
+        body: JSON.stringify({ userId, roleId }),
       })
       if (!res.ok) {
         const error = await res.json() as { error: string }
         throw new Error(error.error)
       }
+      const selectedRole = roles.find((role) => role.id === roleId)
       setUsers((prev) =>
-        prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
+        prev.map((u) =>
+          u.id === userId
+            ? { ...u, roleId, role: selectedRole?.name || u.role }
+            : u
+        )
       )
       toast({ title: t("updateSuccess") })
     } catch (error) {
@@ -197,8 +222,15 @@ export function PromotePanel() {
           <div className="space-y-2">
             {users.map((user) => {
               const isEmperor = user.role === ROLES.EMPEROR
-              const RoleIcon = roleIcons[user.role as Role] || User2
+              const userRole = roles.find((role) => role.id === user.roleId)
+              const RoleIcon = userRole
+                ? ROLE_ICON_MAP[getRoleIcon(userRole)] || User2
+                : User2
               const isUpdating = updatingUserId === user.id
+              const selectValue =
+                user.roleId ||
+                roles.find((role) => role.name === ROLES.CIVILIAN)?.id ||
+                ""
 
               return (
                 <div
@@ -229,7 +261,7 @@ export function PromotePanel() {
                   {isEmperor ? (
                     <div className="flex items-center gap-1.5 text-sm text-amber-600 font-medium px-3">
                       <Crown className="w-4 h-4" />
-                      {roleNames[ROLES.EMPEROR]}
+                      {userRole ? roleDisplayName(userRole) : tCard("roles.EMPEROR")}
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
@@ -240,8 +272,8 @@ export function PromotePanel() {
                           </div>
                         )}
                         <Select
-                          value={user.role || ROLES.CIVILIAN}
-                          onValueChange={(v) => handleRoleChange(user.id, v as RoleWithoutEmperor)}
+                          value={selectValue}
+                          onValueChange={(v) => handleRoleChange(user.id, v)}
                           disabled={isUpdating}
                         >
                           <SelectTrigger className="w-32 h-8 text-sm">
@@ -251,24 +283,19 @@ export function PromotePanel() {
                             </div>
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value={ROLES.DUKE}>
-                              <div className="flex items-center gap-2">
-                                <Gem className="w-4 h-4" />
-                                {roleNames[ROLES.DUKE]}
-                              </div>
-                            </SelectItem>
-                            <SelectItem value={ROLES.KNIGHT}>
-                              <div className="flex items-center gap-2">
-                                <Sword className="w-4 h-4" />
-                                {roleNames[ROLES.KNIGHT]}
-                              </div>
-                            </SelectItem>
-                            <SelectItem value={ROLES.CIVILIAN}>
-                              <div className="flex items-center gap-2">
-                                <User2 className="w-4 h-4" />
-                                {roleNames[ROLES.CIVILIAN]}
-                              </div>
-                            </SelectItem>
+                            {roles
+                              .filter((role) => role.name !== ROLES.EMPEROR)
+                              .map((role) => {
+                                const Icon = ROLE_ICON_MAP[getRoleIcon(role)] || User2
+                                return (
+                                  <SelectItem key={role.id} value={role.id}>
+                                    <div className="flex items-center gap-2">
+                                      <Icon className="w-4 h-4" />
+                                      {roleDisplayName(role)}
+                                    </div>
+                                  </SelectItem>
+                                )
+                              })}
                           </SelectContent>
                         </Select>
                       </div>

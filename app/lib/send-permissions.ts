@@ -84,36 +84,30 @@ async function getUserDailyLimit(userId: string): Promise<number> {
     const db = createDb()
     
     const userRoleData = await db
-      .select({ roleName: roles.name })
+      .select({ roleName: roles.name, dailyLimit: roles.dailyLimit })
       .from(userRoles)
       .innerJoin(roles, eq(userRoles.roleId, roles.id))
       .where(eq(userRoles.userId, userId))
 
-    const userRoleNames = userRoleData.map(r => r.roleName)
+    const userRole = userRoleData[0]
+    if (!userRole) {
+      return -1
+    }
+
+    if (userRole.dailyLimit !== null && userRole.dailyLimit !== undefined) {
+      return userRole.dailyLimit
+    }
 
     const env = getRequestContext().env
     const roleLimitsStr = await env.SITE_CONFIG.get("EMAIL_ROLE_LIMITS")
     
     const customLimits = roleLimitsStr ? JSON.parse(roleLimitsStr) : {}
-    
-    const finalLimits = {
-      emperor: EMAIL_CONFIG.DEFAULT_DAILY_SEND_LIMITS.emperor,
-      duke: customLimits.duke !== undefined ? customLimits.duke : EMAIL_CONFIG.DEFAULT_DAILY_SEND_LIMITS.duke,
-      knight: customLimits.knight !== undefined ? customLimits.knight : EMAIL_CONFIG.DEFAULT_DAILY_SEND_LIMITS.knight,
-      civilian: EMAIL_CONFIG.DEFAULT_DAILY_SEND_LIMITS.civilian,
-    }
+    const customLimit = customLimits[userRole.roleName]
+    const defaultLimit = EMAIL_CONFIG.DEFAULT_DAILY_SEND_LIMITS[
+      userRole.roleName as keyof typeof EMAIL_CONFIG.DEFAULT_DAILY_SEND_LIMITS
+    ]
 
-    if (userRoleNames.includes("emperor")) {
-      return finalLimits.emperor
-    } else if (userRoleNames.includes("duke")) {
-      return finalLimits.duke
-    } else if (userRoleNames.includes("knight")) {
-      return finalLimits.knight
-    } else if (userRoleNames.includes("civilian")) {
-      return finalLimits.civilian
-    }
-
-    return -1
+    return customLimit !== undefined ? customLimit : defaultLimit ?? -1
   } catch (error) {
     console.error('Failed to get user daily limit:', error)
     return -1

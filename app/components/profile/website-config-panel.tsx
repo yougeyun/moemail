@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Settings } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { useState, useEffect } from "react"
-import { Role, ROLES } from "@/lib/permissions"
+import { ROLES } from "@/lib/permissions"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
@@ -19,10 +19,18 @@ import {
 } from "@/components/ui/select"
 import { EMAIL_CONFIG } from "@/config"
 
+interface RoleOption {
+  id: string
+  name: string
+  displayName: string | null
+  icon: string | null
+}
+
 export function WebsiteConfigPanel() {
   const t = useTranslations("profile.website")
   const tCard = useTranslations("profile.card")
   const [defaultRole, setDefaultRole] = useState<string>("")
+  const [roles, setRoles] = useState<RoleOption[]>([])
   const [emailDomains, setEmailDomains] = useState<string>("")
   const [adminContact, setAdminContact] = useState<string>("")
   const [maxEmails, setMaxEmails] = useState<string>(EMAIL_CONFIG.MAX_ACTIVE_EMAILS.toString())
@@ -36,13 +44,14 @@ export function WebsiteConfigPanel() {
 
   useEffect(() => {
     fetchConfig()
+    fetchRoles()
   }, [])
 
   const fetchConfig = async () => {
     const res = await fetch("/api/config")
     if (res.ok) {
       const data = await res.json() as { 
-        defaultRole: Exclude<Role, typeof ROLES.EMPEROR>,
+        defaultRole: string,
         emailDomains: string,
         adminContact: string,
         maxEmails: string,
@@ -59,6 +68,17 @@ export function WebsiteConfigPanel() {
       setTurnstileEnabled(Boolean(data.turnstile?.enabled))
       setTurnstileSiteKey(data.turnstile?.siteKey ?? "")
       setTurnstileSecretKey(data.turnstile?.secretKey ?? "")
+    }
+  }
+
+  const fetchRoles = async () => {
+    try {
+      const res = await fetch("/api/roles")
+      if (!res.ok) return
+      const data = await res.json() as { roles: RoleOption[] }
+      setRoles(data.roles)
+    } catch {
+      // Role options are optional; the current value remains usable.
     }
   }
 
@@ -115,9 +135,20 @@ export function WebsiteConfigPanel() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ROLES.DUKE}>{tCard("roles.DUKE")}</SelectItem>
-              <SelectItem value={ROLES.KNIGHT}>{tCard("roles.KNIGHT")}</SelectItem>
-              <SelectItem value={ROLES.CIVILIAN}>{tCard("roles.CIVILIAN")}</SelectItem>
+              {roles
+                .filter((role) => role.name !== ROLES.EMPEROR)
+                .map((role) => (
+                  <SelectItem key={role.id} value={role.name}>
+                    {role.displayName ||
+                      (role.name === ROLES.DUKE
+                        ? tCard("roles.DUKE")
+                        : role.name === ROLES.KNIGHT
+                          ? tCard("roles.KNIGHT")
+                          : role.name === ROLES.CIVILIAN
+                            ? tCard("roles.CIVILIAN")
+                            : role.name)}
+                  </SelectItem>
+                ))}
             </SelectContent>
           </Select>
         </div>
