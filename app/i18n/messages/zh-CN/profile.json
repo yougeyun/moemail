@@ -364,5 +364,17 @@
     "testSuccess": "测试邮件已发送",
     "testFailed": "测试邮件发送失败",
     "testEmailRequired": "请填写测试收件邮箱"
+  },
+  "wechat": {
+    "title": "微信小程序设置",
+    "enabled": "启用微信登录",
+    "enabledHint": "用于微信小程序登录与账号绑定",
+    "appId": "小程序 AppID",
+    "appSecret": "小程序 AppSecret",
+    "appSecretPlaceholder": "留空表示不修改",
+    "save": "保存配置",
+    "saving": "保存中...",
+    "saveSuccess": "保存成功",
+    "saveFailed": "保存失败"
   }
 }

@@ -1,0 +1,54 @@
+<view class="page">
+  <view class="card quota-card">
+    <view class="quota-main">
+      <text class="quota-number">{{emails.length}}</text>
+      <text class="quota-unit">/ {{emailLimit || '--'}}</text>
+    </view>
+    <view class="muted">当前邮箱数</view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">创建邮箱</view>
+    <view class="field">
+      <text class="label">前缀（可选）</text>
+      <input class="input" placeholder="留空将随机生成" value="{{name}}" bindinput="onNameInput" />
+    </view>
+    <view class="field">
+      <text class="label">域名</text>
+      <picker range="{{domains}}" value="{{domainIndex}}" bindchange="onDomainChange">
+        <view class="picker-value">{{selectedDomain}}</view>
+      </picker>
+    </view>
+    <view class="field">
+      <text class="label">有效期</text>
+      <picker range="{{expiryOptions}}" range-key="label" value="{{expiryIndex}}" bindchange="onExpiryChange">
+        <view class="picker-value">{{selectedExpiryLabel}}</view>
+      </picker>
+    </view>
+    <view class="field">
+      <text class="label">数量</text>
+      <input class="input" type="number" value="{{count}}" bindinput="onCountInput" />
+    </view>
+    <button class="btn" bindtap="createEmail">创建</button>
+  </view>
+
+  <view class="section-head">
+    <text class="card-title">我的邮箱</text>
+    <text class="muted">共 {{total}} 个</text>
+  </view>
+
+  <view class="empty" wx:if="{{!loading && emails.length === 0}}">
+    还没有邮箱，先在上方创建一个
+  </view>
+
+  <view class="card email-item" wx:for="{{emails}}" wx:key="id" data-id="{{item.id}}" data-address="{{item.address}}" bindtap="selectEmail">
+    <view class="email-main">
+      <view class="email-address">{{item.address}}</view>
+      <view class="muted">到期 {{item.expiresText}}</view>
+    </view>
+    <view class="email-actions">
+      <text class="action" catchtap="copyEmail" data-address="{{item.address}}">复制</text>
+      <text class="action danger" catchtap="deleteEmail" data-id="{{item.id}}">删除</text>
+    </view>
+  </view>
+</view>

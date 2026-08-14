@@ -37,3 +37,27 @@ export const bindSchema = z.object({
 })
 
 export type BindSchema = z.infer<typeof bindSchema>
+
+export const wechatLoginSchema = z.object({
+  code: z.string().min(4, "微信登录参数无效"),
+})
+
+export type WechatLoginSchema = z.infer<typeof wechatLoginSchema>
+
+export const wechatBindSchema = z.object({
+  token: z.string().min(10, "登录状态已失效，请重新登录"),
+  email: z.string().email("请输入有效的邮箱地址"),
+  password: z.string().min(8, "密码长度必须大于等于8位"),
+  code: z.string().min(6).max(8).optional(),
+})
+
+export type WechatBindSchema = z.infer<typeof wechatBindSchema>
+
+export const wechatRegisterSchema = z.object({
+  token: z.string().min(10, "登录状态已失效，请重新登录"),
+  email: z.string().email("请输入有效的邮箱地址"),
+  password: z.string().min(8, "密码长度必须大于等于8位"),
+  code: z.string().min(6).max(8).optional(),
+})
+
+export type WechatRegisterSchema = z.infer<typeof wechatRegisterSchema>

@@ -364,5 +364,17 @@
     "testSuccess": "Test email sent",
     "testFailed": "Failed to send test email",
     "testEmailRequired": "Enter a test recipient"
+  },
+  "wechat": {
+    "title": "WeChat Mini Program",
+    "enabled": "Enable WeChat login",
+    "enabledHint": "Used for WeChat Mini Program login and account binding",
+    "appId": "Mini Program AppID",
+    "appSecret": "Mini Program AppSecret",
+    "appSecretPlaceholder": "Leave empty to keep current",
+    "save": "Save",
+    "saving": "Saving...",
+    "saveSuccess": "Saved",
+    "saveFailed": "Failed to save"
   }
 }

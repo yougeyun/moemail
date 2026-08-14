@@ -1,19 +1,19 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
 import { checkSendPermission } from "@/lib/send-permissions"
+import { getUserId } from "@/lib/apiKey"
 
 export const runtime = "edge"
 
 export async function GET() {
   try {
-    const session = await auth()
-    if (!session?.user?.id) {
+    const userId = await getUserId()
+    if (!userId) {
       return NextResponse.json({
         canSend: false,
         error: "未授权"
       })
     }
-    const result = await checkSendPermission(session.user.id)
+    const result = await checkSendPermission(userId)
     
     return NextResponse.json(result)
   } catch (error) {

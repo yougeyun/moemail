@@ -364,5 +364,17 @@
     "testSuccess": "テストメールを送信しました",
     "testFailed": "テストメールの送信に失敗しました",
     "testEmailRequired": "テスト受信者を入力してください"
+  },
+  "wechat": {
+    "title": "微信ミニプログラム設定",
+    "enabled": "微信ログインを有効化",
+    "enabledHint": "ミニプログラムのログインとアカウント連携に使用",
+    "appId": "ミニプログラム AppID",
+    "appSecret": "ミニプログラム AppSecret",
+    "appSecretPlaceholder": "空欄のままにすると変更しません",
+    "save": "保存",
+    "saving": "保存中...",
+    "saveSuccess": "保存しました",
+    "saveFailed": "保存に失敗しました"
   }
 }

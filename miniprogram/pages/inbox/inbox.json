@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "收件箱",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "onReachBottomDistance": 80
+}

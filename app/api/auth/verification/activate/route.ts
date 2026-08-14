@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm"
 import { createDb } from "@/lib/db"
 import { users } from "@/lib/schema"
 import { verifyEmailToken } from "@/lib/email-verification"
+import { bindWechatOpenid } from "@/lib/mini-session"
 
 export const runtime = "edge"
 
@@ -21,6 +22,21 @@ export async function GET(request: Request) {
         .update(users)
         .set({ emailVerified: new Date() })
         .where(eq(users.id, record.userId))
+
+      if (record.meta) {
+        try {
+          const meta = JSON.parse(record.meta) as { wechatOpenid?: string }
+          if (meta.wechatOpenid) {
+            await bindWechatOpenid({
+              db,
+              userId: record.userId,
+              openid: meta.wechatOpenid,
+            })
+          }
+        } catch {
+          // Ignore invalid meta; email activation still succeeds.
+        }
+      }
     }
 
     return new NextResponse(

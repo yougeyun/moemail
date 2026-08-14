@@ -364,5 +364,17 @@
     "testSuccess": "테스트 메일을 보냈습니다",
     "testFailed": "테스트 메일 전송에 실패했습니다",
     "testEmailRequired": "테스트 수신자를 입력하세요"
+  },
+  "wechat": {
+    "title": "위챗 미니프로그램 설정",
+    "enabled": "위챗 로그인 활성화",
+    "enabledHint": "위챗 미니프로그램 로그인과 계정 연동에 사용됩니다",
+    "appId": "미니프로그램 AppID",
+    "appSecret": "미니프로그램 AppSecret",
+    "appSecretPlaceholder": "비워두면 변경하지 않습니다",
+    "save": "설정 저장",
+    "saving": "저장 중...",
+    "saveSuccess": "저장되었습니다",
+    "saveFailed": "저장에 실패했습니다"
   }
 }

@@ -1,0 +1,52 @@
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.avatar {
+  width: 112rpx;
+  height: 112rpx;
+  line-height: 112rpx;
+  text-align: center;
+  border-radius: 50%;
+  background: #0f9d7c;
+  color: #ffffff;
+  font-size: 48rpx;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.profile-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-name {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #17202a;
+  margin-bottom: 6rpx;
+}
+
+.code-field {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.code-field .input {
+  flex: 1;
+}
+
+.redeem-btn {
+  width: 180rpx;
+  line-height: 80rpx;
+  font-size: 26rpx;
+}
+
+.logout-btn {
+  background: #ffffff;
+  color: #e5484d;
+  border: 1rpx solid #f1d3d4;
+}

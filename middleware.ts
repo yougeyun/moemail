@@ -5,6 +5,7 @@ import { PERMISSIONS } from "@/lib/permissions"
 import { checkPermission } from "@/lib/auth"
 import { Permission } from "@/lib/permissions"
 import { handleApiKeyAuth } from "@/lib/apiKey"
+import { resolveMiniSessionUser } from "@/lib/mini-session"
 
 const API_PERMISSIONS: Record<string, Permission> = {
   '/api/emails': PERMISSIONS.MANAGE_EMAIL,
@@ -34,12 +35,24 @@ export async function middleware(request: Request) {
       return handleApiKeyAuth(apiKey, pathname)
     }
 
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json(
-        { error: "未授权" },
-        { status: 401 }
-      )
+    const sessionToken = request.headers.get("X-Session-Token")
+    if (sessionToken) {
+      const userId = await resolveMiniSessionUser(sessionToken)
+      if (!userId) {
+        return NextResponse.json(
+          { error: "请先绑定邮箱后再使用该功能" },
+          { status: 401 }
+        )
+      }
+      request.headers.set("X-User-Id", userId)
+    } else {
+      const session = await auth()
+      if (!session?.user) {
+        return NextResponse.json(
+          { error: "未授权" },
+          { status: 401 }
+        )
+      }
     }
 
     if (pathname === '/api/config' && request.method === 'GET') {

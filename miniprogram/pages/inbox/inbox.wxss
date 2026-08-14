@@ -1,0 +1,53 @@
+.email-address {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #17202a;
+}
+
+.switch-tip {
+  color: #0f9d7c;
+  font-size: 26rpx;
+}
+
+.email-choices {
+  margin-top: 20rpx;
+  border-top: 1rpx solid #eef1f3;
+  padding-top: 12rpx;
+}
+
+.choice-item {
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f2f5f6;
+  color: #17202a;
+  font-size: 28rpx;
+}
+
+.choice-item:last-child {
+  border-bottom: none;
+}
+
+.head-row {
+  margin: 8rpx 4rpx 16rpx;
+}
+
+.compose-link {
+  color: #0f9d7c;
+  font-size: 26rpx;
+}
+
+.message-item {
+  padding: 24rpx;
+}
+
+.message-subject {
+  font-size: 30rpx;
+  font-weight: 600;
+  margin-bottom: 10rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.message-from {
+  margin-bottom: 6rpx;
+}

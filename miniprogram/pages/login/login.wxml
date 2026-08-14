@@ -1,0 +1,44 @@
+<view class="page login-page">
+  <view class="brand-card">
+    <view class="brand-logo">邮</view>
+    <view class="brand-name">临时邮箱</view>
+    <view class="brand-sub">mail.59pk.net</view>
+  </view>
+
+  <view class="card" wx:if="{{step === 'login'}}">
+    <button class="btn btn-wechat" loading="{{submitting}}" bindtap="handleWechatLogin">
+      微信一键登录
+    </button>
+    <view class="muted center-tip">登录即表示同意使用本站临时邮箱服务</view>
+  </view>
+
+  <view class="card" wx:if="{{step === 'choice'}}">
+    <view class="card-title">选择账号处理方式</view>
+    <view class="muted choice-tip">该微信尚未绑定邮箱账号</view>
+    <button class="btn choice-btn" data-step="bind" bindtap="chooseStep">绑定已有账号</button>
+    <button class="btn btn-ghost" data-step="register" bindtap="chooseStep">注册新账号</button>
+  </view>
+
+  <view class="card" wx:if="{{step === 'bind' || step === 'register'}}">
+    <view class="card-title">{{step === 'bind' ? '绑定已有账号' : '注册新账号'}}</view>
+    <view class="field">
+      <text class="label">邮箱</text>
+      <input class="input" type="text" placeholder="请输入邮箱" value="{{email}}" bindinput="onEmailInput" />
+    </view>
+    <view class="field">
+      <text class="label">密码</text>
+      <input class="input" password placeholder="请输入密码" value="{{password}}" bindinput="onPasswordInput" />
+    </view>
+    <view class="field">
+      <text class="label">验证码</text>
+      <view class="row code-row">
+        <input class="input code-input" type="text" placeholder="6位验证码" value="{{code}}" bindinput="onCodeInput" />
+        <button class="btn btn-ghost code-btn" loading="{{sendingCode}}" bindtap="sendCode">发送验证码</button>
+      </view>
+    </view>
+    <view class="notice" wx:if="{{notice}}">{{notice}}</view>
+    <button class="btn submit-btn" loading="{{submitting}}" bindtap="submit">
+      {{step === 'bind' ? '绑定并登录' : '注册并登录'}}
+    </button>
+  </view>
+</view>

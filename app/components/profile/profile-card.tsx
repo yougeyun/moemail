@@ -23,6 +23,7 @@ import { PaymentSettingsPanel } from "./payment-settings-panel"
 import { ActivationCodePanel } from "./activation-code-panel"
 import { ActivationCodeManagerPanel } from "./activation-code-manager-panel"
 import { SystemMailPanel } from "./system-mail-panel"
+import { WechatSettingsPanel } from "./wechat-settings-panel"
 
 interface ProfileCardProps {
   user: User
@@ -124,6 +125,7 @@ export function ProfileCard({ user }: ProfileCardProps) {
       {canManageConfig && <ActivationCodeManagerPanel />}
       {canManageConfig && <EmailServiceConfig />}
       {canManageConfig && <SystemMailPanel />}
+      {canManageConfig && <WechatSettingsPanel />}
       {canManageRoles && <RoleManagerPanel />}
       {canPromote && <PromotePanel />}
       {canManageWebhook && <ApiKeyPanel />}

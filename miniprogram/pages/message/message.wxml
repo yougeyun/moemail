@@ -1,0 +1,24 @@
+<view class="page" wx:if="{{message}}">
+  <view class="card">
+    <view class="message-subject">{{message.subject}}</view>
+    <view class="meta-line">
+      <text class="muted">发件人</text>
+      <text class="meta-value">{{message.from || '未知'}}</text>
+    </view>
+    <view class="meta-line">
+      <text class="muted">时间</text>
+      <text class="meta-value">{{message.time}}</text>
+    </view>
+  </view>
+
+  <view class="card body-card">
+    <rich-text nodes="{{message.displayContent}}"></rich-text>
+  </view>
+
+  <view class="action-row">
+    <button class="btn btn-ghost action-btn" data-text="{{message.content}}" bindtap="copyText">复制正文</button>
+    <button class="btn action-btn" bindtap="reply">回复</button>
+  </view>
+</view>
+
+<view class="empty" wx:if="{{loading}}">加载中...</view>

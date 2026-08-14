@@ -1,0 +1,20 @@
+<view class="page">
+  <view class="card profile-card" wx:if="{{user}}">
+    <view class="avatar">{{user.name ? user.name[0] : '邮'}}</view>
+    <view class="profile-info">
+      <view class="profile-name">{{user.name || user.username}}</view>
+      <view class="muted">{{user.email || '未绑定邮箱'}}</view>
+      <view class="muted">积分：{{user.points}}</view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">激活码兑换</view>
+    <view class="field code-field">
+      <input class="input" type="text" placeholder="输入激活码" value="{{code}}" bindinput="onCodeInput" />
+      <button class="btn btn-ghost redeem-btn" loading="{{redeeming}}" bindtap="redeem">兑换</button>
+    </view>
+  </view>
+
+  <button class="btn logout-btn" bindtap="logout">退出登录</button>
+</view>

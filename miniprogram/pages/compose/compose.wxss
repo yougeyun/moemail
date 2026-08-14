@@ -1,0 +1,8 @@
+.textarea {
+  height: 320rpx;
+  padding: 20rpx 24rpx;
+}
+
+.send-btn {
+  margin-top: 24rpx;
+}

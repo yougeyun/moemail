@@ -1,0 +1,37 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/inbox/inbox",
+    "pages/profile/profile",
+    "pages/login/login",
+    "pages/message/message",
+    "pages/compose/compose"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#0F9D7C",
+    "navigationBarTitleText": "临时邮箱",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F3F6F7"
+  },
+  "tabBar": {
+    "color": "#7A8794",
+    "selectedColor": "#0F9D7C",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "邮箱"
+      },
+      {
+        "pagePath": "pages/inbox/inbox",
+        "text": "收件箱"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json"
+}

@@ -364,5 +364,17 @@
     "testSuccess": "測試郵件已發送",
     "testFailed": "測試郵件發送失敗",
     "testEmailRequired": "請填寫測試收件郵箱"
+  },
+  "wechat": {
+    "title": "微信小程序設定",
+    "enabled": "啟用微信登入",
+    "enabledHint": "用於微信小程序登入與帳號綁定",
+    "appId": "小程序 AppID",
+    "appSecret": "小程序 AppSecret",
+    "appSecretPlaceholder": "留空表示不修改",
+    "save": "儲存設定",
+    "saving": "儲存中...",
+    "saveSuccess": "儲存成功",
+    "saveFailed": "儲存失敗"
   }
 }

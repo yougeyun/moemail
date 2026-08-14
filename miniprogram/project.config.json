@@ -1,0 +1,18 @@
+{
+  "description": "mail.59pk.net 临时邮箱小程序",
+  "packOptions": {
+    "ignore": []
+  },
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true
+  },
+  "compileType": "miniprogram",
+  "libVersion": "3.4.3",
+  "appid": "touristappid",
+  "projectname": "mail59pk-miniprogram",
+  "condition": {}
+}

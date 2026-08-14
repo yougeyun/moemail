@@ -1,0 +1,24 @@
+<view class="page">
+  <view class="card" wx:if="{{error}}">
+    <view class="accent">{{error}}</view>
+  </view>
+
+  <view class="card" wx:if="{{canSend !== false}}">
+    <view class="field">
+      <text class="label">收件人</text>
+      <input class="input" type="text" placeholder="收件人邮箱" value="{{to}}" bindinput="onToInput" />
+    </view>
+    <view class="field">
+      <text class="label">主题</text>
+      <input class="input" type="text" placeholder="邮件主题" value="{{subject}}" bindinput="onSubjectInput" />
+    </view>
+    <view class="field">
+      <text class="label">正文</text>
+      <textarea class="input textarea" placeholder="邮件内容" value="{{content}}" bindinput="onContentInput" />
+    </view>
+    <view class="muted" wx:if="{{remainingEmails !== null}}">
+      今日剩余发件次数：{{remainingEmails}}
+    </view>
+    <button class="btn send-btn" loading="{{sending}}" bindtap="send">发送</button>
+  </view>
+</view>

@@ -1,0 +1,89 @@
+page {
+  background: #f3f6f7;
+  color: #17202a;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  font-size: 28rpx;
+}
+
+.page {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 24rpx;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 8rpx 24rpx rgba(23, 32, 42, 0.05);
+}
+
+.card-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #17202a;
+}
+
+.muted {
+  color: #7a8794;
+  font-size: 24rpx;
+}
+
+.primary {
+  color: #0f9d7c;
+}
+
+.accent {
+  color: #f97316;
+}
+
+.btn {
+  background: #0f9d7c;
+  color: #ffffff;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  line-height: 80rpx;
+  text-align: center;
+}
+
+.btn-ghost {
+  background: #e8f5f0;
+  color: #0f9d7c;
+}
+
+.btn-wechat {
+  background: #07c160;
+  color: #ffffff;
+}
+
+.input {
+  background: #f6f8f9;
+  border-radius: 14rpx;
+  height: 80rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+.label {
+  display: block;
+  font-size: 26rpx;
+  color: #5b6772;
+  margin-bottom: 12rpx;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+}
+
+.between {
+  justify-content: space-between;
+}
+
+.empty {
+  text-align: center;
+  color: #9aa6b0;
+  padding: 80rpx 0;
+}

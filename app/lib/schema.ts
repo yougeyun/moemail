@@ -220,6 +220,24 @@ export const emailVerifications = sqliteTable("email_verification", {
   tokenIdx: index("email_verification_token_idx").on(table.token),
 }))
 
+export const miniSessions = sqliteTable("mini_session", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tokenHash: text("token_hash").notNull().unique(),
+  userId: text("user_id").references(() => users.id, { onDelete: "cascade" }),
+  openid: text("openid").notNull(),
+  expiresAt: integer("expires_at", { mode: "timestamp_ms" }).notNull(),
+  lastUsedAt: integer("last_used_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+}, (table) => ({
+  tokenHashIdx: uniqueIndex("mini_session_token_hash_unique").on(table.tokenHash),
+  userIdIdx: index("mini_session_user_id_idx").on(table.userId),
+  openidIdx: index("mini_session_openid_idx").on(table.openid),
+}))
+
 export const emailShares = sqliteTable('email_share', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
   emailId: text('email_id')
@@ -274,6 +292,14 @@ export const usersRelations = relations(users, ({ many }) => ({
   userRoles: many(userRoles),
   apiKeys: many(apiKeys),
   roleOrders: many(roleOrders),
+  accounts: many(accounts),
+}));
+
+export const accountsRelations = relations(accounts, ({ one }) => ({
+  user: one(users, {
+    fields: [accounts.userId],
+    references: [users.id],
+  }),
 }));
 
 export const rolesRelations = relations(roles, ({ many }) => ({
