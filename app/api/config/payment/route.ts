@@ -20,6 +20,8 @@ export async function GET() {
       wechatSerialNo: config.wechatSerialNo,
       wechatNotifyUrl: config.wechatNotifyUrl,
       wechatPrivateKeyConfigured: Boolean(config.wechatPrivateKey),
+      wechatPlatformPublicKeyConfigured: Boolean(config.wechatPlatformPublicKey),
+      wechatApiV3KeyConfigured: Boolean(config.wechatApiV3Key),
       alipayEnabled: config.alipayEnabled,
       alipayAppId: config.alipayAppId,
       alipayNotifyUrl: config.alipayNotifyUrl,
@@ -45,6 +47,8 @@ export async function POST(request: Request) {
       wechatMchId?: string
       wechatSerialNo?: string
       wechatPrivateKey?: string
+      wechatPlatformPublicKey?: string
+      wechatApiV3Key?: string
       wechatNotifyUrl?: string
       alipayEnabled?: boolean
       alipayAppId?: string
@@ -62,10 +66,12 @@ export async function POST(request: Request) {
         !body.wechatMchId ||
         !body.wechatSerialNo ||
         (!body.wechatPrivateKey && !current.wechatPrivateKey) ||
+        (!body.wechatPlatformPublicKey && !current.wechatPlatformPublicKey) ||
+        (!body.wechatApiV3Key && !current.wechatApiV3Key) ||
         !body.wechatNotifyUrl
       ) {
         return Response.json(
-          { error: "启用微信支付需要完整填写 AppID、商户号、证书序列号、私钥和回调地址" },
+          { error: "启用微信支付需要完整填写 AppID、商户号、证书序列号、私钥、平台公钥、APIv3 密钥和回调地址" },
           { status: 400 }
         )
       }
@@ -90,6 +96,8 @@ export async function POST(request: Request) {
       env.SITE_CONFIG.put("WECHAT_PAY_MCH_ID", body.wechatMchId ?? current.wechatMchId),
       env.SITE_CONFIG.put("WECHAT_PAY_SERIAL_NO", body.wechatSerialNo ?? current.wechatSerialNo),
       env.SITE_CONFIG.put("WECHAT_PAY_PRIVATE_KEY", body.wechatPrivateKey ?? current.wechatPrivateKey),
+      env.SITE_CONFIG.put("WECHAT_PAY_PLATFORM_PUBLIC_KEY", body.wechatPlatformPublicKey ?? current.wechatPlatformPublicKey),
+      env.SITE_CONFIG.put("WECHAT_PAY_API_V3_KEY", body.wechatApiV3Key ?? current.wechatApiV3Key),
       env.SITE_CONFIG.put("WECHAT_PAY_NOTIFY_URL", body.wechatNotifyUrl ?? current.wechatNotifyUrl),
       env.SITE_CONFIG.put("ALIPAY_ENABLED", String(Boolean(body.alipayEnabled))),
       env.SITE_CONFIG.put("ALIPAY_APP_ID", body.alipayAppId ?? current.alipayAppId),

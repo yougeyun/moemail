@@ -17,6 +17,8 @@ interface PaymentSettings {
   wechatSerialNo: string
   wechatNotifyUrl: string
   wechatPrivateKeyConfigured: boolean
+  wechatPlatformPublicKeyConfigured: boolean
+  wechatApiV3KeyConfigured: boolean
   alipayEnabled: boolean
   alipayAppId: string
   alipayNotifyUrl: string
@@ -43,6 +45,8 @@ const EMPTY: PaymentSettings = {
   wechatSerialNo: "",
   wechatNotifyUrl: "",
   wechatPrivateKeyConfigured: false,
+  wechatPlatformPublicKeyConfigured: false,
+  wechatApiV3KeyConfigured: false,
   alipayEnabled: false,
   alipayAppId: "",
   alipayNotifyUrl: "",
@@ -57,6 +61,8 @@ export function PaymentSettingsPanel() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [wechatPrivateKey, setWechatPrivateKey] = useState("")
+  const [wechatPlatformPublicKey, setWechatPlatformPublicKey] = useState("")
+  const [wechatApiV3Key, setWechatApiV3Key] = useState("")
   const [alipayPrivateKey, setAlipayPrivateKey] = useState("")
   const [alipayPublicKey, setAlipayPublicKey] = useState("")
   const [orders, setOrders] = useState<OrderItem[]>([])
@@ -103,6 +109,8 @@ export function PaymentSettingsPanel() {
           wechatMchId: settings.wechatMchId,
           wechatSerialNo: settings.wechatSerialNo,
           wechatPrivateKey: wechatPrivateKey || undefined,
+          wechatPlatformPublicKey: wechatPlatformPublicKey || undefined,
+          wechatApiV3Key: wechatApiV3Key || undefined,
           wechatNotifyUrl: settings.wechatNotifyUrl,
           alipayEnabled: settings.alipayEnabled,
           alipayAppId: settings.alipayAppId,
@@ -119,6 +127,8 @@ export function PaymentSettingsPanel() {
 
       toast({ title: t("saveSuccess") })
       setWechatPrivateKey("")
+      setWechatPlatformPublicKey("")
+      setWechatApiV3Key("")
       setAlipayPrivateKey("")
       setAlipayPublicKey("")
       await fetchSettings()
@@ -235,6 +245,32 @@ export function PaymentSettingsPanel() {
                     : t("privateKeyPlaceholder")
                 }
                 className="min-h-[90px] font-mono text-xs"
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label>{t("platformPublicKey")}</Label>
+              <Textarea
+                value={wechatPlatformPublicKey}
+                onChange={(e) => setWechatPlatformPublicKey(e.target.value)}
+                placeholder={
+                  settings.wechatPlatformPublicKeyConfigured
+                    ? t("keyConfigured")
+                    : t("platformPublicKeyPlaceholder")
+                }
+                className="min-h-[110px] font-mono text-xs"
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label>{t("apiV3Key")}</Label>
+              <Input
+                type="password"
+                value={wechatApiV3Key}
+                onChange={(e) => setWechatApiV3Key(e.target.value)}
+                placeholder={
+                  settings.wechatApiV3KeyConfigured
+                    ? t("keyConfigured")
+                    : t("apiV3KeyPlaceholder")
+                }
               />
             </div>
           </div>

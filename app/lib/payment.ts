@@ -4,6 +4,8 @@ export interface PaymentConfig {
   wechatMchId: string
   wechatSerialNo: string
   wechatPrivateKey: string
+  wechatPlatformPublicKey: string
+  wechatApiV3Key: string
   wechatNotifyUrl: string
   alipayEnabled: boolean
   alipayAppId: string
@@ -21,6 +23,8 @@ export async function getPaymentConfig(
     wechatMchId,
     wechatSerialNo,
     wechatPrivateKey,
+    wechatPlatformPublicKey,
+    wechatApiV3Key,
     wechatNotifyUrl,
     alipayEnabled,
     alipayAppId,
@@ -33,6 +37,8 @@ export async function getPaymentConfig(
     env.SITE_CONFIG.get("WECHAT_PAY_MCH_ID"),
     env.SITE_CONFIG.get("WECHAT_PAY_SERIAL_NO"),
     env.SITE_CONFIG.get("WECHAT_PAY_PRIVATE_KEY"),
+    env.SITE_CONFIG.get("WECHAT_PAY_PLATFORM_PUBLIC_KEY"),
+    env.SITE_CONFIG.get("WECHAT_PAY_API_V3_KEY"),
     env.SITE_CONFIG.get("WECHAT_PAY_NOTIFY_URL"),
     env.SITE_CONFIG.get("ALIPAY_ENABLED"),
     env.SITE_CONFIG.get("ALIPAY_APP_ID"),
@@ -47,12 +53,83 @@ export async function getPaymentConfig(
     wechatMchId: wechatMchId || "",
     wechatSerialNo: wechatSerialNo || "",
     wechatPrivateKey: wechatPrivateKey || "",
+    wechatPlatformPublicKey: wechatPlatformPublicKey || "",
+    wechatApiV3Key: wechatApiV3Key || "",
     wechatNotifyUrl: wechatNotifyUrl || "",
     alipayEnabled: alipayEnabled === "true",
     alipayAppId: alipayAppId || "",
     alipayPrivateKey: alipayPrivateKey || "",
     alipayPublicKey: alipayPublicKey || "",
     alipayNotifyUrl: alipayNotifyUrl || "",
+  }
+}
+
+export async function verifyWechatPayNotify(input: {
+  body: string
+  signature: string
+  timestamp: string
+  nonce: string
+  platformPublicKey: string
+}): Promise<boolean> {
+  try {
+    const key = await importRsaPublicKey(input.platformPublicKey)
+    const message = `${input.timestamp}\n${input.nonce}\n${input.body}\n`
+    const signatureBytes = base64ToBytes(input.signature)
+    return await crypto.subtle.verify(
+      { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+      key,
+      signatureBytes,
+      new TextEncoder().encode(message)
+    )
+  } catch {
+    return false
+  }
+}
+
+export async function decryptWechatResource(input: {
+  ciphertext: string
+  nonce: string
+  associatedData?: string
+  apiV3Key: string
+}): Promise<string> {
+  const keyBytes = new TextEncoder().encode(input.apiV3Key)
+  const key = await crypto.subtle.importKey(
+    "raw",
+    keyBytes,
+    { name: "AES-GCM" },
+    false,
+    ["decrypt"]
+  )
+  const plain = await crypto.subtle.decrypt(
+    {
+      name: "AES-GCM",
+      iv: new TextEncoder().encode(input.nonce),
+      additionalData: input.associatedData
+        ? new TextEncoder().encode(input.associatedData)
+        : undefined,
+      tagLength: 128,
+    },
+    key,
+    base64ToBytes(input.ciphertext)
+  )
+  return new TextDecoder().decode(plain)
+}
+
+export async function verifyAlipayNotify(input: {
+  content: string
+  signature: string
+  publicKey: string
+}): Promise<boolean> {
+  try {
+    const key = await importRsaPublicKey(input.publicKey)
+    return await crypto.subtle.verify(
+      { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+      key,
+      base64ToBytes(input.signature),
+      new TextEncoder().encode(input.content)
+    )
+  } catch {
+    return false
   }
 }
 
@@ -190,6 +267,28 @@ function pemToArrayBuffer(pem: string): ArrayBuffer {
     bytes[index] = binary.charCodeAt(index)
   }
   return bytes.buffer
+}
+
+async function importRsaPublicKey(pem: string): Promise<CryptoKey> {
+  return crypto.subtle.importKey(
+    "spki",
+    pemToArrayBuffer(pem),
+    {
+      name: "RSASSA-PKCS1-v1_5",
+      hash: "SHA-256",
+    },
+    false,
+    ["verify"]
+  )
+}
+
+function base64ToBytes(base64: string): Uint8Array {
+  const binary = atob(base64)
+  const bytes = new Uint8Array(binary.length)
+  for (let index = 0; index < binary.length; index++) {
+    bytes[index] = binary.charCodeAt(index)
+  }
+  return bytes
 }
 
 function bytesToBase64(bytes: Uint8Array): string {
