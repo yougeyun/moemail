@@ -64,6 +64,7 @@ Page({
       this.loadAdsStatus()
       this.loadSubscribeStatus()
       this.loadStats()
+      this.savePendingProfile()
     } catch (error) {
       if (error.message.includes("登录状态已失效") || error.message.includes("未登录")) {
         getApp().clearSession()
@@ -139,6 +140,25 @@ Page({
           ? sendRes.remainingEmails
           : null
     })
+  },
+
+  async savePendingProfile() {
+    const pending = wx.getStorageSync("pendingProfile") || null
+    if (!pending) return
+    try {
+      await request({
+        url: "/api/user/profile",
+        method: "PATCH",
+        data: {
+          name: pending.nickname || undefined,
+          image: pending.avatarDataUrl || undefined
+        }
+      })
+      wx.removeStorageSync("pendingProfile")
+      this.loadUser()
+    } catch (error) {
+      console.warn("保存微信资料失败", error)
+    }
   },
 
   async onSubscribeChange(event) {

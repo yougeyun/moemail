@@ -82,7 +82,16 @@ export const userProfileSchema = z.object({
     .string()
     .min(2, "用户名至少需要 2 个字符")
     .max(30, "用户名不能超过 30 个字符")
-    .refine((value) => !/\s/.test(value), "用户名不能包含空格"),
-})
+    .refine((value) => !/\s/.test(value), "用户名不能包含空格")
+    .optional(),
+  name: z.string().min(1, "昵称不能为空").max(50, "昵称不能超过 50 个字符").optional(),
+  image: z.string().max(2_000_000, "头像数据过大").optional(),
+}).refine(
+  (value) =>
+    value.username !== undefined ||
+    value.name !== undefined ||
+    value.image !== undefined,
+  "至少提供一项修改"
+)
 
 export type UserProfileSchema = z.infer<typeof userProfileSchema>

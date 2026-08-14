@@ -9,7 +9,10 @@ Page({
     code: "",
     sendingCode: false,
     submitting: false,
-    notice: ""
+    notice: "",
+    avatarDataUrl: "",
+    nickname: "",
+    savingProfile: false
   },
 
   onLoad() {
@@ -47,7 +50,16 @@ Page({
       })
       getApp().setSession(res.token, res.user || null)
       if (res.bound) {
+        await this.saveProfile()
         wx.switchTab({ url: "/pages/index/index" })
+        return
+      }
+      if (!this.data.nickname.trim() && !this.data.avatarDataUrl) {
+        this.setData({
+          needsBinding: true,
+          step: "profile",
+          submitting: false
+        })
         return
       }
       this.setData({
@@ -69,7 +81,62 @@ Page({
   },
 
   goProfile() {
+    if (this.data.nickname.trim() || this.data.avatarDataUrl) {
+      wx.setStorageSync("pendingProfile", {
+        nickname: this.data.nickname.trim(),
+        avatarDataUrl: this.data.avatarDataUrl
+      })
+    }
     wx.switchTab({ url: "/pages/profile/profile" })
+  },
+
+  onChooseAvatar(event) {
+    const filePath = event.detail.avatarUrl
+    if (!filePath) return
+    const fs = wx.getFileSystemManager()
+    fs.readFile({
+      filePath,
+      encoding: "base64",
+      success: (res) => {
+        this.setData({
+          avatarDataUrl: `data:image/jpeg;base64,${res.data}`
+        })
+      },
+      fail: () => {
+        wx.showToast({ title: "头像读取失败", icon: "none" })
+      }
+    })
+  },
+
+  onNicknameInput(event) {
+    this.setData({ nickname: event.detail.value })
+  },
+
+  goChoice() {
+    if (!this.data.nickname.trim()) {
+      wx.showToast({ title: "请填写昵称", icon: "none" })
+      return
+    }
+    this.setData({ step: "choice" })
+  },
+
+  async saveProfile() {
+    const nickname = this.data.nickname.trim()
+    const avatarDataUrl = this.data.avatarDataUrl
+    if (!nickname && !avatarDataUrl) return
+    try {
+      await request({
+        url: "/api/user/profile",
+        method: "PATCH",
+        data: {
+          name: nickname || undefined,
+          image: avatarDataUrl || undefined
+        }
+      })
+      wx.removeStorageSync("pendingProfile")
+    } catch (error) {
+      console.warn("保存微信资料失败", error)
+    }
   },
 
   onEmailInput(event) {
@@ -138,6 +205,7 @@ Page({
         return
       }
       getApp().setSession(res.token, res.user)
+      await this.saveProfile()
       wx.switchTab({ url: "/pages/index/index" })
     } catch (error) {
       wx.showToast({ title: error.message, icon: "none" })

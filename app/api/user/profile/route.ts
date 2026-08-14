@@ -23,24 +23,50 @@ export async function PATCH(request: Request) {
       )
     }
 
-    const username = parsed.data.username.trim()
     const db = createDb()
-    const existing = await db.query.users.findFirst({
-      where: and(eq(users.username, username), ne(users.id, userId)),
-    })
-    if (existing) {
-      return NextResponse.json(
-        { error: "该用户名已被占用" },
-        { status: 409 }
-      )
+    const update: {
+      username?: string
+      name?: string
+      image?: string
+    } = {}
+
+    if (parsed.data.username) {
+      const username = parsed.data.username.trim()
+      const existing = await db.query.users.findFirst({
+        where: and(eq(users.username, username), ne(users.id, userId)),
+      })
+      if (existing) {
+        return NextResponse.json(
+          { error: "该用户名已被占用" },
+          { status: 409 }
+        )
+      }
+      update.username = username
+    }
+
+    if (parsed.data.name !== undefined && parsed.data.name.trim()) {
+      update.name = parsed.data.name.trim()
+    }
+
+    if (parsed.data.image !== undefined) {
+      if (
+        !parsed.data.image.startsWith("data:image/") ||
+        parsed.data.image.length > 2_000_000
+      ) {
+        return NextResponse.json(
+          { error: "头像格式或大小不正确" },
+          { status: 400 }
+        )
+      }
+      update.image = parsed.data.image
     }
 
     await db
       .update(users)
-      .set({ username })
+      .set(update)
       .where(eq(users.id, userId))
 
-    return NextResponse.json({ success: true, username })
+    return NextResponse.json({ success: true, ...update })
   } catch (error) {
     console.error("Failed to update user profile:", error)
     return NextResponse.json(

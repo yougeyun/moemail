@@ -12,6 +12,20 @@
     <view class="muted center-tip">登录即表示同意使用本站临时邮箱服务</view>
   </view>
 
+  <view class="card" wx:if="{{step === 'profile'}}">
+    <view class="card-title">完善资料</view>
+    <view class="muted profile-tip">绑定账号前先选择微信头像并填写昵称</view>
+    <button class="avatar-picker" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+      <image wx:if="{{avatarDataUrl}}" src="{{avatarDataUrl}}" class="avatar-preview" mode="aspectFill" />
+      <view wx:else class="avatar-placeholder">选择微信头像</view>
+    </button>
+    <view class="field">
+      <text class="label">昵称</text>
+      <input class="input" type="nickname" placeholder="请输入微信昵称" value="{{nickname}}" bindinput="onNicknameInput" />
+    </view>
+    <button class="btn submit-btn" bindtap="goChoice">下一步</button>
+  </view>
+
   <view class="card" wx:if="{{step === 'choice'}}">
     <view class="card-title">选择账号处理方式</view>
     <view class="muted choice-tip">该微信尚未绑定邮箱账号</view>
