@@ -194,10 +194,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Failed to generate email:', error)
     return NextResponse.json(
-      {
-        error: "创建邮箱失败",
-        detail: error instanceof Error ? error.message : String(error),
-      },
+      { error: "创建邮箱失败" },
       { status: 500 }
     )
   }
