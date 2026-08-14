@@ -31,7 +31,9 @@ export async function middleware(request: Request) {
       return NextResponse.next()
     }
 
+    const requestHeaders = new Headers(request.headers)
     request.headers.delete("X-User-Id")
+    requestHeaders.delete("X-User-Id")
     const apiKey = request.headers.get("X-API-Key")
     if (apiKey) {
       return handleApiKeyAuth(apiKey, pathname)
@@ -47,6 +49,7 @@ export async function middleware(request: Request) {
         )
       }
       request.headers.set("X-User-Id", userId)
+      requestHeaders.set("X-User-Id", userId)
     } else {
       const session = await auth()
       if (!session?.user) {
@@ -58,7 +61,9 @@ export async function middleware(request: Request) {
     }
 
     if (pathname === '/api/config' && request.method === 'GET') {
-      return NextResponse.next()
+      return NextResponse.next({
+        request: { headers: requestHeaders },
+      })
     }
 
     for (const [route, permission] of Object.entries(API_PERMISSIONS)) {
@@ -74,7 +79,9 @@ export async function middleware(request: Request) {
         break
       }
     }
-    return NextResponse.next()
+    return NextResponse.next({
+      request: { headers: requestHeaders },
+    })
   }
 
   // Pages: 语言前缀

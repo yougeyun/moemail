@@ -69,10 +69,7 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error('Failed to fetch user emails:', error)
     return NextResponse.json(
-      {
-        error: "Failed to fetch emails",
-        detail: error instanceof Error ? error.message : String(error),
-      },
+      { error: "Failed to fetch emails" },
       { status: 500 }
     )
   }
