@@ -42,6 +42,11 @@ if (!$connection) {
     respond(502, ['error' => 'SMTP connect failed: ' . $errstr]);
 }
 
+$greeting = smtpRead($connection);
+if (substr($greeting, 0, 3) !== '220') {
+    throw new RuntimeException('SMTP greeting error: ' . trim($greeting));
+}
+
 function smtpRead($connection): string
 {
     $response = '';
