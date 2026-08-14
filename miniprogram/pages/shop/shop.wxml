@@ -1,0 +1,38 @@
+<view class="page">
+  <view class="card current-card">
+    <view class="card-title">当前会员</view>
+    <view class="current-name">{{currentRoleName || '未设置'}}</view>
+    <view class="muted" wx:if="{{currentExpiresAt}}">到期时间：{{currentExpiresAt}}</view>
+  </view>
+
+  <view class="section-title">选择会员等级</view>
+  <view class="empty" wx:if="{{loading}}">加载中...</view>
+  <view class="empty" wx:if="{{!loading && error}}">{{error}}</view>
+  <view class="empty" wx:if="{{!loading && !error && roles.length === 0}}">暂无可购买的会员等级</view>
+
+  <view
+    class="card role-card {{selectedIndex === index ? 'selected' : ''}}"
+    wx:for="{{roles}}"
+    wx:key="id"
+    data-index="{{index}}"
+    bindtap="selectRole"
+  >
+    <view class="role-name">{{item.displayName || item.name}}</view>
+    <view class="muted role-desc">{{item.description || '暂无描述'}}</view>
+  </view>
+
+  <view class="card buy-card" wx:if="{{selectedRole}}">
+    <view class="card-title">购买{{selectedRole.displayName || selectedRole.name}}</view>
+    <view class="field">
+      <picker range="{{selectedRole.durations}}" range-key="label" value="{{durationIndex}}" bindchange="selectDuration">
+        <view class="picker-value">时长：{{selectedDurationLabel}}</view>
+      </picker>
+    </view>
+    <view class="method-row">
+      <button class="method-btn {{paymentMethod === 'wechat' ? 'active' : ''}}" data-method="wechat" bindtap="selectMethod">微信支付</button>
+      <button class="method-btn {{paymentMethod === 'alipay' ? 'active' : ''}}" data-method="alipay" bindtap="selectMethod">支付宝</button>
+    </view>
+    <view class="notice" wx:if="{{paymentMethod === 'alipay'}}">支付宝请在电脑端完成支付</view>
+    <button class="btn buy-btn" loading="{{paying}}" bindtap="buy">立即购买</button>
+  </view>
+</view>

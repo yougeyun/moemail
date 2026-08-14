@@ -237,6 +237,85 @@ export async function createProviderPayment({
   }
 }
 
+export async function createWechatJsapiPayment({
+  orderId,
+  amountYuan,
+  title,
+  openid,
+  config,
+}: {
+  orderId: string
+  amountYuan: number
+  title: string
+  openid: string
+  config: PaymentConfig
+}) {
+  if (
+    !config.wechatEnabled ||
+    !config.wechatAppId ||
+    !config.wechatMchId ||
+    !config.wechatSerialNo ||
+    !config.wechatPrivateKey ||
+    !config.wechatNotifyUrl
+  ) {
+    throw new Error("微信支付未配置")
+  }
+
+  const path = "/v3/pay/transactions/jsapi"
+  const body = JSON.stringify({
+    appid: config.wechatAppId,
+    mchid: config.wechatMchId,
+    description: title,
+    out_trade_no: orderId,
+    notify_url: config.wechatNotifyUrl,
+    amount: {
+      total: Math.max(1, Math.round(amountYuan * 100)),
+      currency: "CNY",
+    },
+    payer: {
+      openid,
+    },
+  })
+  const timestamp = Math.floor(Date.now() / 1000).toString()
+  const nonce = crypto.randomUUID().replace(/-/g, "")
+  const message = `POST\n${path}\n${timestamp}\n${nonce}\n${body}\n`
+  const signature = await signRsaSha256(config.wechatPrivateKey, message)
+  const authorization =
+    `WECHATPAY2-SHA256-RSA2048 mchid="${config.wechatMchId}",` +
+    `nonce_str="${nonce}",timestamp="${timestamp}",` +
+    `serial_no="${config.wechatSerialNo}",signature="${signature}"`
+
+  const response = await fetch(`https://api.mch.weixin.qq.com${path}`, {
+    method: "POST",
+    headers: {
+      Authorization: authorization,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body,
+  })
+
+  const data = (await response.json()) as {
+    prepay_id?: string
+    message?: string
+  }
+  if (!response.ok || !data.prepay_id) {
+    throw new Error(data.message || "微信小程序下单失败")
+  }
+
+  const payMessage =
+    `${config.wechatAppId}\n${timestamp}\n${nonce}\nprepay_id=${data.prepay_id}\n`
+  const paySign = await signRsaSha256(config.wechatPrivateKey, payMessage)
+
+  return {
+    timeStamp: timestamp,
+    nonceStr: nonce,
+    package: `prepay_id=${data.prepay_id}`,
+    signType: "RSA",
+    paySign,
+  }
+}
+
 async function signRsaSha256(privateKeyPem: string, content: string): Promise<string> {
   const key = await crypto.subtle.importKey(
     "pkcs8",

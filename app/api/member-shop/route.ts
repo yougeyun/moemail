@@ -6,7 +6,12 @@ import { getRolePermissions } from "@/lib/permissions"
 import { getRoleEmailRules, getRoleDurationOptions } from "@/lib/role-rules"
 import { getActiveUserRole } from "@/lib/role-access"
 import { getRequestContext } from "@cloudflare/next-on-pages"
-import { createProviderPayment, getPaymentConfig } from "@/lib/payment"
+import {
+  createProviderPayment,
+  createWechatJsapiPayment,
+  getPaymentConfig,
+} from "@/lib/payment"
+import { getMiniSession } from "@/lib/mini-session"
 
 export const runtime = "edge"
 
@@ -66,11 +71,13 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { roleId, durationDays, paymentMethod } = await request.json() as {
+    const body = await request.json() as {
       roleId: string
       durationDays?: number
       paymentMethod?: "wechat" | "alipay"
+      source?: "miniprogram"
     }
+    const { roleId, durationDays, paymentMethod, source } = body
     if (!roleId || durationDays === undefined) {
       return Response.json({ error: "缺少会员等级" }, { status: 400 })
     }
@@ -164,6 +171,34 @@ export async function POST(request: Request) {
           status: "pending",
           paymentMethod,
         })
+
+      if (
+        paymentMethod === "wechat" &&
+        source === "miniprogram"
+      ) {
+        const sessionToken = request.headers.get("X-Session-Token")
+        const session = sessionToken
+          ? await getMiniSession(sessionToken)
+          : null
+        if (!session?.openid || session.userId !== userId) {
+          return Response.json(
+            { error: "微信登录状态无效，请重新登录" },
+            { status: 401 }
+          )
+        }
+        const paymentParams = await createWechatJsapiPayment({
+          orderId,
+          amountYuan: selectedDuration.price,
+          title: `会员等级-${targetRole.displayName || targetRole.name}`,
+          openid: session.openid,
+          config: paymentConfig,
+        })
+        return Response.json({
+          success: true,
+          orderId,
+          paymentParams,
+        })
+      }
 
       const payment = await createProviderPayment({
         orderId,

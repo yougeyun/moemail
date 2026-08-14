@@ -6,6 +6,7 @@
     "pages/login/login",
     "pages/message/message",
     "pages/compose/compose",
+    "pages/shop/shop",
     "pages/qr-login/qr-login"
   ],
   "window": {

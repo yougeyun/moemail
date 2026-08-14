@@ -23,6 +23,16 @@
     </view>
   </view>
 
+  <view class="card" wx:if="{{user}}">
+    <view class="row between">
+      <view class="subscribe-info">
+        <view class="card-title">会员中心</view>
+        <view class="muted">购买更高会员等级，解锁更多权限</view>
+      </view>
+      <text class="link-btn" bindtap="goShop">前往</text>
+    </view>
+  </view>
+
   <view class="card" wx:if="{{unbound}}">
     <view class="card-title">绑定邮箱</view>
     <view class="muted bind-tip">绑定邮箱后即可使用创建邮箱和发信功能</view>

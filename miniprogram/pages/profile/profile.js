@@ -154,6 +154,10 @@ Page({
     }
   },
 
+  goShop() {
+    wx.navigateTo({ url: "/pages/shop/shop" })
+  },
+
   setMode(event) {
     this.setData({
       mode: event.currentTarget.dataset.mode,
