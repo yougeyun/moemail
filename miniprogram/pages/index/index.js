@@ -285,6 +285,28 @@ Page({
     })
   },
 
+  async shareEmail(event) {
+    const id = event.currentTarget.dataset.id
+    try {
+      const res = await request({
+        url: `/api/emails/${id}/share`,
+        method: "POST",
+        data: { expiresIn: 86400000 }
+      })
+      if (!res.token) {
+        throw new Error("生成分享链接失败")
+      }
+      wx.setClipboardData({
+        data: `https://mail.59pk.net/shared/${res.token}`,
+        success: () => {
+          wx.showToast({ title: "分享链接已复制", icon: "success" })
+        }
+      })
+    } catch (error) {
+      wx.showToast({ title: error.message, icon: "none" })
+    }
+  },
+
   deleteEmail(event) {
     const id = event.currentTarget.dataset.id
     wx.showModal({
