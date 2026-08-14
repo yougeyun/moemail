@@ -68,6 +68,10 @@ Page({
     })
   },
 
+  goProfile() {
+    wx.switchTab({ url: "/pages/profile/profile" })
+  },
+
   onEmailInput(event) {
     this.setData({ email: event.detail.value })
   },

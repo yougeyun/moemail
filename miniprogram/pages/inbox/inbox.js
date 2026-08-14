@@ -13,14 +13,34 @@ Page({
   },
 
   onShow() {
+    this.checkSession()
+  },
+
+  async checkSession() {
     const token = wx.getStorageSync("miniToken")
     if (!token) {
       wx.redirectTo({ url: "/pages/login/login" })
       return
     }
-    const selectedEmail = wx.getStorageSync("selectedEmail") || null
-    this.setData({ selectedEmail })
-    this.loadMessages(true)
+    try {
+      const res = await request({ url: "/api/auth/wechat/me" })
+      if (res.needsBinding) {
+        wx.showToast({ title: "请先绑定邮箱", icon: "none" })
+        wx.switchTab({ url: "/pages/profile/profile" })
+        return
+      }
+      const selectedEmail = wx.getStorageSync("selectedEmail") || null
+      this.setData({ selectedEmail })
+      this.loadMessages(true)
+    } catch (error) {
+      if (
+        error.message.includes("登录状态已失效") ||
+        error.message.includes("未登录")
+      ) {
+        getApp().clearSession()
+        wx.redirectTo({ url: "/pages/login/login" })
+      }
+    }
   },
 
   onPullDownRefresh() {

@@ -26,7 +26,12 @@ function request(options) {
         const message =
           (res.data && res.data.error) || "请求失败，请稍后重试"
         if (res.statusCode === 401) {
-          getApp().clearSession()
+          if (
+            message.includes("登录状态已失效") ||
+            message.includes("未登录")
+          ) {
+            getApp().clearSession()
+          }
         }
         reject(new Error(message))
       },

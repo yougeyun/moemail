@@ -26,8 +26,6 @@ Page({
 
   onShow() {
     this.checkLogin()
-    this.loadConfig()
-    this.loadEmails()
   },
 
   onPullDownRefresh() {
@@ -36,10 +34,29 @@ Page({
     })
   },
 
-  checkLogin() {
+  async checkLogin() {
     const token = wx.getStorageSync("miniToken")
     if (!token) {
       wx.redirectTo({ url: "/pages/login/login" })
+      return
+    }
+    try {
+      const res = await request({ url: "/api/auth/wechat/me" })
+      if (res.needsBinding) {
+        wx.showToast({ title: "请先绑定邮箱", icon: "none" })
+        wx.switchTab({ url: "/pages/profile/profile" })
+        return
+      }
+      this.loadConfig()
+      this.loadEmails()
+    } catch (error) {
+      if (
+        error.message.includes("登录状态已失效") ||
+        error.message.includes("未登录")
+      ) {
+        getApp().clearSession()
+        wx.redirectTo({ url: "/pages/login/login" })
+      }
     }
   },
 

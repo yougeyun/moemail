@@ -68,3 +68,6 @@ pnpm-workspace.yaml
 
 # local mail relay credentials
 mail-relay/config.php
+
+# WeChat DevTools local settings
+miniprogram/project.private.config.json

@@ -78,3 +78,9 @@
 .submit-btn {
   margin-top: 8rpx;
 }
+
+.outline-btn {
+  background: #ffffff;
+  color: #0f9d7c;
+  border: 1rpx solid #cfe9e0;
+}

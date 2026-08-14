@@ -8,10 +8,38 @@
     </view>
   </view>
 
-  <view class="card">
+  <view class="card" wx:if="{{unbound}}">
+    <view class="card-title">绑定邮箱</view>
+    <view class="muted bind-tip">绑定邮箱后即可使用创建邮箱和发信功能</view>
+    <view class="mode-row">
+      <button class="mode-btn {{mode === 'bind' ? 'active' : ''}}" data-mode="bind" bindtap="setMode">绑定已有账号</button>
+      <button class="mode-btn {{mode === 'register' ? 'active' : ''}}" data-mode="register" bindtap="setMode">注册新账号</button>
+    </view>
+    <view class="field">
+      <text class="label">邮箱</text>
+      <input class="input" type="text" placeholder="请输入邮箱" value="{{email}}" bindinput="onEmailInput" />
+    </view>
+    <view class="field">
+      <text class="label">密码</text>
+      <input class="input" password placeholder="{{mode === 'bind' ? '请输入原账号密码' : '请设置密码'}}" value="{{password}}" bindinput="onPasswordInput" />
+    </view>
+    <view class="field">
+      <text class="label">验证码</text>
+      <view class="row code-row">
+        <input class="input code-input" type="text" placeholder="6位验证码" value="{{code}}" bindinput="onCodeInput" />
+        <button class="btn btn-ghost code-btn" loading="{{sendingCode}}" bindtap="sendCode">发送验证码</button>
+      </view>
+    </view>
+    <view class="notice" wx:if="{{notice}}">{{notice}}</view>
+    <button class="btn submit-btn" loading="{{submitting}}" bindtap="submit">
+      {{mode === 'bind' ? '绑定并登录' : '注册并登录'}}
+    </button>
+  </view>
+
+  <view class="card" wx:if="{{user}}">
     <view class="card-title">激活码兑换</view>
     <view class="field code-field">
-      <input class="input" type="text" placeholder="输入激活码" value="{{code}}" bindinput="onCodeInput" />
+      <input class="input" type="text" placeholder="输入激活码" value="{{codeText}}" bindinput="onCodeTextInput" />
       <button class="btn btn-ghost redeem-btn" loading="{{redeeming}}" bindtap="redeem">兑换</button>
     </view>
   </view>
