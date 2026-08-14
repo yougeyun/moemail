@@ -176,15 +176,6 @@ export const {
 
         if (existingRole) return
 
-        const initialPoints = Number(
-          (await getRequestContext().env.SITE_CONFIG.get("INITIAL_POINTS")) || 0
-        )
-        if (initialPoints > 0) {
-          await db.update(users)
-            .set({ points: initialPoints })
-            .where(eq(users.id, user.id))
-        }
-
         const defaultRole = await getDefaultRole()
         const role = await findOrCreateRole(db, defaultRole)
         await assignRoleToUser(db, user.id, role.id)
@@ -208,13 +199,14 @@ export const {
         if (token && session.user) {
         session.user.id = token.id as string
         session.user.name = token.name as string
-        session.user.username = token.username as string
         session.user.image = token.image as string
 
         const db = createDb()
         const userRecord = await db.query.users.findFirst({
           where: eq(users.id, session.user.id),
         })
+        session.user.username =
+          userRecord?.username ?? (token.username as string)
         session.user.email = userRecord?.email ?? ""
         const activeUserRole = await getActiveUserRole(db, session.user.id)
         let userRoleRecords = activeUserRole ? [activeUserRole] : []
@@ -249,7 +241,6 @@ export const {
             permissions: ur.role.permissions,
           }),
         }))
-        session.user.points = userRecord?.points ?? 0
 
         const userAccounts = await db.query.accounts.findMany({
           where: eq(accounts.userId, session.user.id),

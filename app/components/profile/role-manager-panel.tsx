@@ -762,7 +762,7 @@ export function RoleManagerPanel() {
                         onChange={(e) => updateDurationOption(index, "price", e.target.value)}
                         className="w-28"
                       />
-                      <span className="text-sm text-muted-foreground">{t("pointsUnit")}</span>
+                      <span className="text-sm text-muted-foreground">{t("currencyUnit")}</span>
                       <Button
                         type="button"
                         variant="ghost"

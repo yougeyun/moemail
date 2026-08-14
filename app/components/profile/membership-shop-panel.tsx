@@ -37,7 +37,7 @@ interface ShopRole {
   allowedExpiries: number[] | null
 }
 
-type PaymentMethod = "points" | "wechat" | "alipay"
+type PaymentMethod = "wechat" | "alipay"
 
 export function MembershipShopPanel() {
   const t = useTranslations("profile.shop")
@@ -46,7 +46,6 @@ export function MembershipShopPanel() {
   const router = useRouter()
   const { toast } = useToast()
   const [roles, setRoles] = useState<ShopRole[]>([])
-  const [points, setPoints] = useState(0)
   const [currentRoleSort, setCurrentRoleSort] = useState(999)
   const [currentExpiresAt, setCurrentExpiresAt] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -61,12 +60,10 @@ export function MembershipShopPanel() {
       if (!res.ok) throw new Error("Failed to fetch shop")
       const data = await res.json() as {
         roles: ShopRole[]
-        points: number
         currentRoleSort: number
         currentExpiresAt: string | null
       }
       setRoles(data.roles)
-      setPoints(data.points)
       setCurrentRoleSort(data.currentRoleSort)
       setCurrentExpiresAt(data.currentExpiresAt)
     } catch {
@@ -93,7 +90,7 @@ export function MembershipShopPanel() {
 
   const handlePurchase = async (role: ShopRole) => {
     const duration = selectedDuration(role)
-    const method = paymentMethods[role.id] || "points"
+    const method = paymentMethods[role.id] || "wechat"
     setPurchasingRoleId(role.id)
     try {
       const res = await fetch("/api/member-shop", {
@@ -108,7 +105,6 @@ export function MembershipShopPanel() {
 
       const data = await res.json() as {
         error?: string
-        points?: number
         paymentUrl?: string
         paymentQr?: string
       }
@@ -122,9 +118,6 @@ export function MembershipShopPanel() {
       } else if (data.paymentQr) {
         toast({ title: t("paymentQrHint") })
       } else {
-        if (typeof data.points === "number") {
-          setPoints(data.points)
-        }
         await update()
         router.refresh()
         toast({ title: t("buySuccess") })
@@ -150,7 +143,6 @@ export function MembershipShopPanel() {
         </div>
         <h2 className="text-lg font-semibold">{t("title")}</h2>
         <div className="ml-auto text-right text-sm text-muted-foreground">
-          <div>{t("currentPoints", { points })}</div>
           {currentExpiresAt && (
             <div className="text-xs">{t("currentExpiresAt", { date: currentExpiresAt })}</div>
           )}
@@ -171,7 +163,7 @@ export function MembershipShopPanel() {
             const buyable = role.sortOrder <= currentRoleSort
             const options = durationFor(role)
             const duration = selectedDuration(role)
-            const method = paymentMethods[role.id] || "points"
+            const method = paymentMethods[role.id] || "wechat"
 
             return (
               <div
@@ -245,7 +237,6 @@ export function MembershipShopPanel() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="points">{t("methodPoints")}</SelectItem>
                           <SelectItem value="wechat">{t("methodWechat")}</SelectItem>
                           <SelectItem value="alipay">{t("methodAlipay")}</SelectItem>
                         </SelectContent>

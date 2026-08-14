@@ -13,7 +13,6 @@ export const users = sqliteTable("user", {
   image: text("image"),
   username: text("username").unique(),
   password: text("password"),
-  points: integer("points").notNull().default(0),
   redeemedEmailQuota: integer("redeemed_email_quota").notNull().default(0),
   redeemedSendQuota: integer("redeemed_send_quota").notNull().default(0),
 })

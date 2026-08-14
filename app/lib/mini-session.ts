@@ -139,7 +139,6 @@ export function toPublicUser(user: {
   email: string | null
   emailVerified: Date | null
   image: string | null
-  points: number
 }) {
   return {
     id: user.id,
@@ -148,6 +147,5 @@ export function toPublicUser(user: {
     email: user.email,
     emailVerified: user.emailVerified,
     image: user.image,
-    points: user.points,
   }
 }

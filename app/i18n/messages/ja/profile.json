@@ -9,8 +9,7 @@
       "DUKE": "公爵",
       "KNIGHT": "騎士",
       "CIVILIAN": "市民"
-    },
-    "points": "ポイント：{points}"
+    }
   },
   "apiKey": {
     "title": "API Key 管理",
@@ -143,8 +142,7 @@
     "enable": "有効化",
     "active": "使用中",
     "saveTemplate": "設定を保存",
-    "brandSettings": "ブランド設定",
-    "initialPoints": "新規ユーザーの初期ポイント"
+    "brandSettings": "ブランド設定"
   },
   "roleManager": {
     "title": "会員レベル管理",
@@ -200,7 +198,7 @@
     "allowedExpiriesHint": "未選択の場合はすべての有効期限を使用できます",
     "defaultExpiry": "デフォルト有効期限",
     "defaultExpiryNone": "ユーザー選択に従う",
-    "price": "購入価格（ポイント）",
+    "price": "購入価格（元）",
     "priceHint": "0 は無料購入",
     "purchasable": "購入可能",
     "purchasableHint": "有効にすると一般会員が会員ショップで購入できます",
@@ -214,14 +212,13 @@
     "addDuration": "期間を追加",
     "durationEmpty": "購入期間が設定されていません",
     "days": "日",
-    "pointsUnit": "ポイント",
+    "currencyUnit": "元",
     "durationHint": "購入できる期間と価格を設定します。購入時はどれか1つを選択します",
     "showUpperDomains": "上位会員の利用ドメインを表示",
     "showUpperDomainsHint": "有効にするとメール作成時に上位会員専用ドメインを表示しますが、選択はできません"
   },
   "shop": {
     "title": "会員ショップ",
-    "currentPoints": "現在のポイント：{points}",
     "loading": "読み込み中...",
     "empty": "購入できる会員レベルがありません",
     "allDomains": "すべてのドメイン",
@@ -233,13 +230,11 @@
     "checkingOut": "購入中...",
     "buySuccess": "購入が完了し、会員レベルがアップしました",
     "checkoutFailed": "購入に失敗しました",
-    "insufficientPoints": "ポイントが不足しています",
     "loadFailed": "会員ショップの読み込みに失敗しました",
     "duration": "購入期間",
     "permanent": "永久",
     "daysValue": "{days} 日",
     "paymentMethod": "支払い方法",
-    "methodPoints": "ポイント",
     "methodWechat": "WeChat Pay",
     "methodAlipay": "Alipay",
     "buyNow": "今すぐ購入",
@@ -270,12 +265,7 @@
     "deleteConfirmButton": "削除",
     "cancel": "キャンセル",
     "deleteSuccess": "ユーザーを削除しました",
-    "deleteFailed": "ユーザーの削除に失敗しました",
-    "points": "ポイント",
-    "savePoints": "ポイント保存",
-    "pointsInvalid": "ポイントは0以上の整数で入力してください",
-    "pointsSaved": "ポイントを更新しました",
-    "pointsSaveFailed": "ポイントの更新に失敗しました"
+    "deleteFailed": "ユーザーの削除に失敗しました"
   },
   "payment": {
     "title": "支払い設定",
@@ -400,5 +390,26 @@
     "saveSuccess": "メールアドレスを連携しました",
     "saveFailed": "操作に失敗しました",
     "linkNotice": "アクティベーションメールを送信しました。リンクをクリックして認証してください"
+  },
+  "settings": {
+    "editProfile": "プロフィール編集",
+    "title": "プロフィール編集",
+    "back": "個人センターに戻る",
+    "usernameTitle": "ユーザー名を変更",
+    "username": "ユーザー名",
+    "usernamePlaceholder": "ユーザー名を入力",
+    "usernameRequired": "ユーザー名を入力してください",
+    "saveUsername": "ユーザー名を保存",
+    "saving": "保存中...",
+    "saveSuccess": "ユーザー名を変更しました",
+    "saveFailed": "変更に失敗しました",
+    "wechatTitle": "WeChat連携",
+    "wechatBound": "WeChat連携済み",
+    "wechatUnbound": "WeChat未連携",
+    "wechatHint": "微信ミニプログラムでログインしメールを連携すると、ここに状態が表示されます",
+    "unbindWechat": "WeChat連携解除",
+    "unbindConfirm": "現在のWeChat連携を解除しますか？解除後は再度スキャンして連携する必要があります。",
+    "unbindSuccess": "WeChat連携を解除しました",
+    "unbindFailed": "解除に失敗しました"
   }
 }

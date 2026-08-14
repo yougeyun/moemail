@@ -9,8 +9,7 @@
       "DUKE": "公爵",
       "KNIGHT": "騎士",
       "CIVILIAN": "平民"
-    },
-    "points": "積分：{points}"
+    }
   },
   "apiKey": {
     "title": "API Key 管理",
@@ -143,8 +142,7 @@
     "enable": "啟用",
     "active": "使用中",
     "saveTemplate": "儲存設定",
-    "brandSettings": "品牌設定",
-    "initialPoints": "新使用者初始積分"
+    "brandSettings": "品牌設定"
   },
   "roleManager": {
     "title": "會員等級管理",
@@ -200,7 +198,7 @@
     "allowedExpiriesHint": "不勾選表示可以使用全部有效期",
     "defaultExpiry": "預設有效期",
     "defaultExpiryNone": "跟隨使用者選擇",
-    "price": "購買價格（積分）",
+    "price": "購買價格（元）",
     "priceHint": "0 表示免費購買",
     "purchasable": "允許購買",
     "purchasableHint": "開啟後普通會員可在會員商城購買該等級",
@@ -214,14 +212,13 @@
     "addDuration": "新增時長",
     "durationEmpty": "尚未設定購買時長",
     "days": "天",
-    "pointsUnit": "積分",
+    "currencyUnit": "元",
     "durationHint": "設定可購買的時長與對應價格，購買時使用者必須選擇其中一個",
     "showUpperDomains": "顯示上一級會員可用網域",
     "showUpperDomainsHint": "開啟後，使用者產生郵箱時可看到上一級會員可用的網域，但不可選擇"
   },
   "shop": {
     "title": "會員商城",
-    "currentPoints": "目前積分：{points}",
     "loading": "載入中...",
     "empty": "暫無可購買的會員等級",
     "allDomains": "全部網域",
@@ -233,13 +230,11 @@
     "checkingOut": "購買中...",
     "buySuccess": "購買成功，會員等級已升級",
     "checkoutFailed": "購買失敗",
-    "insufficientPoints": "積分不足",
     "loadFailed": "載入會員商城失敗",
     "duration": "購買時長",
     "permanent": "永久",
     "daysValue": "{days} 天",
     "paymentMethod": "付款方式",
-    "methodPoints": "積分付款",
     "methodWechat": "微信支付",
     "methodAlipay": "支付寶",
     "buyNow": "立即購買",
@@ -270,12 +265,7 @@
     "deleteConfirmButton": "刪除",
     "cancel": "取消",
     "deleteSuccess": "使用者刪除成功",
-    "deleteFailed": "刪除使用者失敗",
-    "points": "積分",
-    "savePoints": "儲存積分",
-    "pointsInvalid": "積分必須為非負整數",
-    "pointsSaved": "積分已更新",
-    "pointsSaveFailed": "積分更新失敗"
+    "deleteFailed": "刪除使用者失敗"
   },
   "payment": {
     "title": "付款設定",
@@ -400,5 +390,26 @@
     "saveSuccess": "郵箱綁定成功",
     "saveFailed": "操作失敗",
     "linkNotice": "激活郵件已發送，請點擊郵件中的連結完成驗證"
+  },
+  "settings": {
+    "editProfile": "修改資料",
+    "title": "修改資料",
+    "back": "返回個人中心",
+    "usernameTitle": "修改使用者名稱",
+    "username": "使用者名稱",
+    "usernamePlaceholder": "請輸入使用者名稱",
+    "usernameRequired": "請輸入使用者名稱",
+    "saveUsername": "儲存使用者名稱",
+    "saving": "儲存中...",
+    "saveSuccess": "使用者名稱修改成功",
+    "saveFailed": "修改失敗",
+    "wechatTitle": "微信綁定",
+    "wechatBound": "已綁定微信",
+    "wechatUnbound": "未綁定微信",
+    "wechatHint": "請使用微信小程序登入後綁定郵箱，綁定後此處自動顯示狀態",
+    "unbindWechat": "解綁微信",
+    "unbindConfirm": "確定要解綁目前微信嗎？解綁後需要重新掃碼綁定。",
+    "unbindSuccess": "微信已解綁",
+    "unbindFailed": "解綁失敗"
   }
 }

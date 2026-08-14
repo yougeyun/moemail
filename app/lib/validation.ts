@@ -76,3 +76,13 @@ export const userEmailSendCodeSchema = z.object({
 })
 
 export type UserEmailSendCodeSchema = z.infer<typeof userEmailSendCodeSchema>
+
+export const userProfileSchema = z.object({
+  username: z
+    .string()
+    .min(2, "用户名至少需要 2 个字符")
+    .max(30, "用户名不能超过 30 个字符")
+    .refine((value) => !/\s/.test(value), "用户名不能包含空格"),
+})
+
+export type UserProfileSchema = z.infer<typeof userProfileSchema>

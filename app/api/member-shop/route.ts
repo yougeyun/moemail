@@ -2,7 +2,6 @@ import { createDb } from "@/lib/db"
 import { roleOrders, roles, users } from "@/lib/schema"
 import { eq } from "drizzle-orm"
 import { getUserId } from "@/lib/apiKey"
-import { assignRoleToUser } from "@/lib/auth"
 import { getRolePermissions } from "@/lib/permissions"
 import { getRoleEmailRules, getRoleDurationOptions } from "@/lib/role-rules"
 import { getActiveUserRole } from "@/lib/role-access"
@@ -19,19 +18,15 @@ export async function GET() {
 
   try {
     const db = createDb()
-    const [roleRows, user, currentRole] = await Promise.all([
+    const [roleRows, currentRole] = await Promise.all([
       db.query.roles.findMany({
         where: eq(roles.purchasable, true),
         orderBy: (roles, { asc }) => [asc(roles.sortOrder), asc(roles.price)],
-      }),
-      db.query.users.findFirst({
-        where: eq(users.id, userId),
       }),
       getActiveUserRole(db, userId),
     ])
 
     return Response.json({
-      points: user?.points ?? 0,
       currentRoleId: currentRole?.roleId ?? null,
       currentRoleSort: currentRole?.role.sortOrder ?? 999,
       currentExpiresAt: currentRole?.expiresAt
@@ -74,7 +69,7 @@ export async function POST(request: Request) {
     const { roleId, durationDays, paymentMethod } = await request.json() as {
       roleId: string
       durationDays?: number
-      paymentMethod?: "points" | "wechat" | "alipay"
+      paymentMethod?: "wechat" | "alipay"
     }
     if (!roleId || durationDays === undefined) {
       return Response.json({ error: "缺少会员等级" }, { status: 400 })
@@ -186,43 +181,9 @@ export async function POST(request: Request) {
       })
     }
 
-    if (user.points < selectedDuration.price) {
-      return Response.json(
-        { error: "积分不足，请先联系管理员获取积分" },
-        { status: 400 }
-      )
-    }
-
-    const remainingPoints = user.points - selectedDuration.price
-
-    await db.insert(roleOrders)
-      .values({
-        userId,
-        roleId: targetRole.id,
-        roleName: targetRole.name,
-        roleDisplayName: targetRole.displayName,
-        durationDays: selectedDuration.days,
-        expiresAt,
-        price: selectedDuration.price,
-        status: "completed",
-        paymentMethod: "points",
-      })
-
-    await assignRoleToUser(db, userId, targetRole.id, expiresAt ?? undefined)
-    await db.update(users)
-      .set({ points: remainingPoints })
-      .where(eq(users.id, userId))
-
     return Response.json({
-      success: true,
-      points: remainingPoints,
-      role: {
-        id: targetRole.id,
-        name: targetRole.name,
-        displayName: targetRole.displayName,
-        icon: targetRole.icon,
-      },
-    })
+      error: "请选择微信或支付宝支付",
+    }, { status: 400 })
   } catch (error) {
     console.error("Failed to purchase member level:", error)
     return Response.json({ error: "购买失败" }, { status: 500 })

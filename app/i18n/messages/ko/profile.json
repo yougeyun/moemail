@@ -9,8 +9,7 @@
       "DUKE": "공작",
       "KNIGHT": "기사",
       "CIVILIAN": "평민"
-    },
-    "points": "포인트: {points}"
+    }
   },
   "apiKey": {
     "title": "API Key 관리",
@@ -143,8 +142,7 @@
     "enable": "활성화",
     "active": "사용 중",
     "saveTemplate": "설정 저장",
-    "brandSettings": "브랜드 설정",
-    "initialPoints": "신규 사용자 초기 포인트"
+    "brandSettings": "브랜드 설정"
   },
   "roleManager": {
     "title": "회원 등급 관리",
@@ -200,7 +198,7 @@
     "allowedExpiriesHint": "선택하지 않으면 모든 유효기간을 사용할 수 있습니다",
     "defaultExpiry": "기본 유효기간",
     "defaultExpiryNone": "사용자 선택 따름",
-    "price": "구매 가격(포인트)",
+    "price": "구매 가격(원)",
     "priceHint": "0은 무료 구매",
     "purchasable": "구매 허용",
     "purchasableHint": "활성화하면 일반 회원이 회원 상점에서 구매할 수 있습니다",
@@ -214,14 +212,13 @@
     "addDuration": "기간 추가",
     "durationEmpty": "구매 기간이 설정되지 않았습니다",
     "days": "일",
-    "pointsUnit": "포인트",
+    "currencyUnit": "원",
     "durationHint": "구매할 수 있는 기간과 가격을 설정합니다. 구매 시 하나를 선택해야 합니다",
     "showUpperDomains": "상위 회원 도메인 표시",
     "showUpperDomainsHint": "켜면 메일 생성 시 상위 회원 전용 도메인을 표시하지만 선택할 수 없습니다"
   },
   "shop": {
     "title": "회원 상점",
-    "currentPoints": "현재 포인트: {points}",
     "loading": "로딩 중...",
     "empty": "구매 가능한 회원 등급이 없습니다",
     "allDomains": "전체 도메인",
@@ -233,13 +230,11 @@
     "checkingOut": "구매 중...",
     "buySuccess": "구매 완료, 회원 등급이 올랐습니다",
     "checkoutFailed": "구매에 실패했습니다",
-    "insufficientPoints": "포인트가 부족합니다",
     "loadFailed": "회원 상점을 불러오지 못했습니다",
     "duration": "구매 기간",
     "permanent": "영구",
     "daysValue": "{days}일",
     "paymentMethod": "결제 방법",
-    "methodPoints": "포인트 결제",
     "methodWechat": "위챗페이",
     "methodAlipay": "알리페이",
     "buyNow": "바로 구매",
@@ -270,12 +265,7 @@
     "deleteConfirmButton": "삭제",
     "cancel": "취소",
     "deleteSuccess": "사용자가 삭제되었습니다",
-    "deleteFailed": "사용자 삭제에 실패했습니다",
-    "points": "포인트",
-    "savePoints": "포인트 저장",
-    "pointsInvalid": "포인트는 0 이상의 정수여야 합니다",
-    "pointsSaved": "포인트가 업데이트되었습니다",
-    "pointsSaveFailed": "포인트 업데이트에 실패했습니다"
+    "deleteFailed": "사용자 삭제에 실패했습니다"
   },
   "payment": {
     "title": "결제 설정",
@@ -400,5 +390,26 @@
     "saveSuccess": "이메일이 연동되었습니다",
     "saveFailed": "작업에 실패했습니다",
     "linkNotice": "활성화 이메일을 보냈습니다. 링크를 클릭하여 인증하세요"
+  },
+  "settings": {
+    "editProfile": "프로필 수정",
+    "title": "프로필 수정",
+    "back": "내 정보로 돌아가기",
+    "usernameTitle": "사용자 이름 변경",
+    "username": "사용자 이름",
+    "usernamePlaceholder": "사용자 이름 입력",
+    "usernameRequired": "사용자 이름을 입력하세요",
+    "saveUsername": "사용자 이름 저장",
+    "saving": "저장 중...",
+    "saveSuccess": "사용자 이름이 변경되었습니다",
+    "saveFailed": "변경에 실패했습니다",
+    "wechatTitle": "위챗 연동",
+    "wechatBound": "위챗 연동됨",
+    "wechatUnbound": "위챗 미연동",
+    "wechatHint": "위챗 미니프로그램으로 로그인하고 이메일을 연동하면 상태가 자동으로 표시됩니다",
+    "unbindWechat": "위챗 연동 해제",
+    "unbindConfirm": "현재 위챗 연동을 해제하시겠습니까? 해제 후 다시 스캔하여 연동해야 합니다.",
+    "unbindSuccess": "위챗 연동이 해제되었습니다",
+    "unbindFailed": "해제에 실패했습니다"
   }
 }

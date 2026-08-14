@@ -4,7 +4,6 @@
     <view class="profile-info">
       <view class="profile-name">{{user.name || user.username}}</view>
       <view class="muted">{{user.email || '未绑定邮箱'}}</view>
-      <view class="muted">积分：{{user.points}}</view>
     </view>
   </view>
 

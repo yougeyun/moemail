@@ -32,8 +32,7 @@ export async function GET() {
     siteKeywords,
     siteLogo,
     siteIcons,
-    activeTemplate,
-    initialPoints
+    activeTemplate
   ] = await Promise.all([
     env.SITE_CONFIG.get("DEFAULT_ROLE"),
     env.SITE_CONFIG.get("EMAIL_DOMAINS"),
@@ -48,8 +47,7 @@ export async function GET() {
     env.SITE_CONFIG.get("SITE_KEYWORDS"),
     env.SITE_CONFIG.get("SITE_LOGO"),
     env.SITE_CONFIG.get("SITE_ICONS"),
-    env.SITE_CONFIG.get("ACTIVE_TEMPLATE"),
-    env.SITE_CONFIG.get("INITIAL_POINTS")
+    env.SITE_CONFIG.get("ACTIVE_TEMPLATE")
   ])
 
   let icons = {}
@@ -148,7 +146,6 @@ export async function GET() {
     emailDomains: emailDomains || "mail.59pk.net",
     adminContact: adminContact || "",
     maxEmails: maxEmails || EMAIL_CONFIG.MAX_ACTIVE_EMAILS.toString(),
-    initialPoints: initialPoints ? Number(initialPoints) : 0,
     emailRules,
     emailLimit,
     emailQuota: emailQuotaInfo,
@@ -181,7 +178,6 @@ export async function POST(request: Request) {
     emailDomains,
     adminContact,
     maxEmails,
-    initialPoints,
     turnstile,
     siteName,
     siteTitle,
@@ -195,7 +191,6 @@ export async function POST(request: Request) {
     emailDomains?: string,
     adminContact?: string,
     maxEmails?: string,
-    initialPoints?: number,
     siteName?: string,
     siteTitle?: string,
     siteDescription?: string,
@@ -216,7 +211,6 @@ export async function POST(request: Request) {
     env.SITE_CONFIG.get("EMAIL_DOMAINS"),
     env.SITE_CONFIG.get("ADMIN_CONTACT"),
     env.SITE_CONFIG.get("MAX_EMAILS"),
-    env.SITE_CONFIG.get("INITIAL_POINTS"),
     env.SITE_CONFIG.get("TURNSTILE_ENABLED"),
     env.SITE_CONFIG.get("TURNSTILE_SITE_KEY"),
     env.SITE_CONFIG.get("TURNSTILE_SECRET_KEY"),
@@ -233,18 +227,17 @@ export async function POST(request: Request) {
   const finalEmailDomains = emailDomains ?? currentValues[1] ?? "mail.59pk.net"
   const finalAdminContact = adminContact ?? currentValues[2] ?? ""
   const finalMaxEmails = maxEmails ?? currentValues[3] ?? EMAIL_CONFIG.MAX_ACTIVE_EMAILS.toString()
-  const finalInitialPoints = initialPoints ?? Number(currentValues[4] || 0)
-  const finalSiteName = siteName ?? currentValues[8] ?? DEFAULT_SITE_NAME
-  const finalSiteTitle = siteTitle ?? currentValues[9] ?? ""
-  const finalSiteDescription = siteDescription ?? currentValues[10] ?? ""
-  const finalSiteKeywords = siteKeywords ?? currentValues[11] ?? ""
-  const finalSiteLogo = logo ?? currentValues[12] ?? ""
-  const finalActiveTemplate = activeTemplate ?? currentValues[14] ?? "east-paper"
+  const finalSiteName = siteName ?? currentValues[7] ?? DEFAULT_SITE_NAME
+  const finalSiteTitle = siteTitle ?? currentValues[8] ?? ""
+  const finalSiteDescription = siteDescription ?? currentValues[9] ?? ""
+  const finalSiteKeywords = siteKeywords ?? currentValues[10] ?? ""
+  const finalSiteLogo = logo ?? currentValues[11] ?? ""
+  const finalActiveTemplate = activeTemplate ?? currentValues[13] ?? "east-paper"
 
   let currentIcons: Record<string, string> = {}
-  if (currentValues[13]) {
+  if (currentValues[12]) {
     try {
-      currentIcons = JSON.parse(currentValues[13])
+      currentIcons = JSON.parse(currentValues[12])
     } catch {
       currentIcons = {}
     }
@@ -261,9 +254,9 @@ export async function POST(request: Request) {
   }
 
   const turnstileConfig = turnstile ?? {
-    enabled: currentValues[5] === "true",
-    siteKey: currentValues[6] || "",
-    secretKey: currentValues[7] || "",
+    enabled: currentValues[4] === "true",
+    siteKey: currentValues[5] || "",
+    secretKey: currentValues[6] || "",
   }
 
   if (turnstileConfig.enabled && (!turnstileConfig.siteKey || !turnstileConfig.secretKey)) {
@@ -290,7 +283,6 @@ export async function POST(request: Request) {
     env.SITE_CONFIG.put("EMAIL_DOMAINS", finalEmailDomains),
     env.SITE_CONFIG.put("ADMIN_CONTACT", finalAdminContact),
     env.SITE_CONFIG.put("MAX_EMAILS", finalMaxEmails),
-    env.SITE_CONFIG.put("INITIAL_POINTS", String(Math.max(0, Number(finalInitialPoints) || 0))),
     env.SITE_CONFIG.put("TURNSTILE_ENABLED", turnstileConfig.enabled.toString()),
     env.SITE_CONFIG.put("TURNSTILE_SITE_KEY", turnstileConfig.siteKey),
     env.SITE_CONFIG.put("TURNSTILE_SECRET_KEY", turnstileConfig.secretKey),

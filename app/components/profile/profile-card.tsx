@@ -5,7 +5,7 @@ import { useTranslations, useLocale } from "next-intl"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { signOut } from "next-auth/react"
-import { Settings, Crown, Sword, User2, Gem, Mail } from "lucide-react"
+import { Settings, Crown, Sword, User2, Gem, Mail, UserCog } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { WebhookConfig } from "./webhook-config"
 import { PromotePanel } from "./promote-panel"
@@ -24,7 +24,6 @@ import { ActivationCodePanel } from "./activation-code-panel"
 import { ActivationCodeManagerPanel } from "./activation-code-manager-panel"
 import { SystemMailPanel } from "./system-mail-panel"
 import { WechatSettingsPanel } from "./wechat-settings-panel"
-import { EmailBindingPanel } from "./email-binding-panel"
 
 interface ProfileCardProps {
   user: User
@@ -42,6 +41,7 @@ export function ProfileCard({ user }: ProfileCardProps) {
   const tAuth = useTranslations("auth.signButton")
   const tWebhook = useTranslations("profile.webhook")
   const tNav = useTranslations("common.nav")
+  const tSettings = useTranslations("profile.settings")
   const locale = useLocale()
   const router = useRouter()
   const { checkPermission } = useRolePermission()
@@ -95,16 +95,9 @@ export function ProfileCard({ user }: ProfileCardProps) {
                 })}
               </div>
             )}
-            {typeof user.points === "number" && (
-              <div className="mt-2 text-sm text-muted-foreground">
-                {t("points", { points: user.points })}
-              </div>
-            )}
           </div>
         </div>
       </div>
-
-      <EmailBindingPanel initialEmail={user.email} />
 
       <MembershipShopPanel />
       <ActivationCodePanel />
@@ -140,6 +133,14 @@ export function ProfileCard({ user }: ProfileCardProps) {
         >
           <Mail className="w-4 h-4" />
           {tNav("backToMailbox")}
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => router.push(`/${locale}/profile/settings`)}
+          className="gap-2 flex-1"
+        >
+          <UserCog className="w-4 h-4" />
+          {tSettings("editProfile")}
         </Button>
         <Button
           variant="outline"

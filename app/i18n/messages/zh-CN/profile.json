@@ -9,8 +9,7 @@
       "DUKE": "公爵",
       "KNIGHT": "骑士",
       "CIVILIAN": "平民"
-    },
-    "points": "积分：{points}"
+    }
   },
   "apiKey": {
     "title": "API Key 管理",
@@ -143,8 +142,7 @@
     "enable": "启用",
     "active": "使用中",
     "saveTemplate": "保存设置",
-    "brandSettings": "品牌设置",
-    "initialPoints": "新用户初始积分"
+    "brandSettings": "品牌设置"
   },
   "roleManager": {
     "title": "会员等级管理",
@@ -200,7 +198,7 @@
     "allowedExpiriesHint": "不勾选表示可以使用全部有效期",
     "defaultExpiry": "默认有效期",
     "defaultExpiryNone": "跟随用户选择",
-    "price": "购买价格（积分）",
+    "price": "购买价格（元）",
     "priceHint": "0 表示免费购买",
     "purchasable": "允许购买",
     "purchasableHint": "开启后普通会员可在会员商城购买该等级",
@@ -214,14 +212,13 @@
     "addDuration": "添加时长",
     "durationEmpty": "暂未配置购买时长",
     "days": "天",
-    "pointsUnit": "积分",
+    "currencyUnit": "元",
     "durationHint": "配置可购买的时长和对应价格，购买时用户必须选择其中一个",
     "showUpperDomains": "显示上一级会员可用域名",
     "showUpperDomainsHint": "开启后，用户生成邮箱时可看到上一级会员可用的域名，但不可选择"
   },
   "shop": {
     "title": "会员商城",
-    "currentPoints": "当前积分：{points}",
     "loading": "加载中...",
     "empty": "暂无可购买的会员等级",
     "allDomains": "全部域名",
@@ -233,13 +230,11 @@
     "checkingOut": "购买中...",
     "buySuccess": "购买成功，会员等级已升级",
     "checkoutFailed": "购买失败",
-    "insufficientPoints": "积分不足",
     "loadFailed": "加载会员商城失败",
     "duration": "购买时长",
     "permanent": "永久",
     "daysValue": "{days} 天",
     "paymentMethod": "支付方式",
-    "methodPoints": "积分支付",
     "methodWechat": "微信支付",
     "methodAlipay": "支付宝",
     "buyNow": "立即购买",
@@ -270,12 +265,7 @@
     "deleteConfirmButton": "删除",
     "cancel": "取消",
     "deleteSuccess": "用户删除成功",
-    "deleteFailed": "删除用户失败",
-    "points": "积分",
-    "savePoints": "保存积分",
-    "pointsInvalid": "积分必须为非负整数",
-    "pointsSaved": "积分已更新",
-    "pointsSaveFailed": "积分更新失败"
+    "deleteFailed": "删除用户失败"
   },
   "payment": {
     "title": "支付设置",
@@ -400,5 +390,26 @@
     "saveSuccess": "邮箱绑定成功",
     "saveFailed": "操作失败",
     "linkNotice": "激活邮件已发送，请点击邮件中的链接完成验证"
+  },
+  "settings": {
+    "editProfile": "修改资料",
+    "title": "修改资料",
+    "back": "返回个人中心",
+    "usernameTitle": "修改用户名",
+    "username": "用户名",
+    "usernamePlaceholder": "请输入用户名",
+    "usernameRequired": "请输入用户名",
+    "saveUsername": "保存用户名",
+    "saving": "保存中...",
+    "saveSuccess": "用户名修改成功",
+    "saveFailed": "修改失败",
+    "wechatTitle": "微信绑定",
+    "wechatBound": "已绑定微信",
+    "wechatUnbound": "未绑定微信",
+    "wechatHint": "请使用微信小程序登录后绑定邮箱，绑定后此处自动显示状态",
+    "unbindWechat": "解绑微信",
+    "unbindConfirm": "确定要解绑当前微信吗？解绑后需要重新扫码绑定。",
+    "unbindSuccess": "微信已解绑",
+    "unbindFailed": "解绑失败"
   }
 }

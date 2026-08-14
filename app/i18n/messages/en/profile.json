@@ -9,8 +9,7 @@
       "DUKE": "Duke",
       "KNIGHT": "Knight",
       "CIVILIAN": "Civilian"
-    },
-    "points": "Points: {points}"
+    }
   },
   "apiKey": {
     "title": "API Key Management",
@@ -143,8 +142,7 @@
     "enable": "Enable",
     "active": "Active",
     "saveTemplate": "Save Settings",
-    "brandSettings": "Brand Settings",
-    "initialPoints": "Initial Points for New Users"
+    "brandSettings": "Brand Settings"
   },
   "roleManager": {
     "title": "Member Level Management",
@@ -200,7 +198,7 @@
     "allowedExpiriesHint": "Leave unchecked to allow every expiry option.",
     "defaultExpiry": "Default Expiry",
     "defaultExpiryNone": "Follow user choice",
-    "price": "Purchase Price (Points)",
+    "price": "Purchase Price (CNY)",
     "priceHint": "0 means free",
     "purchasable": "Purchasable",
     "purchasableHint": "Allow normal members to buy this level in the member shop.",
@@ -214,14 +212,13 @@
     "addDuration": "Add Duration",
     "durationEmpty": "No purchase durations configured",
     "days": "days",
-    "pointsUnit": "points",
+    "currencyUnit": "CNY",
     "durationHint": "Configure purchasable durations and prices. Buyers must choose one.",
     "showUpperDomains": "Show Upper Level Domains",
     "showUpperDomainsHint": "Show upper level domains when creating emails, but keep them unselectable."
   },
   "shop": {
     "title": "Member Shop",
-    "currentPoints": "Current points: {points}",
     "loading": "Loading...",
     "empty": "No purchasable member levels",
     "allDomains": "All domains",
@@ -233,13 +230,11 @@
     "checkingOut": "Purchasing...",
     "buySuccess": "Purchase complete, member level upgraded",
     "checkoutFailed": "Purchase failed",
-    "insufficientPoints": "Not enough points",
     "loadFailed": "Failed to load member shop",
     "duration": "Duration",
     "permanent": "Permanent",
     "daysValue": "{days} days",
     "paymentMethod": "Payment Method",
-    "methodPoints": "Points",
     "methodWechat": "WeChat Pay",
     "methodAlipay": "Alipay",
     "buyNow": "Buy Now",
@@ -270,12 +265,7 @@
     "deleteConfirmButton": "Delete",
     "cancel": "Cancel",
     "deleteSuccess": "User deleted successfully",
-    "deleteFailed": "Failed to delete user",
-    "points": "Points",
-    "savePoints": "Save Points",
-    "pointsInvalid": "Points must be a non-negative integer",
-    "pointsSaved": "Points updated",
-    "pointsSaveFailed": "Failed to update points"
+    "deleteFailed": "Failed to delete user"
   },
   "payment": {
     "title": "Payment Settings",
@@ -400,5 +390,26 @@
     "saveSuccess": "Email bound successfully",
     "saveFailed": "Operation failed",
     "linkNotice": "Activation email sent. Click the link to verify."
+  },
+  "settings": {
+    "editProfile": "Edit Profile",
+    "title": "Edit Profile",
+    "back": "Back to Profile",
+    "usernameTitle": "Change Username",
+    "username": "Username",
+    "usernamePlaceholder": "Enter username",
+    "usernameRequired": "Enter a username",
+    "saveUsername": "Save Username",
+    "saving": "Saving...",
+    "saveSuccess": "Username updated",
+    "saveFailed": "Failed to update",
+    "wechatTitle": "WeChat Binding",
+    "wechatBound": "WeChat bound",
+    "wechatUnbound": "WeChat not bound",
+    "wechatHint": "Log in with the WeChat Mini Program and bind an email; the status updates automatically.",
+    "unbindWechat": "Unbind WeChat",
+    "unbindConfirm": "Unbind the current WeChat account? You will need to scan again to bind.",
+    "unbindSuccess": "WeChat unbound",
+    "unbindFailed": "Failed to unbind"
   }
 }

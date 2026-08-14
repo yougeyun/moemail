@@ -32,7 +32,6 @@ declare module "next-auth" {
       defaultExpiry?: number | null
       permissions?: string[]
     }[]
-    points?: number
     username?: string | null
     providers?: string[]
   }
