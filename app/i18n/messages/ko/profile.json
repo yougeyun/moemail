@@ -376,5 +376,29 @@
     "saving": "저장 중...",
     "saveSuccess": "저장되었습니다",
     "saveFailed": "저장에 실패했습니다"
+  },
+  "emailBind": {
+    "bindTitle": "이메일 연동",
+    "changeTitle": "이메일 변경",
+    "currentEmail": "현재 이메일",
+    "email": "이메일",
+    "emailPlaceholder": "연동할 이메일을 입력하세요",
+    "newEmailPlaceholder": "새 이메일 주소를 입력하세요",
+    "password": "현재 비밀번호",
+    "passwordPlaceholder": "현재 로그인 비밀번호를 입력하세요",
+    "code": "인증 코드",
+    "codePlaceholder": "6자리 인증 코드",
+    "sendCode": "인증 코드 보내기",
+    "sending": "보내는 중...",
+    "codeSent": "인증 코드가 전송되었습니다",
+    "sendFailed": "전송에 실패했습니다",
+    "emailRequired": "이메일을 먼저 입력하세요",
+    "required": "이메일과 현재 비밀번호를 입력하세요",
+    "bind": "연동",
+    "change": "변경",
+    "saving": "제출 중...",
+    "saveSuccess": "이메일이 연동되었습니다",
+    "saveFailed": "작업에 실패했습니다",
+    "linkNotice": "활성화 이메일을 보냈습니다. 링크를 클릭하여 인증하세요"
   }
 }

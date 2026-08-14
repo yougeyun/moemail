@@ -376,5 +376,29 @@
     "saving": "Saving...",
     "saveSuccess": "Saved",
     "saveFailed": "Failed to save"
+  },
+  "emailBind": {
+    "bindTitle": "Bind Email",
+    "changeTitle": "Change Email",
+    "currentEmail": "Current email",
+    "email": "Email",
+    "emailPlaceholder": "Enter the email to bind",
+    "newEmailPlaceholder": "Enter the new email address",
+    "password": "Current password",
+    "passwordPlaceholder": "Enter your current password",
+    "code": "Verification code",
+    "codePlaceholder": "6-digit code",
+    "sendCode": "Send code",
+    "sending": "Sending...",
+    "codeSent": "Verification code sent",
+    "sendFailed": "Failed to send",
+    "emailRequired": "Enter an email first",
+    "required": "Enter email and current password",
+    "bind": "Bind email",
+    "change": "Change email",
+    "saving": "Submitting...",
+    "saveSuccess": "Email bound successfully",
+    "saveFailed": "Operation failed",
+    "linkNotice": "Activation email sent. Click the link to verify."
   }
 }

@@ -199,6 +199,7 @@ export const {
         token.id = user.id
         token.name = user.name || user.username
         token.username = user.username
+        token.email = user.email
         token.image = user.image || generateAvatarUrl(token.name as string)
       }
       return token
@@ -214,6 +215,7 @@ export const {
         const userRecord = await db.query.users.findFirst({
           where: eq(users.id, session.user.id),
         })
+        session.user.email = userRecord?.email ?? ""
         const activeUserRole = await getActiveUserRole(db, session.user.id)
         let userRoleRecords = activeUserRole ? [activeUserRole] : []
 

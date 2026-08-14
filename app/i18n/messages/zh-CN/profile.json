@@ -376,5 +376,29 @@
     "saving": "保存中...",
     "saveSuccess": "保存成功",
     "saveFailed": "保存失败"
+  },
+  "emailBind": {
+    "bindTitle": "绑定邮箱",
+    "changeTitle": "换绑邮箱",
+    "currentEmail": "当前邮箱",
+    "email": "邮箱",
+    "emailPlaceholder": "请输入要绑定的邮箱",
+    "newEmailPlaceholder": "请输入新的邮箱地址",
+    "password": "当前密码",
+    "passwordPlaceholder": "请输入当前登录密码",
+    "code": "验证码",
+    "codePlaceholder": "6位验证码",
+    "sendCode": "发送验证码",
+    "sending": "发送中...",
+    "codeSent": "验证码已发送",
+    "sendFailed": "发送失败",
+    "emailRequired": "请先填写邮箱",
+    "required": "请填写邮箱和当前密码",
+    "bind": "绑定邮箱",
+    "change": "换绑邮箱",
+    "saving": "提交中...",
+    "saveSuccess": "邮箱绑定成功",
+    "saveFailed": "操作失败",
+    "linkNotice": "激活邮件已发送，请点击邮件中的链接完成验证"
   }
 }

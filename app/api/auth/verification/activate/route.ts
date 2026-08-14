@@ -20,7 +20,10 @@ export async function GET(request: Request) {
       const db = createDb()
       await db
         .update(users)
-        .set({ emailVerified: new Date() })
+        .set({
+          email: record.email,
+          emailVerified: new Date(),
+        })
         .where(eq(users.id, record.userId))
 
       if (record.meta) {

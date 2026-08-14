@@ -61,3 +61,18 @@ export const wechatRegisterSchema = z.object({
 })
 
 export type WechatRegisterSchema = z.infer<typeof wechatRegisterSchema>
+
+export const userEmailSchema = z.object({
+  email: z.string().email("请输入有效的邮箱地址"),
+  password: z.string().min(1, "请输入当前密码"),
+  code: z.string().min(6).max(8).optional(),
+})
+
+export type UserEmailSchema = z.infer<typeof userEmailSchema>
+
+export const userEmailSendCodeSchema = z.object({
+  email: z.string().email("请输入有效的邮箱地址"),
+  password: z.string().min(1, "请输入当前密码"),
+})
+
+export type UserEmailSendCodeSchema = z.infer<typeof userEmailSendCodeSchema>

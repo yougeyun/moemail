@@ -4,7 +4,7 @@ import { createDb } from "@/lib/db"
 import { emailVerifications } from "@/lib/schema"
 import { getSystemMailConfig, sendSystemMail } from "@/lib/system-mail"
 
-export type VerificationPurpose = "register" | "bind"
+export type VerificationPurpose = "register" | "bind" | "change-email"
 
 function randomCode() {
   const buffer = new Uint32Array(1)

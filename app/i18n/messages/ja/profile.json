@@ -376,5 +376,29 @@
     "saving": "保存中...",
     "saveSuccess": "保存しました",
     "saveFailed": "保存に失敗しました"
+  },
+  "emailBind": {
+    "bindTitle": "メールアドレス連携",
+    "changeTitle": "メールアドレス変更",
+    "currentEmail": "現在のメール",
+    "email": "メールアドレス",
+    "emailPlaceholder": "連携するメールアドレスを入力",
+    "newEmailPlaceholder": "新しいメールアドレスを入力",
+    "password": "現在のパスワード",
+    "passwordPlaceholder": "現在のログインパスワードを入力",
+    "code": "認証コード",
+    "codePlaceholder": "6桁の認証コード",
+    "sendCode": "認証コードを送信",
+    "sending": "送信中...",
+    "codeSent": "認証コードを送信しました",
+    "sendFailed": "送信に失敗しました",
+    "emailRequired": "メールアドレスを入力してください",
+    "required": "メールアドレスと現在のパスワードを入力してください",
+    "bind": "連携する",
+    "change": "変更する",
+    "saving": "送信中...",
+    "saveSuccess": "メールアドレスを連携しました",
+    "saveFailed": "操作に失敗しました",
+    "linkNotice": "アクティベーションメールを送信しました。リンクをクリックして認証してください"
   }
 }

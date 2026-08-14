@@ -376,5 +376,29 @@
     "saving": "儲存中...",
     "saveSuccess": "儲存成功",
     "saveFailed": "儲存失敗"
+  },
+  "emailBind": {
+    "bindTitle": "綁定郵箱",
+    "changeTitle": "更換郵箱",
+    "currentEmail": "目前郵箱",
+    "email": "郵箱",
+    "emailPlaceholder": "請輸入要綁定的郵箱",
+    "newEmailPlaceholder": "請輸入新的郵箱地址",
+    "password": "目前密碼",
+    "passwordPlaceholder": "請輸入目前登入密碼",
+    "code": "驗證碼",
+    "codePlaceholder": "6 位驗證碼",
+    "sendCode": "發送驗證碼",
+    "sending": "發送中...",
+    "codeSent": "驗證碼已發送",
+    "sendFailed": "發送失敗",
+    "emailRequired": "請先填寫郵箱",
+    "required": "請填寫郵箱和目前密碼",
+    "bind": "綁定郵箱",
+    "change": "更換郵箱",
+    "saving": "提交中...",
+    "saveSuccess": "郵箱綁定成功",
+    "saveFailed": "操作失敗",
+    "linkNotice": "激活郵件已發送，請點擊郵件中的連結完成驗證"
   }
 }

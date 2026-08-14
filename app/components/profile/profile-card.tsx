@@ -24,6 +24,7 @@ import { ActivationCodePanel } from "./activation-code-panel"
 import { ActivationCodeManagerPanel } from "./activation-code-manager-panel"
 import { SystemMailPanel } from "./system-mail-panel"
 import { WechatSettingsPanel } from "./wechat-settings-panel"
+import { EmailBindingPanel } from "./email-binding-panel"
 
 interface ProfileCardProps {
   user: User
@@ -102,6 +103,8 @@ export function ProfileCard({ user }: ProfileCardProps) {
           </div>
         </div>
       </div>
+
+      <EmailBindingPanel initialEmail={user.email} />
 
       <MembershipShopPanel />
       <ActivationCodePanel />
