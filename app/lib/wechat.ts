@@ -42,8 +42,7 @@ export async function exchangeWechatCode(code: string): Promise<WechatSession> {
   })
 
   const response = await fetch(
-    `https://api.weixin.qq.com/sns/jscode2session?${params.toString()}`,
-    { cache: "no-store" }
+    `https://api.weixin.qq.com/sns/jscode2session?${params.toString()}`
   )
 
   if (!response.ok) {
