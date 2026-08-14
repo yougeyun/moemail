@@ -1,5 +1,6 @@
 const { request } = require("../../utils/request")
 const { getAdsConfig, showRewardedVideo } = require("../../utils/ads")
+const { formatTime } = require("../../utils/format")
 
 Page({
   data: {
@@ -19,6 +20,10 @@ Page({
     rewardRemaining: 0,
     showRewardButton: false,
     rewarding: false,
+    roleName: "",
+    memberExpiresAt: "",
+    emailCount: 0,
+    sendRemaining: null,
     subscribeEnabled: false,
     subscribeTemplateId: "",
     showSubscribeSwitch: false,
@@ -48,10 +53,17 @@ Page({
       getApp().setSession(wx.getStorageSync("miniToken"), res.user)
       this.setData({
         unbound: false,
-        user: res.user
+        user: res.user,
+        roleName: res.role
+          ? res.role.displayName || res.role.name
+          : "",
+        memberExpiresAt: res.role && res.role.expiresAt
+          ? formatTime(res.role.expiresAt)
+          : ""
       })
       this.loadAdsStatus()
       this.loadSubscribeStatus()
+      this.loadStats()
     } catch (error) {
       if (error.message.includes("登录状态已失效") || error.message.includes("未登录")) {
         getApp().clearSession()
@@ -111,6 +123,22 @@ Page({
         showSubscribeSwitch: Boolean(res.templateId)
       })
     }
+  },
+
+  async loadStats() {
+    const [emailsRes, sendRes] = await Promise.all([
+      request({ url: "/api/emails" }).catch(() => null),
+      request({ url: "/api/emails/send-permission" }).catch(() => null)
+    ])
+    this.setData({
+      emailCount: emailsRes
+        ? emailsRes.total || (emailsRes.emails ? emailsRes.emails.length : 0)
+        : 0,
+      sendRemaining:
+        sendRes && typeof sendRes.remainingEmails === "number"
+          ? sendRes.remainingEmails
+          : null
+    })
   },
 
   async onSubscribeChange(event) {

@@ -5,6 +5,7 @@ import {
   getUserById,
   toPublicUser,
 } from "@/lib/mini-session"
+import { getActiveUserRole } from "@/lib/role-access"
 
 export const runtime = "edge"
 
@@ -34,10 +35,21 @@ export async function GET(request: Request) {
   if (!user) {
     return NextResponse.json({ error: "账号不存在" }, { status: 404 })
   }
+  const activeRole = await getActiveUserRole(db, user.id)
 
   return NextResponse.json({
     bound: true,
     needsBinding: false,
     user: toPublicUser(user),
+    role: activeRole
+      ? {
+          name: activeRole.role.name,
+          displayName: activeRole.role.displayName,
+          icon: activeRole.role.icon,
+          expiresAt: activeRole.expiresAt
+            ? activeRole.expiresAt.toISOString()
+            : null,
+        }
+      : null,
   })
 }

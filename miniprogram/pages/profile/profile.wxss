@@ -29,6 +29,31 @@
   margin-bottom: 6rpx;
 }
 
+.stat-item {
+  flex: 1;
+  text-align: center;
+}
+
+.stat-num {
+  font-size: 36rpx;
+  font-weight: 800;
+  color: #17202a;
+  margin-bottom: 6rpx;
+}
+
+.stat-role {
+  font-size: 28rpx;
+  line-height: 44rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.member-expiry {
+  margin-top: 16rpx;
+  text-align: center;
+}
+
 .reward-card {
   border: 1rpx solid #ffe3c7;
 }

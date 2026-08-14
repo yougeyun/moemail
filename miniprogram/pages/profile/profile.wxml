@@ -7,6 +7,24 @@
     </view>
   </view>
 
+  <view class="card stats-card" wx:if="{{user}}">
+    <view class="row">
+      <view class="stat-item">
+        <view class="stat-num">{{emailCount}}</view>
+        <view class="muted">邮箱总数</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-num">{{sendRemaining === null ? '--' : sendRemaining}}</view>
+        <view class="muted">可发邮件</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-num stat-role">{{roleName || '--'}}</view>
+        <view class="muted">当前等级</view>
+      </view>
+    </view>
+    <view class="muted member-expiry" wx:if="{{memberExpiresAt}}">等级到期：{{memberExpiresAt}}</view>
+  </view>
+
   <view class="card reward-card" wx:if="{{showRewardButton}}">
     <view class="card-title">看视频领邮箱额度</view>
     <view class="muted reward-tip">今日剩余 {{rewardRemaining}} 次，每次 +{{rewardEmailQuota}} 个邮箱额度</view>
