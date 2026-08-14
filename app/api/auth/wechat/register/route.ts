@@ -68,7 +68,10 @@ export async function POST(request: Request) {
           userId: user.id,
           openid: session.openid,
         })
-        await attachMiniSessionUser(token, user.id)
+        const attached = await attachMiniSessionUser(token, user.id)
+        if (!attached) {
+          throw new Error("登录状态已失效，请重新登录")
+        }
       } catch (error) {
         await db.delete(users).where(eq(users.id, user.id))
         throw error

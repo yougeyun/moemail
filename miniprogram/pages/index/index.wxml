@@ -1,7 +1,7 @@
 <view class="page">
   <view class="card quota-card">
     <view class="quota-main">
-      <text class="quota-number">{{emails.length}}</text>
+      <text class="quota-number">{{total}}</text>
       <text class="quota-unit">/ {{emailLimit || '--'}}</text>
     </view>
     <view class="muted">当前邮箱数</view>

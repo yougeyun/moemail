@@ -38,7 +38,8 @@ Page({
     if (this.data.loading) return
     this.setData({ loading: true })
     try {
-      const url = `/api/emails/${this.data.selectedEmail.id}?cursor=${this.data.nextCursor || ""}`
+      const cursor = reset ? "" : this.data.nextCursor || ""
+      const url = `/api/emails/${this.data.selectedEmail.id}?cursor=${cursor}`
       const res = await request({ url })
       const mapped = (res.messages || []).map((item) => ({
         id: item.id,

@@ -56,7 +56,9 @@ Page({
           : allDomains
       const domains = allowedDomains.length ? allowedDomains : allDomains
       const expiryValues =
-        res.emailRules && res.emailRules.allowedExpiries
+        res.emailRules &&
+        res.emailRules.allowedExpiries &&
+        res.emailRules.allowedExpiries.length
           ? res.emailRules.allowedExpiries
           : [3600000, 86400000, 604800000, 0]
       const expiryOptions = expiryValues.map((value) => ({

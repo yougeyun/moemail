@@ -101,7 +101,10 @@ export async function POST(request: Request) {
       .update(users)
       .set({ emailVerified: new Date() })
       .where(eq(users.id, user.id))
-    await attachMiniSessionUser(token, user.id)
+    const attached = await attachMiniSessionUser(token, user.id)
+    if (!attached) {
+      throw new Error("登录状态已失效，请重新登录")
+    }
 
     return NextResponse.json({
       success: true,
