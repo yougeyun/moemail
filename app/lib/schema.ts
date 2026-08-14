@@ -192,12 +192,49 @@ export const userEmailQuotas = sqliteTable("user_email_quota", {
   expiryDays: integer("expiry_days").notNull().default(30),
   expiry: integer("expiry").notNull().default(86400000),
   sourceCodeId: text("source_code_id").references(() => activationCodes.id, { onDelete: "set null" }),
+  sourceType: text("source_type").notNull().default("activation_code"),
+  sourceId: text("source_id"),
   createdAt: integer("created_at", { mode: "timestamp_ms" })
     .notNull()
     .$defaultFn(() => new Date()),
 }, (table) => ({
   userIdIdx: index("user_email_quota_user_id_idx").on(table.userId),
   sourceCodeIdIdx: index("user_email_quota_source_code_id_idx").on(table.sourceCodeId),
+}))
+
+export const adRewardRecords = sqliteTable("ad_reward_record", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  quota: integer("quota").notNull().default(0),
+  expiryDays: integer("expiry_days").notNull().default(30),
+  expiry: integer("expiry").notNull().default(86400000),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+}, (table) => ({
+  userIdIdx: index("ad_reward_record_user_id_idx").on(table.userId),
+  createdAtIdx: index("ad_reward_record_created_at_idx").on(table.createdAt),
+}))
+
+export const wechatSubscriptions = sqliteTable("wechat_subscription", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  openid: text("openid").notNull(),
+  templateId: text("template_id").notNull(),
+  enabled: integer("enabled", { mode: "boolean" }).notNull().default(true),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+}, (table) => ({
+  userIdIdx: index("wechat_subscription_user_id_idx").on(table.userId),
+  openidIdx: index("wechat_subscription_openid_idx").on(table.openid),
 }))
 
 export const emailVerifications = sqliteTable("email_verification", {

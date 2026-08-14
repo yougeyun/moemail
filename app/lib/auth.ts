@@ -20,6 +20,7 @@ import { getUserId } from "./apiKey"
 import { verifyTurnstileToken } from "./turnstile"
 import { getRoleEmailRules } from "./role-rules"
 import { getActiveUserRole } from "./role-access"
+import { consumeQrTicket } from "./qr-login"
 
 const ROLE_DESCRIPTIONS: Record<Role, string> = {
   [ROLES.EMPEROR]: "皇帝（网站所有者）",
@@ -121,7 +122,27 @@ export const {
           throw new Error("请输入用户名和密码")
         }
 
-        const { username, password, turnstileToken } = credentials as Record<string, string | undefined>
+        const { username, password, turnstileToken, qrTicket } = credentials as Record<string, string | undefined>
+
+        if (qrTicket) {
+          const userId = await consumeQrTicket(qrTicket)
+          if (!userId) {
+            throw new Error("扫码登录已过期，请重新扫码")
+          }
+
+          const db = createDb()
+          const user = await db.query.users.findFirst({
+            where: eq(users.id, userId),
+          })
+          if (!user) {
+            throw new Error("账号不存在")
+          }
+
+          return {
+            ...user,
+            password: undefined,
+          }
+        }
 
         let parsedCredentials: AuthSchema
         try {

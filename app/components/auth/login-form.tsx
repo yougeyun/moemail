@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { signIn } from "next-auth/react"
 import { useTranslations } from "next-intl"
 import { useToast } from "@/components/ui/use-toast"
@@ -19,7 +19,14 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-import { KeyRound, Loader2, Mail, User2 } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { KeyRound, Loader2, Mail, QrCode, RefreshCw, User2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Turnstile } from "@/components/auth/turnstile"
 import { Logo } from "@/components/ui/logo"
@@ -55,6 +62,11 @@ export function LoginForm({ turnstile }: LoginFormProps) {
   const [turnstileToken, setTurnstileToken] = useState("")
   const [turnstileResetCounter, setTurnstileResetCounter] = useState(0)
   const [activeTab, setActiveTab] = useState<"login" | "register">("login")
+  const [qrOpen, setQrOpen] = useState(false)
+  const [qrLoading, setQrLoading] = useState(false)
+  const [qrImage, setQrImage] = useState("")
+  const [qrError, setQrError] = useState("")
+  const qrTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const { toast } = useToast()
   const t = useTranslations("auth.loginForm")
 
@@ -65,6 +77,15 @@ export function LoginForm({ turnstile }: LoginFormProps) {
     setTurnstileToken("")
     setTurnstileResetCounter((prev) => prev + 1)
   }, [])
+
+  const clearQrPolling = useCallback(() => {
+    if (qrTimerRef.current) {
+      clearInterval(qrTimerRef.current)
+      qrTimerRef.current = null
+    }
+  }, [])
+
+  useEffect(() => clearQrPolling, [clearQrPolling])
 
   const ensureTurnstileSolved = () => {
     if (!turnstileEnabled) return true
@@ -272,6 +293,77 @@ export function LoginForm({ turnstile }: LoginFormProps) {
     }
   }
 
+  const startQrLogin = async () => {
+    clearQrPolling()
+    setQrLoading(true)
+    setQrError("")
+    setQrImage("")
+    try {
+      const res = await fetch("/api/auth/qrcode", { method: "POST" })
+      const data = (await res.json()) as {
+        error?: string
+        token?: string
+        qrCode?: string
+      }
+      if (!res.ok) {
+        throw new Error(data.error || t("qr.failed"))
+      }
+      if (!data.token || !data.qrCode) {
+        throw new Error(t("qr.failed"))
+      }
+
+      setQrImage(data.qrCode)
+      const startedAt = Date.now()
+      qrTimerRef.current = setInterval(async () => {
+        if (Date.now() - startedAt > 150_000) {
+          clearQrPolling()
+          setQrError(t("qr.expired"))
+          return
+        }
+        try {
+          const statusRes = await fetch(
+            `/api/auth/qrcode/status?token=${encodeURIComponent(data.token as string)}`
+          )
+          const statusData = (await statusRes.json()) as {
+            status?: string
+            ticket?: string
+          }
+          if (statusData.status === "confirmed" && statusData.ticket) {
+            clearQrPolling()
+            const result = await signIn("credentials", {
+              qrTicket: statusData.ticket,
+              redirect: false,
+            })
+            if (result?.error) {
+              setQrError(t("qr.loginFailed"))
+              return
+            }
+            window.location.href = "/"
+          } else if (statusData.status === "expired") {
+            clearQrPolling()
+            setQrError(t("qr.expired"))
+          }
+        } catch {
+          // Keep polling; the QR code may still be valid.
+        }
+      }, 2000)
+    } catch (error) {
+      setQrError(error instanceof Error ? error.message : t("qr.failed"))
+    } finally {
+      setQrLoading(false)
+    }
+  }
+
+  const closeQrLogin = () => {
+    clearQrPolling()
+    setQrOpen(false)
+  }
+
+  const openQrLogin = () => {
+    setQrOpen(true)
+    startQrLogin()
+  }
+
   return (
     <Card className="w-[95%] max-w-md panel overflow-hidden shadow-xl">
       <CardHeader className="space-y-2 border-b border-border/70 bg-card/60 px-7 pb-6 pt-8">
@@ -350,6 +442,27 @@ export function LoginForm({ turnstile }: LoginFormProps) {
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {t("actions.login")}
+              </Button>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border/70" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-card px-2 text-muted-foreground">
+                    {t("actions.or")}
+                  </span>
+                </div>
+              </div>
+
+              <Button
+                variant="outline"
+                className="w-full gap-2"
+                onClick={openQrLogin}
+                disabled={qrLoading}
+              >
+                <QrCode className="h-4 w-4" />
+                {t("actions.wechatQrLogin")}
               </Button>
             </TabsContent>
 
@@ -485,6 +598,46 @@ export function LoginForm({ turnstile }: LoginFormProps) {
           </div>
         )}
       </CardContent>
+      <Dialog
+        open={qrOpen}
+        onOpenChange={(open) => {
+          if (!open) closeQrLogin()
+        }}
+      >
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{t("qr.title")}</DialogTitle>
+            <DialogDescription>{t("qr.hint")}</DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col items-center gap-4 py-2">
+            {qrLoading ? (
+              <div className="flex h-52 w-52 items-center justify-center rounded-lg border border-border/70 bg-muted/40">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              </div>
+            ) : qrImage ? (
+              <img
+                src={qrImage}
+                alt={t("qr.title")}
+                className="h-52 w-52 rounded-lg border border-border/70 bg-white object-contain p-2"
+              />
+            ) : null}
+            {qrImage && !qrError && (
+              <p className="text-center text-xs text-muted-foreground">
+                {t("qr.confirmHint")}
+              </p>
+            )}
+            {qrError && (
+              <p className="text-center text-sm text-destructive">{qrError}</p>
+            )}
+            {qrError && (
+              <Button size="sm" variant="outline" onClick={startQrLogin} className="gap-2">
+                <RefreshCw className="h-4 w-4" />
+                {t("qr.refresh")}
+              </Button>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   )
 }

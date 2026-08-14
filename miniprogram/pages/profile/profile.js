@@ -1,4 +1,5 @@
 const { request } = require("../../utils/request")
+const { getAdsConfig, showRewardedVideo } = require("../../utils/ads")
 
 Page({
   data: {
@@ -12,7 +13,16 @@ Page({
     submitting: false,
     notice: "",
     codeText: "",
-    redeeming: false
+    redeeming: false,
+    rewardedAdUnitId: "",
+    rewardEmailQuota: 1,
+    rewardRemaining: 0,
+    showRewardButton: false,
+    rewarding: false,
+    subscribeEnabled: false,
+    subscribeTemplateId: "",
+    showSubscribeSwitch: false,
+    subscribeLoading: false
   },
 
   onShow() {
@@ -40,12 +50,106 @@ Page({
         unbound: false,
         user: res.user
       })
+      this.loadAdsStatus()
+      this.loadSubscribeStatus()
     } catch (error) {
       if (error.message.includes("登录状态已失效") || error.message.includes("未登录")) {
         getApp().clearSession()
         wx.redirectTo({ url: "/pages/login/login" })
         return
       }
+      wx.showToast({ title: error.message, icon: "none" })
+    }
+  },
+
+  async loadAdsStatus() {
+    const config = await getAdsConfig()
+    if (
+      !config ||
+      !config.enabled ||
+      !config.rewardedEnabled ||
+      !config.rewardedAdUnitId
+    ) {
+      this.setData({ showRewardButton: false })
+      return
+    }
+    const status = await request({ url: "/api/ads/status" }).catch(() => null)
+    const remaining = status ? status.remaining || 0 : 0
+    this.setData({
+      rewardedAdUnitId: config.rewardedAdUnitId,
+      rewardEmailQuota: config.rewardEmailQuota || 1,
+      rewardRemaining: remaining,
+      showRewardButton: remaining > 0
+    })
+  },
+
+  async watchRewardedVideo() {
+    if (this.data.rewarding) return
+    this.setData({ rewarding: true })
+    try {
+      const ended = await showRewardedVideo(this.data.rewardedAdUnitId)
+      if (!ended) {
+        wx.showToast({ title: "完整观看视频后才能领取奖励", icon: "none" })
+        return
+      }
+      await request({ url: "/api/ads/reward", method: "POST" })
+      wx.showToast({ title: "奖励已到账", icon: "success" })
+      this.loadAdsStatus()
+    } catch (error) {
+      wx.showToast({ title: error.message, icon: "none" })
+    } finally {
+      this.setData({ rewarding: false })
+    }
+  },
+
+  async loadSubscribeStatus() {
+    const res = await request({ url: "/api/wechat/subscribe" }).catch(() => null)
+    if (res) {
+      this.setData({
+        subscribeEnabled: Boolean(res.enabled),
+        subscribeTemplateId: res.templateId || "",
+        showSubscribeSwitch: Boolean(res.templateId)
+      })
+    }
+  },
+
+  async onSubscribeChange(event) {
+    const enabled = Boolean(event.detail.value)
+    if (enabled && !this.data.subscribeTemplateId) {
+      wx.showToast({ title: "新邮件提醒尚未配置", icon: "none" })
+      this.setData({ subscribeEnabled: false })
+      return
+    }
+
+    this.setData({ subscribeLoading: true })
+    try {
+      if (enabled) {
+        const result = await new Promise((resolve) => {
+          wx.requestSubscribeMessage({
+            tmplIds: [this.data.subscribeTemplateId],
+            success: resolve,
+            fail: () => resolve(null)
+          })
+        })
+        if (!result || result[this.data.subscribeTemplateId] !== "accept") {
+          this.setData({ subscribeEnabled: false, subscribeLoading: false })
+          wx.showToast({ title: "未授权消息订阅", icon: "none" })
+          return
+        }
+      }
+
+      await request({
+        url: "/api/wechat/subscribe",
+        method: "POST",
+        data: { enabled }
+      })
+      this.setData({ subscribeEnabled: enabled, subscribeLoading: false })
+      wx.showToast({
+        title: enabled ? "新邮件提醒已开启" : "新邮件提醒已关闭",
+        icon: "success"
+      })
+    } catch (error) {
+      this.setData({ subscribeEnabled: false, subscribeLoading: false })
       wx.showToast({ title: error.message, icon: "none" })
     }
   },

@@ -1,3 +1,5 @@
+const { getAdsConfig, showSplashAd } = require("./utils/ads")
+
 App({
   globalData: {
     token: "",
@@ -9,6 +11,10 @@ App({
     const user = wx.getStorageSync("miniUser") || null
     this.globalData.token = token
     this.globalData.user = user
+
+    setTimeout(() => {
+      getAdsConfig().then((config) => showSplashAd(config))
+    }, 800)
   },
 
   setSession(token, user) {

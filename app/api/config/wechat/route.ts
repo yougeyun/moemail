@@ -27,6 +27,7 @@ export async function POST(request: Request) {
       enabled?: boolean
       appId?: string
       appSecret?: string
+      subscribeTemplateId?: string
     }
     const env = getRequestContext().env
     const current = await getWechatConfig()
@@ -37,6 +38,9 @@ export async function POST(request: Request) {
       body.appSecret !== undefined && body.appSecret.trim()
         ? body.appSecret.trim()
         : current.appSecret
+    const subscribeTemplateId = (
+      body.subscribeTemplateId ?? current.subscribeTemplateId
+    ).trim()
 
     if (enabled && (!appId || !appSecret)) {
       return NextResponse.json(
@@ -49,6 +53,7 @@ export async function POST(request: Request) {
       env.SITE_CONFIG.put("WECHAT_ENABLED", String(enabled)),
       env.SITE_CONFIG.put("WECHAT_APP_ID", appId),
       env.SITE_CONFIG.put("WECHAT_APP_SECRET", appSecret),
+      env.SITE_CONFIG.put("WECHAT_SUBSCRIBE_TEMPLATE_ID", subscribeTemplateId),
     ])
 
     return NextResponse.json({ success: true })

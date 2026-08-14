@@ -7,6 +7,22 @@
     </view>
   </view>
 
+  <view class="card reward-card" wx:if="{{showRewardButton}}">
+    <view class="card-title">看视频领邮箱额度</view>
+    <view class="muted reward-tip">今日剩余 {{rewardRemaining}} 次，每次 +{{rewardEmailQuota}} 个邮箱额度</view>
+    <button class="btn reward-btn" loading="{{rewarding}}" bindtap="watchRewardedVideo">立即观看</button>
+  </view>
+
+  <view class="card" wx:if="{{user && showSubscribeSwitch}}">
+    <view class="row between">
+      <view class="subscribe-info">
+        <view class="card-title">新邮件提醒</view>
+        <view class="muted">开启后收到新邮件时通过微信通知你</view>
+      </view>
+      <switch checked="{{subscribeEnabled}}" disabled="{{subscribeLoading}}" bindchange="onSubscribeChange" color="#0F9D7C" />
+    </view>
+  </view>
+
   <view class="card" wx:if="{{unbound}}">
     <view class="card-title">绑定邮箱</view>
     <view class="muted bind-tip">绑定邮箱后即可使用创建邮箱和发信功能</view>

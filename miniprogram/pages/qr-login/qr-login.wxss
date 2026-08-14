@@ -1,0 +1,39 @@
+.qr-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-card {
+  width: 100%;
+  text-align: center;
+  padding: 80rpx 40rpx;
+}
+
+.status-icon {
+  width: 128rpx;
+  height: 128rpx;
+  line-height: 128rpx;
+  margin: 0 auto 32rpx;
+  border-radius: 50%;
+  font-size: 56rpx;
+  font-weight: 800;
+  color: #ffffff;
+  background: #0f9d7c;
+}
+
+.status-icon.error {
+  background: #e5484d;
+}
+
+.status-icon.loading {
+  background: #f97316;
+}
+
+.status-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #17202a;
+  margin-bottom: 40rpx;
+  line-height: 1.6;
+}

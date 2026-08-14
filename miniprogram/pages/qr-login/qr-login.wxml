@@ -1,0 +1,10 @@
+<view class="page qr-page">
+  <view class="card status-card">
+    <view class="status-icon {{status}}">
+      {{status === 'success' ? '✓' : status === 'error' ? '!' : '···'}}
+    </view>
+    <view class="status-title">{{message}}</view>
+    <button wx:if="{{status === 'login'}}" class="btn" bindtap="goLogin">先登录并绑定邮箱</button>
+    <button wx:if="{{status === 'error'}}" class="btn btn-ghost" bindtap="backHome">返回首页</button>
+  </view>
+</view>

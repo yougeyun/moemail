@@ -13,6 +13,7 @@ interface WechatConfig {
   enabled: boolean
   appId: string
   appSecret: string
+  subscribeTemplateId: string
 }
 
 export function WechatSettingsPanel() {
@@ -22,6 +23,7 @@ export function WechatSettingsPanel() {
     enabled: false,
     appId: "",
     appSecret: "",
+    subscribeTemplateId: "",
   })
   const [loading, setLoading] = useState(false)
 
@@ -112,6 +114,21 @@ export function WechatSettingsPanel() {
               placeholder={t("appSecretPlaceholder")}
             />
           </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label>{t("subscribeTemplateId")}</Label>
+          <Input
+            value={config.subscribeTemplateId}
+            onChange={(e) =>
+              setConfig((prev) => ({
+                ...prev,
+                subscribeTemplateId: e.target.value,
+              }))
+            }
+            placeholder="新邮件提醒模板 ID"
+          />
+          <p className="text-xs text-muted-foreground">{t("subscribeHint")}</p>
         </div>
 
         <Button onClick={handleSave} disabled={loading} className="gap-2">

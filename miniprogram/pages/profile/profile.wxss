@@ -29,6 +29,25 @@
   margin-bottom: 6rpx;
 }
 
+.reward-card {
+  border: 1rpx solid #ffe3c7;
+}
+
+.reward-tip {
+  margin: 12rpx 0 20rpx;
+  color: #f97316;
+}
+
+.reward-btn {
+  background: #f97316;
+}
+
+.subscribe-info {
+  flex: 1;
+  min-width: 0;
+  margin-right: 16rpx;
+}
+
 .bind-tip {
   margin: 10rpx 0 24rpx;
 }

@@ -30,6 +30,26 @@
   margin-bottom: 24rpx;
 }
 
+.reward-row {
+  margin-bottom: 24rpx;
+  padding: 20rpx;
+  background: #fff4e8;
+  border-radius: 14rpx;
+}
+
+.reward-tip {
+  display: block;
+  color: #f97316;
+  font-size: 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.reward-btn {
+  background: #f97316;
+  line-height: 72rpx;
+  font-size: 26rpx;
+}
+
 .picker-value {
   height: 80rpx;
   line-height: 80rpx;

@@ -24,7 +24,8 @@ export async function middleware(request: Request) {
       pathname.startsWith('/api/auth') ||
       pathname.startsWith('/api/shared') ||
       pathname.startsWith('/api/site-icon') ||
-      pathname.startsWith('/api/site-logo')
+      pathname.startsWith('/api/site-logo') ||
+      pathname.startsWith('/api/ads/config')
     ) {
       return NextResponse.next()
     }

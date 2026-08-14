@@ -1,5 +1,6 @@
 const { request } = require("../../utils/request")
 const { formatTime, expiryLabel } = require("../../utils/format")
+const { getAdsConfig, createBanner, showRewardedVideo } = require("../../utils/ads")
 
 Page({
   data: {
@@ -21,15 +22,31 @@ Page({
     count: 1,
     emailLimit: null,
     quotaRemaining: null,
-    total: 0
+    total: 0,
+    adsEnabled: false,
+    rewardedAdUnitId: "",
+    rewardEmailQuota: 1,
+    rewardDailyLimit: 0,
+    rewardTodayCount: 0,
+    rewardRemaining: 0,
+    showRewardButton: false,
+    rewarding: false
   },
 
   onShow() {
     this.checkLogin()
   },
 
+  onHide() {
+    this.destroyBanner()
+  },
+
+  onUnload() {
+    this.destroyBanner()
+  },
+
   onPullDownRefresh() {
-    Promise.all([this.loadConfig(), this.loadEmails()]).finally(() => {
+    Promise.all([this.loadConfig(), this.loadEmails(), this.loadAds()]).finally(() => {
       wx.stopPullDownRefresh()
     })
   },
@@ -49,6 +66,7 @@ Page({
       }
       this.loadConfig()
       this.loadEmails()
+      this.loadAds()
     } catch (error) {
       if (
         error.message.includes("登录状态已失效") ||
@@ -57,6 +75,76 @@ Page({
         getApp().clearSession()
         wx.redirectTo({ url: "/pages/login/login" })
       }
+    }
+  },
+
+  async loadAds() {
+    const adsConfig = await getAdsConfig()
+    if (!adsConfig || !adsConfig.enabled) {
+      this.destroyBanner()
+      this.setData({ adsEnabled: false, showRewardButton: false })
+      return
+    }
+
+    const statusRes = await request({ url: "/api/ads/status" }).catch(() => null)
+    const rewardRemaining =
+      statusRes && typeof statusRes.remaining === "number"
+        ? statusRes.remaining
+        : 0
+    this.setData({
+      adsEnabled: true,
+      rewardedAdUnitId: adsConfig.rewardedAdUnitId || "",
+      rewardEmailQuota: adsConfig.rewardEmailQuota || 1,
+      rewardDailyLimit: adsConfig.rewardDailyLimit || 0,
+      rewardTodayCount: statusRes ? statusRes.todayCount || 0 : 0,
+      rewardRemaining,
+      showRewardButton:
+        Boolean(adsConfig.rewardedEnabled) &&
+        Boolean(adsConfig.rewardedAdUnitId) &&
+        rewardRemaining > 0
+    })
+    this.ensureBanner(adsConfig)
+  },
+
+  ensureBanner(config) {
+    this.destroyBanner()
+    if (config && config.enabled && config.bannerAdUnitId) {
+      this.bannerAd = createBanner(config)
+      if (this.bannerAd) {
+        this.bannerAd.show().catch(() => {})
+      }
+    }
+  },
+
+  destroyBanner() {
+    if (this.bannerAd) {
+      try {
+        this.bannerAd.destroy()
+      } catch (error) {
+        // Banner may already be destroyed by the runtime.
+      }
+      this.bannerAd = null
+    }
+  },
+
+  async watchRewardedVideo() {
+    if (this.data.rewarding) return
+    this.setData({ rewarding: true })
+    try {
+      const ended = await showRewardedVideo(this.data.rewardedAdUnitId)
+      if (!ended) {
+        wx.showToast({ title: "完整观看视频后才能领取奖励", icon: "none" })
+        return
+      }
+      await request({ url: "/api/ads/reward", method: "POST" })
+      wx.showToast({ title: "奖励已到账", icon: "success" })
+      this.loadAds()
+      this.loadConfig()
+      this.loadEmails()
+    } catch (error) {
+      wx.showToast({ title: error.message, icon: "none" })
+    } finally {
+      this.setData({ rewarding: false })
     }
   },
 
@@ -172,6 +260,22 @@ Page({
       this.loadConfig()
     } catch (error) {
       wx.showToast({ title: error.message, icon: "none" })
+      if (
+        error.message.includes("最大邮箱数量限制") ||
+        error.message.includes("额度")
+      ) {
+        wx.showModal({
+          title: "邮箱额度不足",
+          content: `当前额度不足，可看激励视频增加 ${this.data.rewardEmailQuota} 个邮箱额度`,
+          confirmText: "看视频领取",
+          cancelText: "取消",
+          success: (result) => {
+            if (result.confirm) {
+              this.watchRewardedVideo()
+            }
+          }
+        })
+      }
     }
   },
 

@@ -1,5 +1,6 @@
 const { request } = require("../../utils/request")
 const { formatTime } = require("../../utils/format")
+const { getAdsConfig, createBanner } = require("../../utils/ads")
 
 Page({
   data: {
@@ -9,11 +10,20 @@ Page({
     messages: [],
     loading: false,
     nextCursor: null,
-    total: 0
+    total: 0,
+    adsEnabled: false
   },
 
   onShow() {
     this.checkSession()
+  },
+
+  onHide() {
+    this.destroyBanner()
+  },
+
+  onUnload() {
+    this.destroyBanner()
   },
 
   async checkSession() {
@@ -32,6 +42,7 @@ Page({
       const selectedEmail = wx.getStorageSync("selectedEmail") || null
       this.setData({ selectedEmail })
       this.loadMessages(true)
+      this.loadAds()
     } catch (error) {
       if (
         error.message.includes("登录状态已失效") ||
@@ -40,6 +51,38 @@ Page({
         getApp().clearSession()
         wx.redirectTo({ url: "/pages/login/login" })
       }
+    }
+  },
+
+  async loadAds() {
+    const config = await getAdsConfig()
+    if (!config || !config.enabled) {
+      this.destroyBanner()
+      this.setData({ adsEnabled: false })
+      return
+    }
+    this.setData({ adsEnabled: Boolean(config.bannerAdUnitId) })
+    this.ensureBanner(config)
+  },
+
+  ensureBanner(config) {
+    this.destroyBanner()
+    if (config && config.enabled && config.bannerAdUnitId) {
+      this.bannerAd = createBanner(config)
+      if (this.bannerAd) {
+        this.bannerAd.show().catch(() => {})
+      }
+    }
+  },
+
+  destroyBanner() {
+    if (this.bannerAd) {
+      try {
+        this.bannerAd.destroy()
+      } catch (error) {
+        // Banner may already be destroyed by the runtime.
+      }
+      this.bannerAd = null
     }
   },
 

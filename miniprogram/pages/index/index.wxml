@@ -29,6 +29,10 @@
       <text class="label">数量</text>
       <input class="input" type="number" value="{{count}}" bindinput="onCountInput" />
     </view>
+    <view class="reward-row" wx:if="{{showRewardButton}}">
+      <text class="reward-tip">今日还可看 {{rewardRemaining}} 次视频，每次 +{{rewardEmailQuota}} 个邮箱额度</text>
+      <button class="btn reward-btn" loading="{{rewarding}}" bindtap="watchRewardedVideo">看视频领额度</button>
+    </view>
     <button class="btn" bindtap="createEmail">创建</button>
   </view>
 

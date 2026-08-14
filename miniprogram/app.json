@@ -5,7 +5,8 @@
     "pages/profile/profile",
     "pages/login/login",
     "pages/message/message",
-    "pages/compose/compose"
+    "pages/compose/compose",
+    "pages/qr-login/qr-login"
   ],
   "window": {
     "navigationBarBackgroundColor": "#0F9D7C",
