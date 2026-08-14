@@ -9,15 +9,52 @@ Page({
     sending: false,
     canSend: true,
     remainingEmails: null,
-    error: ""
+    error: "",
+    emailChoices: [],
+    emailIndex: 0,
+    selectedSender: ""
   },
 
   onLoad(options) {
+    const forwardDraft = wx.getStorageSync("forwardDraft") || null
+    if (forwardDraft) {
+      wx.removeStorageSync("forwardDraft")
+    }
     this.setData({
       emailId: options.emailId || "",
-      to: options.to ? decodeURIComponent(options.to) : ""
+      to: options.to ? decodeURIComponent(options.to) : "",
+      subject: forwardDraft ? forwardDraft.subject : "",
+      content: forwardDraft ? forwardDraft.content : ""
     })
     this.loadPermission()
+    this.loadEmails()
+  },
+
+  async loadEmails() {
+    const res = await request({ url: "/api/emails" }).catch(() => ({
+      emails: []
+    }))
+    const emails = res.emails || []
+    let emailIndex = emails.findIndex((item) => item.id === this.data.emailId)
+    if (emailIndex === -1) {
+      emailIndex = 0
+    }
+    this.setData({
+      emailChoices: emails,
+      emailIndex,
+      emailId: emails[emailIndex] ? emails[emailIndex].id : "",
+      selectedSender: emails[emailIndex] ? emails[emailIndex].address : ""
+    })
+  },
+
+  onEmailChange(event) {
+    const index = Number(event.detail.value)
+    const email = this.data.emailChoices[index]
+    this.setData({
+      emailIndex: index,
+      emailId: email ? email.id : "",
+      selectedSender: email ? email.address : ""
+    })
   },
 
   async loadPermission() {

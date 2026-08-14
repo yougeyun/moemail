@@ -3,6 +3,14 @@
   padding: 20rpx 24rpx;
 }
 
+.picker-value {
+  height: 80rpx;
+  line-height: 80rpx;
+  background: #f6f8f9;
+  border-radius: 14rpx;
+  padding: 0 24rpx;
+}
+
 .send-btn {
   margin-top: 24rpx;
 }

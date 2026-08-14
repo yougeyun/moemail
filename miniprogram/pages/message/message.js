@@ -17,6 +17,15 @@ Page({
     this.loadMessage()
   },
 
+  onShareAppMessage() {
+    return {
+      title: this.data.message
+        ? this.data.message.subject
+        : "临时邮箱邮件",
+      path: `/pages/message/message?id=${this.data.id}&emailId=${this.data.emailId}`
+    }
+  },
+
   async loadMessage() {
     try {
       const res = await request({
@@ -50,6 +59,22 @@ Page({
     if (!this.data.message) return
     wx.navigateTo({
       url: `/pages/compose/compose?emailId=${this.data.emailId}&to=${encodeURIComponent(this.data.message.from)}`
+    })
+  },
+
+  forward() {
+    if (!this.data.message) return
+    const subject = this.data.message.subject.startsWith("Fwd:")
+      ? this.data.message.subject
+      : `Fwd: ${this.data.message.subject}`
+    const content =
+      `\n\n---------- 原始邮件 ----------\n` +
+      `发件人：${this.data.message.from || "未知"}\n` +
+      `时间：${this.data.message.time}\n\n` +
+      (this.data.message.content || "")
+    wx.setStorageSync("forwardDraft", { subject, content })
+    wx.navigateTo({
+      url: `/pages/compose/compose?emailId=${this.data.emailId}`
     })
   }
 })

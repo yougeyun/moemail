@@ -17,7 +17,9 @@
 
   <view class="action-row">
     <button class="btn btn-ghost action-btn" data-text="{{message.content}}" bindtap="copyText">复制正文</button>
+    <button class="btn btn-ghost action-btn" open-type="share">分享</button>
     <button class="btn action-btn" bindtap="reply">回复</button>
+    <button class="btn action-btn" bindtap="forward">转发为邮件</button>
   </view>
 </view>
 

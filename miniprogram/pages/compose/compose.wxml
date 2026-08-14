@@ -5,6 +5,12 @@
 
   <view class="card" wx:if="{{canSend !== false}}">
     <view class="field">
+      <text class="label">发件人</text>
+      <picker range="{{emailChoices}}" range-key="address" value="{{emailIndex}}" bindchange="onEmailChange">
+        <view class="picker-value">{{selectedSender || '请选择发件邮箱'}}</view>
+      </picker>
+    </view>
+    <view class="field">
       <text class="label">收件人</text>
       <input class="input" type="text" placeholder="收件人邮箱" value="{{to}}" bindinput="onToInput" />
     </view>

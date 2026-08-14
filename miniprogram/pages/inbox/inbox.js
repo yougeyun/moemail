@@ -16,14 +16,33 @@ Page({
 
   onShow() {
     this.checkSession()
+    this.startPolling()
   },
 
   onHide() {
     this.destroyBanner()
+    this.stopPolling()
   },
 
   onUnload() {
     this.destroyBanner()
+    this.stopPolling()
+  },
+
+  startPolling() {
+    this.stopPolling()
+    this.pollTimer = setInterval(() => {
+      if (this.data.selectedEmail) {
+        this.loadMessages(true)
+      }
+    }, 30000)
+  },
+
+  stopPolling() {
+    if (this.pollTimer) {
+      clearInterval(this.pollTimer)
+      this.pollTimer = null
+    }
   },
 
   async checkSession() {
