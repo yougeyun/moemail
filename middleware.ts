@@ -26,6 +26,7 @@ export async function middleware(request: Request) {
       pathname.startsWith('/api/site-icon') ||
       pathname.startsWith('/api/site-logo') ||
       pathname.startsWith('/api/ads/config') ||
+      pathname.startsWith('/api/config/tabs') ||
       pathname.startsWith('/api/payment/notify')
     ) {
       return NextResponse.next()

@@ -38,6 +38,7 @@ App({
     } else {
       wx.removeStorageSync("miniUser")
     }
+    this.loadTabConfig()
   },
 
   clearSession() {
