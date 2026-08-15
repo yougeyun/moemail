@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server"
 import { nanoid } from "nanoid"
-import { and, eq, gt, inArray, sql } from "drizzle-orm"
+import { and, eq, gt, inArray, isNull, or, sql } from "drizzle-orm"
 import { createDb } from "@/lib/db"
-import { emails, userEmailQuotas, users } from "@/lib/schema"
+import {
+  activationCodes,
+  emailSlots,
+  emails,
+  userEmailQuotas,
+  users,
+} from "@/lib/schema"
 import { EXPIRY_OPTIONS } from "@/types/email"
 import { EMAIL_CONFIG } from "@/config"
 import { getRequestContext } from "@cloudflare/next-on-pages"
@@ -34,19 +40,14 @@ export async function POST(request: Request) {
   }
 
   try {
-    const [userRoleRecord, userRecord] = await Promise.all([
-      getActiveUserRole(db, userId),
-      db.query.users.findFirst({
-        where: eq(users.id, userId),
-      }),
-    ])
+    const userRoleRecord = await getActiveUserRole(db, userId)
     const userRole = userRoleRecord?.role
-    const quota = await getEmailQuotaSummary(userId, userRecord)
+    const quota = await getEmailQuotaSummary(userId)
+    const isEmperor = userRole?.name === ROLES.EMPEROR
 
-    let activeEmailsCount = 0
     let freeLimit = Number.MAX_SAFE_INTEGER
-
-    if (userRole?.name !== ROLES.EMPEROR) {
+    let freeOccupied = 0
+    if (!isEmperor) {
       const globalMaxEmails = Number(
         await env.SITE_CONFIG.get("MAX_EMAILS")
       )
@@ -55,16 +56,16 @@ export async function POST(request: Request) {
         (Number.isFinite(globalMaxEmails) && globalMaxEmails > 0
           ? globalMaxEmails
           : EMAIL_CONFIG.MAX_ACTIVE_EMAILS)
-      const countResult = await db
+      const slotResult = await db
         .select({ count: sql<number>`count(*)` })
-        .from(emails)
+        .from(emailSlots)
         .where(
           and(
-            eq(emails.userId, userId),
-            gt(emails.expiresAt, new Date())
+            eq(emailSlots.userId, userId),
+            gt(emailSlots.expiresAt, new Date())
           )
         )
-      activeEmailsCount = Number(countResult[0].count)
+      freeOccupied = Number(slotResult[0]?.count ?? 0)
     }
 
     const { name, count, expiryTime, domain } = await request.json<{
@@ -127,17 +128,22 @@ export async function POST(request: Request) {
       )
     }
 
-    const maxEmails = freeLimit + quota.total
-    const available = maxEmails - activeEmailsCount
-    if (available <= 0) {
+    const freeAvailable = Math.max(0, freeLimit - freeOccupied)
+    const freeToCreate = Math.min(requestedCount, freeAvailable)
+    const quotaToCreate = Math.min(
+      requestedCount - freeToCreate,
+      quota.remaining
+    )
+    const available = freeToCreate + quotaToCreate
+
+    if (available < requestedCount) {
       return NextResponse.json(
-        { error: "邮箱额度已用完" },
-        { status: 403 }
-      )
-    }
-    if (requestedCount > available) {
-      return NextResponse.json(
-        { error: `邮箱额度不足，最多还能创建 ${available} 个邮箱` },
+        {
+          error: `邮箱额度不足，最多还能创建 ${available} 个邮箱（免费 ${Math.max(
+            0,
+            freeAvailable
+          )} 个，激活码 ${quota.remaining} 个）`,
+        },
         { status: 403 }
       )
     }
@@ -173,27 +179,24 @@ export async function POST(request: Request) {
         .where(inArray(sql`LOWER(${emails.address})`, chunk))
       if (existingRows.length > 0) {
         return NextResponse.json(
-          { error: `邮箱地址已被使用：${existingRows[0].address}` },
+          {
+            error: `邮箱地址已被使用：${existingRows[0].address}`,
+          },
           { status: 409 }
         )
       }
     }
-
-    const freeToCreate = Math.min(
-      requestedCount,
-      Math.max(0, freeLimit - activeEmailsCount)
-    )
-    const quotaToCreate = Math.min(
-      requestedCount - freeToCreate,
-      quota.remaining
-    )
 
     const quotaRows =
       quotaToCreate > 0
         ? await db.query.userEmailQuotas.findMany({
             where: and(
               eq(userEmailQuotas.userId, userId),
-              gt(userEmailQuotas.quota, 0)
+              gt(userEmailQuotas.quota, 0),
+              or(
+                isNull(activationCodes.expiresAt),
+                gt(activationCodes.expiresAt, new Date())
+              )
             ),
             orderBy: (rows, { asc }) => [asc(rows.createdAt)],
           })
@@ -234,6 +237,17 @@ export async function POST(request: Request) {
       }
     )
 
+    const slotRows: typeof emailSlots.$inferInsert[] =
+      !isEmperor && freeToCreate > 0
+        ? rows.slice(0, freeToCreate).map((row) => ({
+            id: crypto.randomUUID(),
+            userId,
+            emailId: row.id,
+            expiresAt: row.expiresAt,
+            createdAt: now,
+          }))
+        : []
+
     const quotaUpdates = Array.from(quotaConsumed.entries()).map(
       ([id, take]) => {
         const row = quotaRows.find((item) => item.id === id)
@@ -261,15 +275,26 @@ export async function POST(request: Request) {
       quotaUpdates.length + (userUpdate ? 1 : 0)
     const chunkSize = Math.max(
       1,
-      Math.min(80, MAX_BATCH_STATEMENTS - extraStatements)
+      Math.min(
+        40,
+        Math.floor((MAX_BATCH_STATEMENTS - extraStatements) / 2)
+      )
     )
 
+    const emailInserts = rows.map((row) =>
+      db.insert(emails).values(row)
+    ) as unknown[]
+    const slotInserts = slotRows.map((row) =>
+      db.insert(emailSlots).values(row)
+    ) as unknown[]
+
     for (let i = 0; i < rows.length; i += chunkSize) {
-      const chunk = rows.slice(i, i + chunkSize)
-      const statements = chunk.map((row) =>
-        db.insert(emails).values(row)
-      ) as unknown[]
-      if (i + chunkSize >= rows.length) {
+      const end = Math.min(i + chunkSize, rows.length)
+      const statements = [
+        ...emailInserts.slice(i, end),
+        ...slotInserts.slice(i, end),
+      ]
+      if (end === rows.length) {
         statements.push(...quotaUpdates)
         if (userUpdate) statements.push(userUpdate)
       }

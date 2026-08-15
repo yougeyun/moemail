@@ -5,7 +5,7 @@ import { checkPermission } from "@/lib/auth"
 import { isTemplateId } from "@/templates/configs"
 import { DEFAULT_SITE_NAME } from "@/lib/site-config"
 import { createDb } from "@/lib/db"
-import { emails, roles, users } from "@/lib/schema"
+import { emailSlots, emails, roles, users } from "@/lib/schema"
 import { and, eq, gt, lt, sql } from "drizzle-orm"
 import { getUserId } from "@/lib/apiKey"
 import { getRoleEmailRules } from "@/lib/role-rules"
@@ -77,9 +77,13 @@ export async function GET() {
         total: number
         remaining: number
         activeEmailCount: number
+        freeOccupiedCount: number
+        canCreateEmailCount: number | null
       }
     | undefined
   let activeEmailCount = 0
+  let freeOccupiedCount = 0
+  let canCreateEmailCount: number | null = null
 
   if (userId) {
     const db = createDb()
@@ -112,10 +116,29 @@ export async function GET() {
           )
         )
       activeEmailCount = Number(activeCountResult[0]?.count ?? 0)
+      const slotResult = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(emailSlots)
+        .where(
+          and(
+            eq(emailSlots.userId, userId),
+            gt(emailSlots.expiresAt, new Date())
+          )
+        )
+      freeOccupiedCount = Number(slotResult[0]?.count ?? 0)
+      canCreateEmailCount =
+        userRole.role.name === ROLES.EMPEROR
+          ? null
+          : Math.max(
+              0,
+              (freeLimit - freeOccupiedCount) + emailQuota.remaining
+            )
       emailQuotaInfo = {
         total: emailQuota.total,
         remaining: emailQuota.remaining,
         activeEmailCount,
+        freeOccupiedCount,
+        canCreateEmailCount,
       }
 
       const rules = getRoleEmailRules({
@@ -163,6 +186,8 @@ export async function GET() {
     emailLimit,
     emailQuota: emailQuotaInfo,
     activeEmailCount,
+    freeOccupiedCount,
+    canCreateEmailCount,
     siteName: siteName || DEFAULT_SITE_NAME,
     siteTitle: siteTitle || "",
     siteDescription: siteDescription || "",

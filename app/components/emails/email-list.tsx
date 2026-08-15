@@ -218,11 +218,7 @@ export function EmailList({ onEmailSelect, selectedEmailId }: EmailListProps) {
                 <span title={t("quotaHint")}>
                   {t("quotaSummary", {
                     current: total,
-                    remaining: Math.max(
-                      0,
-                      (config?.emailLimit ?? config?.maxEmails ?? EMAIL_CONFIG.MAX_ACTIVE_EMAILS) -
-                        total
-                    ),
+                    remaining: config?.canCreateEmailCount ?? 0,
                     totalLimit:
                       config?.emailLimit ??
                       config?.maxEmails ??

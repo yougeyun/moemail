@@ -55,6 +55,21 @@ export const emails = sqliteTable("email", {
   addressLowerIdx: index("email_address_lower_idx").on(sql`LOWER(${table.address})`),
 }))
 
+export const emailSlots = sqliteTable("email_slot", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  emailId: text("email_id"),
+  expiresAt: integer("expires_at", { mode: "timestamp_ms" }).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+}, (table) => ({
+  userIdIdx: index("email_slot_user_id_idx").on(table.userId),
+  expiresAtIdx: index("email_slot_expires_at_idx").on(table.expiresAt),
+}))
+
 export const messages = sqliteTable("message", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   emailId: text("emailId")

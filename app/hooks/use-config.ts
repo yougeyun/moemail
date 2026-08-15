@@ -13,10 +13,14 @@ interface Config {
   maxEmails: number
   emailLimit: number | null
   activeEmailCount: number
+  freeOccupiedCount: number
+  canCreateEmailCount: number | null
   emailQuota?: {
     total: number
     remaining: number
     activeEmailCount: number
+    freeOccupiedCount: number
+    canCreateEmailCount: number | null
   }
   emailRules: {
     allowedDomains: string[] | null
@@ -52,6 +56,8 @@ const useConfigStore = create<ConfigStore>((set) => ({
           maxEmails: Number(data.maxEmails) || EMAIL_CONFIG.MAX_ACTIVE_EMAILS,
           emailLimit: data.emailLimit ?? null,
           activeEmailCount: data.activeEmailCount || 0,
+          freeOccupiedCount: data.freeOccupiedCount || 0,
+          canCreateEmailCount: data.canCreateEmailCount ?? null,
           emailQuota: data.emailQuota,
           emailRules: data.emailRules || {
             allowedDomains: null,

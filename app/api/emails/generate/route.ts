@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server"
 import { nanoid } from "nanoid"
 import { createDb } from "@/lib/db"
-import { emails, userEmailQuotas, users } from "@/lib/schema"
-import { eq, and, gt, sql } from "drizzle-orm"
+import {
+  activationCodes,
+  emailSlots,
+  emails,
+  userEmailQuotas,
+  users,
+} from "@/lib/schema"
+import { and, eq, gt, isNull, or, sql } from "drizzle-orm"
 import { EXPIRY_OPTIONS } from "@/types/email"
 import { EMAIL_CONFIG } from "@/config"
 import { getRequestContext } from "@cloudflare/next-on-pages"
@@ -14,66 +20,56 @@ import { getEmailQuotaSummary } from "@/lib/email-quota"
 
 export const runtime = "edge"
 
+function toExpiry(value: number, now: Date) {
+  return value === 0
+    ? new Date("9999-01-01T00:00:00.000Z")
+    : new Date(now.getTime() + value)
+}
+
 export async function POST(request: Request) {
   const db = createDb()
   const env = getRequestContext().env
-
   const userId = await getUserId()
-  const userRoleRecord = await getActiveUserRole(db, userId!)
-  const userRole = userRoleRecord?.role
-  const userRecord = await db.query.users.findFirst({
-    where: eq(users.id, userId!),
-  })
-
-  let activeEmailsCount = 0
-  let freeLimit = Number.MAX_SAFE_INTEGER
-  let redeemedEmailQuota = 0
-  let usedQuotaExpiry = 86400000
-  let quotaRowToConsume: {
-    id: string
-    quota: number
-    expiry: number
-  } | null = null
-  let legacyQuotaConsumed = false
+  if (!userId) {
+    return NextResponse.json({ error: "未授权" }, { status: 401 })
+  }
 
   try {
-    const quota = await getEmailQuotaSummary(userId!, userRecord)
-    redeemedEmailQuota = quota.remaining
+    const userRoleRecord = await getActiveUserRole(db, userId)
+    const userRole = userRoleRecord?.role
+    const quota = await getEmailQuotaSummary(userId)
+    const isEmperor = userRole?.name === ROLES.EMPEROR
 
-    if (userRole?.name !== ROLES.EMPEROR) {
-      const globalMaxEmails = Number(await env.SITE_CONFIG.get("MAX_EMAILS"))
+    let freeLimit = Number.MAX_SAFE_INTEGER
+    let freeOccupied = 0
+    if (!isEmperor) {
+      const globalMaxEmails = Number(
+        await env.SITE_CONFIG.get("MAX_EMAILS")
+      )
       freeLimit =
         userRole?.maxEmails ??
         (Number.isFinite(globalMaxEmails) && globalMaxEmails > 0
           ? globalMaxEmails
           : EMAIL_CONFIG.MAX_ACTIVE_EMAILS)
-      const activeCountResult = await db
+      const slotResult = await db
         .select({ count: sql<number>`count(*)` })
-        .from(emails)
+        .from(emailSlots)
         .where(
           and(
-            eq(emails.userId, userId!),
-            gt(emails.expiresAt, new Date())
+            eq(emailSlots.userId, userId),
+            gt(emailSlots.expiresAt, new Date())
           )
         )
-      activeEmailsCount = Number(activeCountResult[0].count)
-
-      const maxEmails = freeLimit + quota.total
-      if (activeEmailsCount >= maxEmails) {
-        return NextResponse.json(
-          { error: `已达到最大邮箱数量限制 (${maxEmails})` },
-          { status: 403 }
-        )
-      }
+      freeOccupied = Number(slotResult[0]?.count ?? 0)
     }
 
-    const { name, expiryTime, domain } = await request.json<{ 
+    const { name, expiryTime, domain } = await request.json<{
       name: string
       expiryTime: number
       domain: string
     }>()
 
-    if (!EXPIRY_OPTIONS.some(option => option.value === expiryTime)) {
+    if (!EXPIRY_OPTIONS.some((option) => option.value === expiryTime)) {
       return NextResponse.json(
         { error: "无效的过期时间" },
         { status: 400 }
@@ -81,7 +77,9 @@ export async function POST(request: Request) {
     }
 
     const domainString = await env.SITE_CONFIG.get("EMAIL_DOMAINS")
-    const domains = domainString ? domainString.split(',') : ["mail.59pk.net"]
+    const domains = domainString
+      ? domainString.split(",")
+      : ["mail.59pk.net"]
 
     if (!domains || !domains.includes(domain)) {
       return NextResponse.json(
@@ -118,7 +116,7 @@ export async function POST(request: Request) {
 
     const address = `${name || nanoid(8)}@${domain}`
     const existingEmail = await db.query.emails.findFirst({
-      where: eq(sql`LOWER(${emails.address})`, address.toLowerCase())
+      where: eq(sql`LOWER(${emails.address})`, address.toLowerCase()),
     })
 
     if (existingEmail) {
@@ -128,74 +126,96 @@ export async function POST(request: Request) {
       )
     }
 
-    const now = new Date()
-    let expires: Date | undefined
-    if (
-      userRole?.name !== ROLES.EMPEROR &&
-      activeEmailsCount >= freeLimit &&
-      redeemedEmailQuota > 0
-    ) {
+    const freeAvailable = Math.max(0, freeLimit - freeOccupied)
+    const useFree = freeAvailable > 0
+
+    let expires: Date
+    let quotaRowToConsume: {
+      id: string
+      quota: number
+      expiry: number
+    } | null = null
+    let legacyQuotaConsumed = false
+
+    if (useFree) {
+      expires = toExpiry(expiryTime, new Date())
+    } else if (quota.remaining > 0) {
       const quotaRow = await db.query.userEmailQuotas.findFirst({
         where: and(
-          eq(userEmailQuotas.userId, userId!),
-          gt(userEmailQuotas.quota, 0)
+          eq(userEmailQuotas.userId, userId),
+          gt(userEmailQuotas.quota, 0),
+          or(
+            isNull(activationCodes.expiresAt),
+            gt(activationCodes.expiresAt, new Date())
+          )
         ),
-        orderBy: (quotas, { asc }) => [asc(quotas.createdAt)],
+        orderBy: (rows, { asc }) => [asc(rows.createdAt)],
       })
-
       if (quotaRow) {
-        usedQuotaExpiry = quotaRow.expiry
-        quotaRowToConsume = quotaRow
+        quotaRowToConsume = {
+          id: quotaRow.id,
+          quota: quotaRow.quota,
+          expiry: quotaRow.expiry,
+        }
+        expires = toExpiry(quotaRow.expiry, new Date())
       } else {
         legacyQuotaConsumed = true
+        expires = toExpiry(86400000, new Date())
       }
-
-      expires =
-        usedQuotaExpiry === 0
-          ? new Date("9999-01-01T00:00:00.000Z")
-          : new Date(now.getTime() + usedQuotaExpiry)
+    } else {
+      return NextResponse.json(
+        {
+          error: `邮箱额度不足，最多还能创建 ${freeAvailable} 个免费邮箱`,
+        },
+        { status: 403 }
+      )
     }
 
-    if (!expires) {
-      expires =
-        expiryTime === 0
-          ? new Date("9999-01-01T00:00:00.000Z")
-          : new Date(now.getTime() + expiryTime)
-    }
-    
-    const emailData: typeof emails.$inferInsert = {
-      address,
-      createdAt: now,
-      expiresAt: expires,
-      userId: userId!
-    }
-    
-    const result = await db.insert(emails)
-      .values(emailData)
+    const now = new Date()
+    const result = await db
+      .insert(emails)
+      .values({
+        address,
+        createdAt: now,
+        expiresAt: expires,
+        userId,
+      })
       .returning({ id: emails.id, address: emails.address })
 
+    if (useFree && !isEmperor) {
+      await db.insert(emailSlots).values({
+        userId,
+        emailId: result[0].id,
+        expiresAt: expires,
+        createdAt: now,
+      })
+    }
+
     if (quotaRowToConsume) {
-      await db.update(userEmailQuotas)
+      await db
+        .update(userEmailQuotas)
         .set({ quota: quotaRowToConsume.quota - 1 })
         .where(eq(userEmailQuotas.id, quotaRowToConsume.id))
-      await db.update(users)
-        .set({ redeemedEmailQuota: Math.max(0, redeemedEmailQuota - 1) })
-        .where(eq(users.id, userId!))
+      await db
+        .update(users)
+        .set({ redeemedEmailQuota: Math.max(0, quota.remaining - 1) })
+        .where(eq(users.id, userId))
     } else if (legacyQuotaConsumed) {
-      await db.update(users)
-        .set({ redeemedEmailQuota: Math.max(0, redeemedEmailQuota - 1) })
-        .where(eq(users.id, userId!))
+      await db
+        .update(users)
+        .set({ redeemedEmailQuota: Math.max(0, quota.remaining - 1) })
+        .where(eq(users.id, userId))
     }
-    
-    return NextResponse.json({ 
+
+    return NextResponse.json({
       id: result[0].id,
-      email: result[0].address 
+      email: result[0].address,
     })
   } catch (error) {
-    console.error('Failed to generate email:', error)
+    console.error("Failed to generate email:", error)
     return NextResponse.json(
       { error: "创建邮箱失败" },
       { status: 500 }
     )
   }
-} 
+}

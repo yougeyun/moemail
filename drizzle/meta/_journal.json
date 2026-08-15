@@ -218,6 +218,13 @@
       "when": 1786754774312,
       "tag": "0030_gifted_valeria_richards",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "6",
+      "when": 1786757002616,
+      "tag": "0031_striped_leopardon",
+      "breakpoints": true
     }
   ]
 }

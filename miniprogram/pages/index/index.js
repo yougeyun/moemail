@@ -24,6 +24,7 @@ Page({
     quotaRemaining: null,
     total: 0,
     activeEmailCount: 0,
+    canCreateEmailCount: null,
     remainingToCreate: null,
     totalLimit: null,
     adsEnabled: false,
@@ -181,6 +182,10 @@ Page({
         selectedExpiryLabel: expiryLabel(expiryValues[0] || 86400000),
         expiryIndex: 0,
         emailLimit: res.emailLimit,
+        canCreateEmailCount:
+          typeof res.canCreateEmailCount === "number"
+            ? res.canCreateEmailCount
+            : null,
         activeEmailCount:
           typeof res.activeEmailCount === "number" ? res.activeEmailCount : 0,
         quotaTotal:
@@ -221,10 +226,9 @@ Page({
   },
 
   updateQuotaDisplay() {
-    const { emailLimit, activeEmailCount } = this.data
+    const { emailLimit, canCreateEmailCount } = this.data
     this.setData({
-      remainingToCreate:
-        emailLimit == null ? null : Math.max(0, emailLimit - activeEmailCount),
+      remainingToCreate: canCreateEmailCount,
       totalLimit: emailLimit
     })
   },
