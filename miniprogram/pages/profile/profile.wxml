@@ -30,7 +30,6 @@
   </view>
 
   <view class="card reward-card" wx:if="{{showRewardButton}}">
-    <view class="card-title">看视频领邮箱额度</view>
     <button class="btn reward-btn" loading="{{rewarding}}" bindtap="watchRewardedVideo">免费领取额度</button>
   </view>
 
