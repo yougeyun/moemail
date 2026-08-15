@@ -1,4 +1,25 @@
 <view class="page">
+  <view class="guest-card" wx:if="{{guestMode}}">
+    <view class="guest-title">临时邮箱 · 实时收信</view>
+    <view class="guest-sub">无需登录即可了解服务，登录后可创建临时邮箱、接收邮件和发送邮件。</view>
+    <button class="btn guest-login-btn" bindtap="goLogin">微信登录</button>
+    <view class="guest-features">
+      <view class="guest-feature">
+        <text class="feature-name">临时邮箱</text>
+        <text class="feature-desc">支持 1 小时、1 天、3 天或永久</text>
+      </view>
+      <view class="guest-feature">
+        <text class="feature-name">实时收信</text>
+        <text class="feature-desc">多邮箱统一收件箱</text>
+      </view>
+      <view class="guest-feature">
+        <text class="feature-name">发件能力</text>
+        <text class="feature-desc">登录后按权限发送邮件</text>
+      </view>
+    </view>
+  </view>
+
+  <block wx:else>
   <view class="quota-card">
     <view class="quota-grid">
       <view class="quota-item">
@@ -81,4 +102,5 @@
       >删除</text>
     </view>
   </view>
+  </block>
 </view>

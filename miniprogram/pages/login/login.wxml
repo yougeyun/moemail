@@ -9,7 +9,19 @@
     <button class="btn btn-wechat" loading="{{submitting}}" bindtap="handleWechatLogin">
       微信一键登录
     </button>
-    <view class="muted center-tip">登录即表示同意使用本站临时邮箱服务</view>
+    <view class="agreement-row">
+      <checkbox-group bindchange="toggleAgreed">
+        <label class="agreement-label">
+          <checkbox value="agreed" checked="{{agreed}}" color="#0F9D7C" />
+          <text>我已阅读并同意</text>
+        </label>
+      </checkbox-group>
+      <view class="agreement-links">
+        <text catchtap="showUserAgreement">《用户服务协议》</text>
+        <text class="agreement-and">和</text>
+        <text catchtap="showPrivacyPolicy">《隐私政策》</text>
+      </view>
+    </view>
   </view>
 
   <view class="card" wx:if="{{step === 'profile'}}">

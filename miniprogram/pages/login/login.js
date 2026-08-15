@@ -12,7 +12,8 @@ Page({
     notice: "",
     avatarDataUrl: "",
     nickname: "",
-    savingProfile: false
+    savingProfile: false,
+    agreed: false
   },
 
   onLoad() {
@@ -35,6 +36,8 @@ Page({
 
   async handleWechatLogin() {
     if (this.data.submitting) return
+    if (!this.ensureAgreed()) return
+    wx.setStorageSync("privacyAgreed", true)
     this.setData({ submitting: true, notice: "" })
     try {
       const loginCode = await new Promise((resolve, reject) => {
@@ -120,6 +123,38 @@ Page({
     this.setData({ step: "choice" })
   },
 
+  toggleAgreed(event) {
+    this.setData({
+      agreed: Boolean(event.detail.value && event.detail.value.length > 0)
+    })
+  },
+
+  ensureAgreed() {
+    if (this.data.agreed) return true
+    wx.showToast({ title: "请先阅读并同意《用户服务协议》和《隐私政策》", icon: "none" })
+    return false
+  },
+
+  showUserAgreement() {
+    wx.showModal({
+      title: "用户服务协议",
+      content:
+        "欢迎使用 mail.59pk.net 临时邮箱小程序。本服务用于创建临时邮箱、接收邮件、发送邮件和兑换激活码。用户应遵守法律法规，不得利用本服务发送垃圾邮件或从事违法活动。",
+      showCancel: false,
+      confirmText: "我知道了"
+    })
+  },
+
+  showPrivacyPolicy() {
+    wx.showModal({
+      title: "隐私政策",
+      content:
+        "为提供登录、邮箱和消息提醒服务，我们会在你主动授权后使用微信登录凭证、头像、昵称及邮箱信息。我们不会收集手机号码，也不会将你的数据用于本服务以外的用途。",
+      showCancel: false,
+      confirmText: "我知道了"
+    })
+  },
+
   async saveProfile() {
     const nickname = this.data.nickname.trim()
     const avatarDataUrl = this.data.avatarDataUrl
@@ -153,6 +188,7 @@ Page({
 
   async sendCode() {
     if (this.data.sendingCode) return
+    if (!this.ensureAgreed()) return
     if (!this.data.email) {
       wx.showToast({ title: "请先填写邮箱", icon: "none" })
       return
@@ -184,6 +220,7 @@ Page({
 
   async submit() {
     if (this.data.submitting) return
+    if (!this.ensureAgreed()) return
     this.setData({ submitting: true, notice: "" })
     const isBind = this.data.step === "bind"
     try {

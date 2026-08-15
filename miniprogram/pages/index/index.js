@@ -4,6 +4,7 @@ const { getAdsConfig, showBanner, showRewardedVideo } = require("../../utils/ads
 
 Page({
   data: {
+    guestMode: false,
     loading: false,
     emails: [],
     domains: [],
@@ -50,6 +51,10 @@ Page({
   },
 
   onPullDownRefresh() {
+    if (this.data.guestMode) {
+      wx.stopPullDownRefresh()
+      return
+    }
     Promise.all([this.loadConfig(), this.loadEmails(), this.loadAds()]).finally(() => {
       wx.stopPullDownRefresh()
     })
@@ -58,7 +63,7 @@ Page({
   async checkLogin() {
     const token = wx.getStorageSync("miniToken")
     if (!token) {
-      wx.redirectTo({ url: "/pages/login/login" })
+      this.setData({ guestMode: true, loading: false })
       return
     }
     try {
@@ -68,6 +73,7 @@ Page({
         wx.switchTab({ url: "/pages/profile/profile" })
         return
       }
+      this.setData({ guestMode: false })
       this.loadConfig()
       this.loadEmails()
       this.loadAds()
@@ -77,7 +83,7 @@ Page({
         error.message.includes("未登录")
       ) {
         getApp().clearSession()
-        wx.redirectTo({ url: "/pages/login/login" })
+        this.setData({ guestMode: true, loading: false })
       }
     }
   },
@@ -260,6 +266,11 @@ Page({
   },
 
   async createEmail() {
+    if (this.data.guestMode) {
+      wx.showToast({ title: "请先登录后创建邮箱", icon: "none" })
+      this.goLogin()
+      return
+    }
     const count = Math.max(1, Math.floor(Number(this.data.count) || 1))
     const payload = {
       name: this.data.name.trim(),
@@ -303,6 +314,10 @@ Page({
         })
       }
     }
+  },
+
+  goLogin() {
+    wx.navigateTo({ url: "/pages/login/login" })
   },
 
   copyEmail(event) {
