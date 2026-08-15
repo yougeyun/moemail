@@ -73,7 +73,12 @@
     <view class="email-actions">
       <text class="action" catchtap="copyEmail" data-address="{{item.address}}">复制</text>
       <text class="action" catchtap="shareEmail" data-id="{{item.id}}">分享</text>
-      <text class="action danger" catchtap="deleteEmail" data-id="{{item.id}}">删除</text>
+      <text
+        class="action danger"
+        wx:if="{{!item.permanent}}"
+        catchtap="deleteEmail"
+        data-id="{{item.id}}"
+      >删除</text>
     </view>
   </view>
 </view>

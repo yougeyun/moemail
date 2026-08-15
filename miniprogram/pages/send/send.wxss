@@ -1,0 +1,32 @@
+.head-row {
+  margin-bottom: 20rpx;
+}
+
+.compose-link {
+  color: #0f9d7c;
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.message-item {
+  padding: 20rpx 24rpx;
+}
+
+.message-subject {
+  overflow: hidden;
+  color: #17202a;
+  font-size: 28rpx;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.message-from,
+.message-time {
+  margin-top: 8rpx;
+}
+
+.load-more {
+  padding: 20rpx 0;
+  text-align: center;
+}

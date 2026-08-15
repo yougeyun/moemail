@@ -1,53 +1,72 @@
-.email-address {
-  font-size: 32rpx;
-  font-weight: 700;
-  color: #17202a;
+.filter-card {
+  padding: 20rpx 24rpx;
 }
 
-.switch-tip {
-  color: #0f9d7c;
+.unread-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.picker-value {
+  height: 64rpx;
+  margin-top: 16rpx;
+  padding: 0 20rpx;
+  background: #f6f8f9;
+  border-radius: 12rpx;
+  color: #17202a;
   font-size: 26rpx;
-}
-
-.email-choices {
-  margin-top: 20rpx;
-  border-top: 1rpx solid #eef1f3;
-  padding-top: 12rpx;
-}
-
-.choice-item {
-  padding: 20rpx 0;
-  border-bottom: 1rpx solid #f2f5f6;
-  color: #17202a;
-  font-size: 28rpx;
-}
-
-.choice-item:last-child {
-  border-bottom: none;
+  line-height: 64rpx;
 }
 
 .head-row {
-  margin: 8rpx 4rpx 16rpx;
+  margin: 20rpx 4rpx 12rpx;
 }
 
 .compose-link {
   color: #0f9d7c;
   font-size: 26rpx;
+  font-weight: 600;
 }
 
 .message-item {
-  padding: 24rpx;
+  padding: 20rpx 24rpx;
 }
 
 .message-subject {
-  font-size: 30rpx;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  overflow: hidden;
+  color: #17202a;
+  font-size: 28rpx;
   font-weight: 600;
-  margin-bottom: 10rpx;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.unread-dot {
+  width: 14rpx;
+  height: 14rpx;
+  flex-shrink: 0;
+  background: #f97316;
+  border-radius: 50%;
+}
+
+.message-from,
+.message-email,
+.message-time {
+  margin-top: 8rpx;
+}
+
+.message-email {
+  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.message-from {
-  margin-bottom: 6rpx;
+.load-more {
+  padding: 20rpx 0;
+  text-align: center;
 }

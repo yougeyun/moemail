@@ -431,7 +431,19 @@
     "activation": "アクティベーションコード",
     "email": "メールサービス",
     "wechat": "WeChatと広告",
-    "developer": "開発者"
+    "developer": "開発者",
+    "navigation": "下部ナビ"
+  },
+  "tabs": {
+    "title": "ミニプログラム下部ナビ",
+    "description": "4つのタブ名を編集し、各タブを個別に有効化できます。",
+    "label": "名前",
+    "enabled": "有効",
+    "save": "設定を保存",
+    "saving": "保存中...",
+    "saveSuccess": "下部ナビを保存しました",
+    "saveFailed": "保存に失敗しました",
+    "loadFailed": "読み込みに失敗しました"
   },
   "settings": {
     "editProfile": "プロフィール編集",

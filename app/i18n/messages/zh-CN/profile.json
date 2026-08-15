@@ -431,7 +431,19 @@
     "activation": "激活码管理",
     "email": "邮件服务",
     "wechat": "微信与广告",
-    "developer": "开发者"
+    "developer": "开发者",
+    "navigation": "底部导航"
+  },
+  "tabs": {
+    "title": "小程序底部导航",
+    "description": "编辑底部四个选项的名称，并可单独开启或关闭。",
+    "label": "名称",
+    "enabled": "启用",
+    "save": "保存配置",
+    "saving": "保存中...",
+    "saveSuccess": "底部导航配置已保存",
+    "saveFailed": "保存失败",
+    "loadFailed": "加载配置失败"
   },
   "settings": {
     "editProfile": "修改资料",

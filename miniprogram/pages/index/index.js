@@ -210,7 +210,8 @@ Page({
       const emails = (res.emails || []).map((item) => ({
         id: item.id,
         address: item.address,
-        expiresText: formatTime(item.expiresAt)
+        expiresText: formatTime(item.expiresAt),
+        permanent: new Date(item.expiresAt).getFullYear() === 9999
       }))
       this.setData({
         emails,

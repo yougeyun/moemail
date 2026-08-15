@@ -2,6 +2,7 @@
   "pages": [
     "pages/index/index",
     "pages/inbox/inbox",
+    "pages/send/send",
     "pages/profile/profile",
     "pages/login/login",
     "pages/message/message",
@@ -15,6 +16,7 @@
     "backgroundColor": "#F3F6F7"
   },
   "tabBar": {
+    "custom": true,
     "color": "#7A8794",
     "selectedColor": "#0F9D7C",
     "backgroundColor": "#FFFFFF",
@@ -27,6 +29,10 @@
       {
         "pagePath": "pages/inbox/inbox",
         "text": "收件箱"
+      },
+      {
+        "pagePath": "pages/send/send",
+        "text": "发件"
       },
       {
         "pagePath": "pages/profile/profile",

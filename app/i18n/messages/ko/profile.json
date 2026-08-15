@@ -431,7 +431,19 @@
     "activation": "활성화 코드",
     "email": "메일 서비스",
     "wechat": "WeChat 및 광고",
-    "developer": "개발자"
+    "developer": "개발자",
+    "navigation": "하단 내비"
+  },
+  "tabs": {
+    "title": "미니 프로그램 하단 내비",
+    "description": "네 개 탭 이름을 편집하고 각 탭을 개별로 켜거나 끌 수 있습니다.",
+    "label": "이름",
+    "enabled": "사용",
+    "save": "설정 저장",
+    "saving": "저장 중...",
+    "saveSuccess": "하단 내비 설정을 저장했습니다",
+    "saveFailed": "저장 실패",
+    "loadFailed": "불러오기 실패"
   },
   "settings": {
     "editProfile": "프로필 수정",

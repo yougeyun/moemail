@@ -16,10 +16,20 @@ import { WechatSettingsPanel } from "@/components/profile/wechat-settings-panel"
 import { AdsSettingsPanel } from "@/components/profile/ads-settings-panel"
 import { WebhookConfig } from "@/components/profile/webhook-config"
 import { ApiKeyPanel } from "@/components/profile/api-key-panel"
+import { TabSettingsPanel } from "@/components/profile/tab-settings-panel"
 
 export const runtime = "edge"
 
-const SECTION_ORDER = ["website", "members", "users", "activation", "email", "wechat", "developer"]
+const SECTION_ORDER = [
+  "website",
+  "members",
+  "users",
+  "activation",
+  "email",
+  "wechat",
+  "navigation",
+  "developer",
+]
 
 function renderSection(section: string, canRoles: boolean, canPromote: boolean) {
   switch (section) {
@@ -51,6 +61,8 @@ function renderSection(section: string, canRoles: boolean, canPromote: boolean) 
           <AdsSettingsPanel />
         </div>
       )
+    case "navigation":
+      return <TabSettingsPanel />
     case "developer":
       return (
         <div className="space-y-6">
@@ -85,7 +97,13 @@ export default async function AdminSectionPage({
   ])
 
   const sections = SECTION_ORDER.filter((key) => {
-    if (key === "website" || key === "activation" || key === "email" || key === "wechat") {
+    if (
+      key === "website" ||
+      key === "activation" ||
+      key === "email" ||
+      key === "wechat" ||
+      key === "navigation"
+    ) {
       return canConfig
     }
     if (key === "members") return canRoles

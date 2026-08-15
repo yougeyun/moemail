@@ -7,6 +7,7 @@ import {
   ArrowLeft,
   Globe,
   KeyRound,
+  LayoutGrid,
   Mail,
   Megaphone,
   Settings,
@@ -29,6 +30,7 @@ const SECTION_ICONS: Record<string, typeof Globe> = {
   activation: KeyRound,
   email: Mail,
   wechat: Megaphone,
+  navigation: LayoutGrid,
   developer: Wrench,
 }
 

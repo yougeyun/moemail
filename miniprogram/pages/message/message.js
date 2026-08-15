@@ -31,6 +31,10 @@ Page({
       const res = await request({
         url: `/api/emails/${this.data.emailId}/${this.data.id}`
       })
+      request({
+        url: `/api/messages/${this.data.id}/read`,
+        method: "POST"
+      }).catch(() => {})
       this.setData({
         message: {
           subject: res.message.subject || "（无主题）",

@@ -431,7 +431,19 @@
     "activation": "激活碼管理",
     "email": "郵件服務",
     "wechat": "微信與廣告",
-    "developer": "開發者"
+    "developer": "開發者",
+    "navigation": "底部導航"
+  },
+  "tabs": {
+    "title": "小程式底部導航",
+    "description": "編輯底部四個選項的名稱，並可單獨開啟或關閉。",
+    "label": "名稱",
+    "enabled": "啟用",
+    "save": "儲存配置",
+    "saving": "儲存中...",
+    "saveSuccess": "底部導航配置已儲存",
+    "saveFailed": "儲存失敗",
+    "loadFailed": "載入配置失敗"
   },
   "settings": {
     "editProfile": "修改資料",

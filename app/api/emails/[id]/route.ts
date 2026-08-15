@@ -30,6 +30,12 @@ export async function DELETE(
         { status: 403 }
       )
     }
+    if (email.expiresAt.getFullYear() >= 9999) {
+      return NextResponse.json(
+        { error: "永久邮箱不可删除" },
+        { status: 403 }
+      )
+    }
     await db.delete(messages)
       .where(eq(messages.emailId, id))
 

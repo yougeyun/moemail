@@ -1,46 +1,28 @@
 <view class="page">
-  <view class="card" wx:if="{{selectedEmail}}">
-    <view class="row between" bindtap="toggleEmailChoices">
-      <view>
-        <view class="email-address">{{selectedEmail.address}}</view>
-        <view class="muted">共 {{total}} 封邮件</view>
+  <view class="card filter-card">
+    <view class="row between">
+      <text class="card-title">收件箱</text>
+      <view class="unread-row">
+        <text class="muted">仅看未读</text>
+        <switch checked="{{unreadOnly}}" bindchange="onUnreadChange" color="#0F9D7C" />
       </view>
-      <text class="switch-tip">{{showEmailChoices ? '收起' : '切换'}}</text>
     </view>
-    <view class="email-choices" wx:if="{{showEmailChoices}}">
-      <view
-        class="choice-item"
-        wx:for="{{emailChoices}}"
-        wx:key="id"
-        data-id="{{item.id}}"
-        data-address="{{item.address}}"
-        bindtap="chooseEmail"
-      >{{item.address}}</view>
-    </view>
+    <picker
+      range="{{emailFilters}}"
+      range-key="address"
+      value="{{filterIndex}}"
+      bindchange="onFilterEmailChange"
+    >
+      <view class="picker-value">{{activeEmailAddress || '全部邮箱'}}</view>
+    </picker>
   </view>
 
-  <view class="card" wx:if="{{!selectedEmail}}">
-    <view class="empty">还没有选择邮箱</view>
-    <button class="btn btn-ghost" bindtap="toggleEmailChoices">选择邮箱</button>
-  </view>
-
-  <view class="card email-choices" wx:if="{{!selectedEmail && showEmailChoices}}">
-    <view
-      class="choice-item"
-      wx:for="{{emailChoices}}"
-      wx:key="id"
-      data-id="{{item.id}}"
-      data-address="{{item.address}}"
-      bindtap="chooseEmail"
-    >{{item.address}}</view>
-  </view>
-
-  <view class="row between head-row" wx:if="{{selectedEmail}}">
-    <text class="card-title">收件箱</text>
+  <view class="row between head-row">
+    <text class="card-title">邮件</text>
     <text class="compose-link" bindtap="goCompose">写邮件</text>
   </view>
 
-  <view class="empty" wx:if="{{!loading && selectedEmail && messages.length === 0}}">
+  <view class="empty" wx:if="{{!loading && messages.length === 0}}">
     暂无邮件
   </view>
 
@@ -49,10 +31,19 @@
     wx:for="{{messages}}"
     wx:key="id"
     data-id="{{item.id}}"
+    data-emailid="{{item.emailId}}"
     bindtap="openMessage"
   >
-    <view class="message-subject">{{item.subject}}</view>
-    <view class="muted message-from">{{item.from}}</view>
-    <view class="muted message-time">{{item.time}}</view>
+    <view class="message-subject">
+      <text class="unread-dot" wx:if="{{!item.isRead}}"></text>
+      <text>{{item.subject}}</text>
+    </view>
+    <view class="muted message-from">{{item.from || item.emailAddress}}</view>
+    <view class="row between">
+      <view class="muted message-email">{{item.emailAddress}}</view>
+      <view class="muted message-time">{{item.time}}</view>
+    </view>
   </view>
+
+  <view class="muted load-more" wx:if="{{loadingMore}}">加载更多...</view>
 </view>

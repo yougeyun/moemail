@@ -4,13 +4,16 @@ const { getAdsConfig, createBanner } = require("../../utils/ads")
 
 Page({
   data: {
-    selectedEmail: null,
-    showEmailChoices: false,
-    emailChoices: [],
     messages: [],
     loading: false,
+    loadingMore: false,
     nextCursor: null,
     total: 0,
+    emailFilters: [],
+    filterIndex: 0,
+    activeEmailId: "",
+    activeEmailAddress: "全部邮箱",
+    unreadOnly: false,
     adsEnabled: false
   },
 
@@ -32,7 +35,7 @@ Page({
   startPolling() {
     this.stopPolling()
     this.pollTimer = setInterval(() => {
-      if (this.data.selectedEmail) {
+      if (!this.data.loading) {
         this.loadMessages(true)
       }
     }, 30000)
@@ -58,8 +61,7 @@ Page({
         wx.switchTab({ url: "/pages/profile/profile" })
         return
       }
-      const selectedEmail = wx.getStorageSync("selectedEmail") || null
-      this.setData({ selectedEmail })
+      this.loadEmailFilters()
       this.loadMessages(true)
       this.loadAds()
     } catch (error) {
@@ -105,8 +107,59 @@ Page({
     }
   },
 
+  async loadEmailFilters() {
+    try {
+      const res = await request({ url: "/api/emails" })
+      const emails = res.emails || []
+      const filters = [{ id: "", address: "全部邮箱" }].concat(
+        emails.map((item) => ({
+          id: item.id,
+          address: item.address
+        }))
+      )
+      const currentId = this.data.activeEmailId
+      const index = filters.findIndex((item) => item.id === currentId)
+      const activeIndex = index === -1 ? 0 : index
+      this.setData({
+        emailFilters: filters,
+        filterIndex: activeIndex,
+        activeEmailId: filters[activeIndex].id,
+        activeEmailAddress: filters[activeIndex].address
+      })
+    } catch (error) {
+      wx.showToast({ title: error.message, icon: "none" })
+    }
+  },
+
+  onFilterEmailChange(event) {
+    const index = Number(event.detail.value)
+    const filter = this.data.emailFilters[index]
+    if (!filter) return
+    this.setData({
+      filterIndex: index,
+      activeEmailId: filter.id,
+      activeEmailAddress: filter.address
+    })
+    if (filter.id) {
+      wx.setStorageSync("selectedEmail", {
+        id: filter.id,
+        address: filter.address
+      })
+    } else {
+      wx.removeStorageSync("selectedEmail")
+    }
+    this.loadMessages(true)
+  },
+
+  onUnreadChange(event) {
+    this.setData({ unreadOnly: Boolean(event.detail.value) })
+    this.loadMessages(true)
+  },
+
   onPullDownRefresh() {
-    this.loadMessages(true).finally(() => wx.stopPullDownRefresh())
+    Promise.all([this.loadEmailFilters(), this.loadMessages(true)]).finally(
+      () => wx.stopPullDownRefresh()
+    )
   },
 
   onReachBottom() {
@@ -116,105 +169,64 @@ Page({
   },
 
   async loadMessages(reset) {
-    if (!this.data.selectedEmail) return
     if (this.data.loading) return
-    this.setData({ loading: true })
+    this.setData({ loading: true, loadingMore: !reset })
     try {
       const cursor = reset ? "" : this.data.nextCursor || ""
-      const url = `/api/emails/${this.data.selectedEmail.id}?cursor=${cursor}`
-      const res = await request({ url })
+      const params = []
+      if (this.data.activeEmailId) {
+        params.push(`emailId=${encodeURIComponent(this.data.activeEmailId)}`)
+      }
+      if (this.data.unreadOnly) {
+        params.push("unread=1")
+      }
+      if (cursor) {
+        params.push(`cursor=${encodeURIComponent(cursor)}`)
+      }
+      const query = params.length ? `?${params.join("&")}` : ""
+      const res = await request({ url: `/api/messages${query}` })
       const mapped = (res.messages || []).map((item) => ({
         id: item.id,
-        subject: item.subject || "（无主题）",
+        emailId: item.email_id,
+        emailAddress: item.email_address,
         from: item.from_address || "",
-        time: formatTime(item.received_at)
+        subject: item.subject || "（无主题）",
+        time: formatTime(item.received_at),
+        isRead: Boolean(item.is_read)
       }))
       this.setData({
         messages: reset ? mapped : this.data.messages.concat(mapped),
         nextCursor: res.nextCursor || null,
         total: res.total || mapped.length,
-        loading: false
+        loading: false,
+        loadingMore: false
       })
     } catch (error) {
-      this.setData({ loading: false })
+      this.setData({ loading: false, loadingMore: false })
       if (reset) {
-        const message = error.message || ""
-        if (
-          message.includes("过期") ||
-          message.includes("无权限") ||
-          message.includes("不存在")
-        ) {
-          this.clearExpiredEmail(message)
-        } else {
-          wx.showToast({ title: message, icon: "none" })
-        }
+        wx.showToast({ title: error.message, icon: "none" })
       }
     }
   },
 
-  clearExpiredEmail(message) {
-    wx.removeStorageSync("selectedEmail")
-    this.stopPolling()
-    this.setData({
-      selectedEmail: null,
-      messages: [],
-      nextCursor: null,
-      total: 0
-    })
-    wx.showToast({ title: message || "邮箱已过期", icon: "none" })
-    this.loadEmailChoices()
-  },
-
-  async loadEmailChoices() {
-    try {
-      const res = await request({ url: "/api/emails" })
-      this.setData({
-        emailChoices: res.emails || [],
-        showEmailChoices: true
-      })
-    } catch (error) {
-      wx.showToast({ title: error.message, icon: "none" })
-    }
-  },
-
-  async toggleEmailChoices() {
-    if (this.data.showEmailChoices) {
-      this.setData({ showEmailChoices: false })
-      return
-    }
-    try {
-      const res = await request({ url: "/api/emails" })
-      this.setData({
-        emailChoices: res.emails || [],
-        showEmailChoices: true
-      })
-    } catch (error) {
-      wx.showToast({ title: error.message, icon: "none" })
-    }
-  },
-
-  chooseEmail(event) {
-    const { id, address } = event.currentTarget.dataset
-    wx.setStorageSync("selectedEmail", { id, address })
-    this.setData({
-      selectedEmail: { id, address },
-      showEmailChoices: false,
-      messages: [],
-      nextCursor: null
-    })
-    this.loadMessages(true)
-  },
-
   openMessage(event) {
-    const { id } = event.currentTarget.dataset
+    const { id, emailid } = event.currentTarget.dataset
+    this.setData({
+      messages: this.data.messages.map((item) =>
+        item.id === id ? { ...item, isRead: true } : item
+      )
+    })
     wx.navigateTo({
-      url: `/pages/message/message?id=${id}&emailId=${this.data.selectedEmail.id}`
+      url: `/pages/message/message?id=${id}&emailId=${emailid}`
     })
   },
 
   goCompose() {
+    const fallback = this.data.emailFilters[1]
+    const emailId =
+      this.data.activeEmailId || (fallback ? fallback.id : "")
     wx.navigateTo({
-      url: `/pages/compose/compose?emailId=${this.data.selectedEmail.id}`
+      url: `/pages/compose/compose${emailId ? `?emailId=${emailId}` : ""}`
     })
   }
 })

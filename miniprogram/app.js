@@ -1,9 +1,11 @@
 const { getAdsConfig, showSplashAd } = require("./utils/ads")
+const { request } = require("./utils/request")
 
 App({
   globalData: {
     token: "",
-    user: null
+    user: null,
+    tabConfig: []
   },
 
   onLaunch() {
@@ -11,10 +13,20 @@ App({
     const user = wx.getStorageSync("miniUser") || null
     this.globalData.token = token
     this.globalData.user = user
+    this.loadTabConfig()
 
     setTimeout(() => {
       getAdsConfig().then((config) => showSplashAd(config))
     }, 800)
+  },
+
+  async loadTabConfig() {
+    try {
+      const res = await request({ url: "/api/config/tabs" })
+      this.globalData.tabConfig = (res && res.tabs) || []
+    } catch (error) {
+      this.globalData.tabConfig = []
+    }
   },
 
   setSession(token, user) {

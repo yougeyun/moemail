@@ -431,7 +431,19 @@
     "activation": "Activation Codes",
     "email": "Email Service",
     "wechat": "WeChat & Ads",
-    "developer": "Developer"
+    "developer": "Developer",
+    "navigation": "Bottom Nav"
+  },
+  "tabs": {
+    "title": "Mini Program Bottom Navigation",
+    "description": "Edit the four tab labels and enable or disable each tab.",
+    "label": "Label",
+    "enabled": "Enabled",
+    "save": "Save Configuration",
+    "saving": "Saving...",
+    "saveSuccess": "Bottom navigation saved",
+    "saveFailed": "Failed to save",
+    "loadFailed": "Failed to load"
   },
   "settings": {
     "editProfile": "Edit Profile",
