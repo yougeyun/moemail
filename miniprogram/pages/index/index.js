@@ -23,6 +23,9 @@ Page({
     emailLimit: null,
     quotaRemaining: null,
     total: 0,
+    activeEmailCount: 0,
+    remainingToCreate: null,
+    totalLimit: null,
     adsEnabled: false,
     rewardedAdUnitId: "",
     rewardEmailQuota: 1,
@@ -178,11 +181,18 @@ Page({
         selectedExpiryLabel: expiryLabel(expiryValues[0] || 86400000),
         expiryIndex: 0,
         emailLimit: res.emailLimit,
+        activeEmailCount:
+          typeof res.activeEmailCount === "number" ? res.activeEmailCount : 0,
+        quotaTotal:
+          res.emailQuota && typeof res.emailQuota.total === "number"
+            ? res.emailQuota.total
+            : res.emailLimit || 0,
         quotaRemaining:
           res.emailQuota && typeof res.emailQuota.remaining === "number"
             ? res.emailQuota.remaining
             : null
       })
+      this.updateQuotaDisplay()
     } catch (error) {
       // Config is optional; email list still loads.
     }
@@ -200,12 +210,23 @@ Page({
       this.setData({
         emails,
         total: res.total || emails.length,
+        activeEmailCount: res.total || emails.length,
         loading: false
       })
+      this.updateQuotaDisplay()
     } catch (error) {
       this.setData({ loading: false })
       wx.showToast({ title: error.message, icon: "none" })
     }
+  },
+
+  updateQuotaDisplay() {
+    const { emailLimit, activeEmailCount } = this.data
+    this.setData({
+      remainingToCreate:
+        emailLimit == null ? null : Math.max(0, emailLimit - activeEmailCount),
+      totalLimit: emailLimit
+    })
   },
 
   onNameInput(event) {

@@ -16,6 +16,8 @@
     "backToMessageList": "← 메시지 목록으로 돌아가기"
   },
   "list": {
+    "quotaSummary": "현재 {current} · 생성 가능 {remaining} · 총 {totalLimit}",
+    "quotaHint": "현재 메일 / 생성 가능 / 전체",
     "emailCount": "{count}/{max} 이메일",
     "emailCountUnlimited": "{count}/∞ 이메일",
     "loading": "로딩 중...",

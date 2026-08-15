@@ -202,10 +202,6 @@ Page({
     }
   },
 
-  goShop() {
-    wx.navigateTo({ url: "/pages/shop/shop" })
-  },
-
   setMode(event) {
     this.setData({
       mode: event.currentTarget.dataset.mode,
@@ -306,13 +302,25 @@ Page({
     if (this.data.redeeming) return
     this.setData({ redeeming: true })
     try {
-      await request({
+      const res = await request({
         url: "/api/activation-codes/redeem",
         method: "POST",
         data: { code: this.data.codeText }
       })
       this.setData({ codeText: "", redeeming: false })
-      wx.showToast({ title: "兑换成功", icon: "success" })
+      if (res.redeemedRoleName) {
+        wx.showModal({
+          title: "兑换成功",
+          content: `会员等级：${res.redeemedRoleName}${
+            res.redeemedRoleDurationDays > 0
+              ? `（${res.redeemedRoleDurationDays} 天）`
+              : "（永久）"
+          }`,
+          showCancel: false
+        })
+      } else {
+        wx.showToast({ title: "兑换成功", icon: "success" })
+      }
       this.loadUser()
     } catch (error) {
       this.setData({ redeeming: false })

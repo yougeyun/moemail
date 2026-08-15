@@ -5,51 +5,38 @@ import { useTranslations, useLocale } from "next-intl"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { signOut } from "next-auth/react"
-import { Settings, Crown, Sword, User2, Gem, Mail, UserCog } from "lucide-react"
+import { Crown, Gem, Mail, Settings, Sword, User2, UserCog } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { WebhookConfig } from "./webhook-config"
-import { PromotePanel } from "./promote-panel"
-import { EmailServiceConfig } from "./email-service-config"
 import { useRolePermission } from "@/hooks/use-role-permission"
 import { PERMISSIONS, getRoleIcon } from "@/lib/permissions"
-import { WebsiteConfigPanel } from "./website-config-panel"
-import { ApiKeyPanel } from "./api-key-panel"
-import { BrandSettingsPanel } from "./brand-settings-panel"
-import { TemplateManagerPanel } from "./template-manager-panel"
-import { RoleManagerPanel } from "./role-manager-panel"
 import { ROLE_ICON_MAP } from "./role-ui"
-import { MembershipShopPanel } from "./membership-shop-panel"
-import { PaymentSettingsPanel } from "./payment-settings-panel"
 import { ActivationCodePanel } from "./activation-code-panel"
-import { ActivationCodeManagerPanel } from "./activation-code-manager-panel"
-import { SystemMailPanel } from "./system-mail-panel"
-import { WechatSettingsPanel } from "./wechat-settings-panel"
-import { AdsSettingsPanel } from "./ads-settings-panel"
 
 interface ProfileCardProps {
   user: User
 }
 
 const roleConfigs = {
-  emperor: { key: 'EMPEROR', icon: Crown },
-  duke: { key: 'DUKE', icon: Gem },
-  knight: { key: 'KNIGHT', icon: Sword },
-  civilian: { key: 'CIVILIAN', icon: User2 },
+  emperor: { key: "EMPEROR", icon: Crown },
+  duke: { key: "DUKE", icon: Gem },
+  knight: { key: "KNIGHT", icon: Sword },
+  civilian: { key: "CIVILIAN", icon: User2 },
 } as const
 
 export function ProfileCard({ user }: ProfileCardProps) {
   const t = useTranslations("profile.card")
   const tAuth = useTranslations("auth.signButton")
-  const tWebhook = useTranslations("profile.webhook")
   const tNav = useTranslations("common.nav")
   const tSettings = useTranslations("profile.settings")
+  const tAdmin = useTranslations("profile.admin")
   const locale = useLocale()
   const router = useRouter()
   const { checkPermission } = useRolePermission()
-  const canManageWebhook = checkPermission(PERMISSIONS.MANAGE_WEBHOOK)
-  const canPromote = checkPermission(PERMISSIONS.PROMOTE_USER)
-  const canManageConfig = checkPermission(PERMISSIONS.MANAGE_CONFIG)
-  const canManageRoles = checkPermission(PERMISSIONS.MANAGE_ROLES)
+  const canAdmin =
+    checkPermission(PERMISSIONS.MANAGE_CONFIG) ||
+    checkPermission(PERMISSIONS.MANAGE_ROLES) ||
+    checkPermission(PERMISSIONS.PROMOTE_USER) ||
+    checkPermission(PERMISSIONS.MANAGE_WEBHOOK)
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -66,19 +53,18 @@ export function ProfileCard({ user }: ProfileCardProps) {
               />
             )}
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <h2 className="truncate text-2xl font-bold">{user.name}</h2>
             </div>
-            <p className="text-sm text-muted-foreground truncate mt-1">
-              {
-                user.email ? user.email : `${t("name")}: ${user.username}`
-              }
+            <p className="mt-1 truncate text-sm text-muted-foreground">
+              {user.email ? user.email : `${t("name")}: ${user.username}`}
             </p>
             {user.roles && (
-              <div className="flex gap-2 mt-2">
+              <div className="mt-2 flex gap-2">
                 {user.roles.map((role) => {
-                  const roleConfig = roleConfigs[role.name as keyof typeof roleConfigs]
+                  const roleConfig =
+                    roleConfigs[role.name as keyof typeof roleConfigs]
                   const Icon = ROLE_ICON_MAP[getRoleIcon(role)] || User2
                   const roleName =
                     role.displayName ||
@@ -86,10 +72,10 @@ export function ProfileCard({ user }: ProfileCardProps) {
                   return (
                     <div
                       key={role.name}
-                      className="flex items-center gap-1 text-xs bg-primary/10 text-primary px-2 py-0.5 rounded"
+                      className="flex items-center gap-1 rounded bg-primary/10 px-2 py-0.5 text-xs text-primary"
                       title={roleName}
                     >
-                      <Icon className="w-3 h-3" />
+                      <Icon className="h-3 w-3" />
                       {roleName}
                     </div>
                   )
@@ -100,50 +86,34 @@ export function ProfileCard({ user }: ProfileCardProps) {
         </div>
       </div>
 
-      <MembershipShopPanel />
       <ActivationCodePanel />
 
-      {canManageWebhook && (
-      <div className="panel-card">
-          <div className="mb-6 flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <Settings className="h-5 w-5" />
-            </div>
-            <h2 className="text-lg font-semibold">{tWebhook("title")}</h2>
-          </div>
-          <WebhookConfig />
-        </div>
-      )}
-
-      {canManageConfig && <WebsiteConfigPanel />}
-      {canManageConfig && <BrandSettingsPanel />}
-      {canManageConfig && <TemplateManagerPanel />}
-      {canManageConfig && <PaymentSettingsPanel />}
-      {canManageConfig && <ActivationCodeManagerPanel />}
-      {canManageConfig && <EmailServiceConfig />}
-      {canManageConfig && <SystemMailPanel />}
-      {canManageConfig && <WechatSettingsPanel />}
-      {canManageConfig && <AdsSettingsPanel />}
-      {canManageRoles && <RoleManagerPanel />}
-      {canPromote && <PromotePanel />}
-      {canManageWebhook && <ApiKeyPanel />}
-
-      <div className="flex flex-col sm:flex-row gap-4 px-1">
+      <div className="flex flex-col gap-4 px-1 sm:flex-row">
         <Button
           onClick={() => router.push(`/${locale}/moe`)}
-          className="gap-2 flex-1"
+          className="flex-1 gap-2"
         >
-          <Mail className="w-4 h-4" />
+          <Mail className="h-4 w-4" />
           {tNav("backToMailbox")}
         </Button>
         <Button
           variant="outline"
           onClick={() => router.push(`/${locale}/profile/settings`)}
-          className="gap-2 flex-1"
+          className="flex-1 gap-2"
         >
-          <UserCog className="w-4 h-4" />
+          <UserCog className="h-4 w-4" />
           {tSettings("editProfile")}
         </Button>
+        {canAdmin && (
+          <Button
+            variant="outline"
+            onClick={() => router.push(`/${locale}/profile/admin`)}
+            className="flex-1 gap-2"
+          >
+            <Settings className="h-4 w-4" />
+            {tAdmin("title")}
+          </Button>
+        )}
         <Button
           variant="outline"
           onClick={() => signOut({ callbackUrl: `/${locale}` })}
@@ -154,4 +124,4 @@ export function ProfileCard({ user }: ProfileCardProps) {
       </div>
     </div>
   )
-} 
+}

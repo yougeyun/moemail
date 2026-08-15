@@ -299,6 +299,8 @@
     "permanent": "永久"
   },
   "activationCode": {
+    "days": " 天",
+    "permanentRole": " 永久",
     "title": "激活碼兌換",
     "emailQuota": "剩餘郵箱額度：{count}",
     "emailQuotaTotal": "已兌換郵箱額度：{count}",
@@ -311,6 +313,10 @@
     "redeemFailed": "兌換失敗"
   },
   "activationCodeManager": {
+    "role": "會員等級（可選）",
+    "roleNone": "不關聯等級",
+    "roleDurationDays": "等級時長（天）",
+    "roleDurationHint": "0 表示永久",
     "title": "激活碼管理",
     "count": "產生數量",
     "emailQuota": "可兌換郵箱數",
@@ -414,6 +420,18 @@
     "saveSuccess": "郵箱綁定成功",
     "saveFailed": "操作失敗",
     "linkNotice": "激活郵件已發送，請點擊郵件中的連結完成驗證"
+  },
+  "admin": {
+    "title": "管理後台",
+    "subtitle": "網站設定與營運管理",
+    "back": "返回個人中心",
+    "website": "網站設定",
+    "members": "會員等級",
+    "users": "用戶管理",
+    "activation": "激活碼管理",
+    "email": "郵件服務",
+    "wechat": "微信與廣告",
+    "developer": "開發者"
   },
   "settings": {
     "editProfile": "修改資料",

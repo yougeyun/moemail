@@ -1,9 +1,9 @@
 import { createDb } from "@/lib/db"
-import { activationCodes, users } from "@/lib/schema"
+import { activationCodes, roles, users } from "@/lib/schema"
 import { desc, eq } from "drizzle-orm"
 import { nanoid } from "nanoid"
 import { auth, checkPermission } from "@/lib/auth"
-import { PERMISSIONS } from "@/lib/permissions"
+import { PERMISSIONS, ROLES } from "@/lib/permissions"
 import { EXPIRY_OPTIONS } from "@/types/email"
 
 export const runtime = "edge"
@@ -24,6 +24,9 @@ export async function GET() {
         sendQuota: activationCodes.sendQuota,
         emailExpiryDays: activationCodes.emailExpiryDays,
         emailExpiry: activationCodes.emailExpiry,
+        roleId: activationCodes.roleId,
+        roleDurationDays: activationCodes.roleDurationDays,
+        roleDisplayName: roles.displayName,
         usedBy: activationCodes.usedBy,
         usedAt: activationCodes.usedAt,
         createdAt: activationCodes.createdAt,
@@ -32,6 +35,7 @@ export async function GET() {
       })
       .from(activationCodes)
       .leftJoin(users, eq(users.id, activationCodes.usedBy))
+      .leftJoin(roles, eq(roles.id, activationCodes.roleId))
       .orderBy(desc(activationCodes.createdAt))
       .limit(200)
 
@@ -57,6 +61,8 @@ export async function POST(request: Request) {
       emailExpiry?: number
       prefix?: string
       expiresInDays?: number
+      roleId?: string
+      roleDurationDays?: number
     }
 
     const count = Math.min(500, Math.max(1, Number(body.count) || 1))
@@ -73,6 +79,23 @@ export async function POST(request: Request) {
         : null
 
     const db = createDb()
+    const roleId = (body.roleId || "").trim() || undefined
+    const roleDurationDays = Math.max(
+      0,
+      Math.floor(Number(body.roleDurationDays) || 0)
+    )
+    if (roleId) {
+      const role = await db.query.roles.findFirst({
+        where: eq(roles.id, roleId),
+      })
+      if (!role || role.name === ROLES.EMPEROR) {
+        return Response.json(
+          { error: "无效的会员等级" },
+          { status: 400 }
+        )
+      }
+    }
+
     const session = await auth()
     const sessionUserId = session?.user?.id || "system"
     const codes = Array.from({ length: count }, () => {
@@ -87,6 +110,8 @@ export async function POST(request: Request) {
             ? 0
             : Math.ceil(normalizedEmailExpiry / 86400000),
         emailExpiry: normalizedEmailExpiry,
+        roleId: roleId ?? null,
+        roleDurationDays: roleId ? roleDurationDays : 0,
         createdBy: sessionUserId,
         expiresAt,
       }

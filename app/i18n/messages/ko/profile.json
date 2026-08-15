@@ -299,6 +299,8 @@
     "permanent": "영구"
   },
   "activationCode": {
+    "days": " 일",
+    "permanentRole": " 영구",
     "title": "활성 코드 교환",
     "emailQuota": "남은 메일 할당량: {count}",
     "emailQuotaTotal": "메일 할당량(총): {count}",
@@ -311,6 +313,10 @@
     "redeemFailed": "교환 실패"
   },
   "activationCodeManager": {
+    "role": "회원 등급 (선택)",
+    "roleNone": "등급 없음",
+    "roleDurationDays": "등급 기간 (일)",
+    "roleDurationHint": "0은 영구를 의미합니다",
     "title": "활성 코드 관리",
     "count": "생성 수",
     "emailQuota": "메일 수",
@@ -414,6 +420,18 @@
     "saveSuccess": "이메일이 연동되었습니다",
     "saveFailed": "작업에 실패했습니다",
     "linkNotice": "활성화 이메일을 보냈습니다. 링크를 클릭하여 인증하세요"
+  },
+  "admin": {
+    "title": "관리자 센터",
+    "subtitle": "사이트 설정 및 운영 관리",
+    "back": "프로필로 돌아가기",
+    "website": "사이트 설정",
+    "members": "회원 등급",
+    "users": "사용자 관리",
+    "activation": "활성화 코드",
+    "email": "메일 서비스",
+    "wechat": "WeChat 및 광고",
+    "developer": "개발자"
   },
   "settings": {
     "editProfile": "프로필 수정",

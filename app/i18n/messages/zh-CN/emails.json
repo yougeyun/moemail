@@ -16,6 +16,8 @@
     "backToMessageList": "← 返回消息列表"
   },
   "list": {
+    "quotaSummary": "当前 {current} · 可创建 {remaining} · 总数 {totalLimit}",
+    "quotaHint": "当前邮箱 / 可创建邮箱 / 邮箱总数",
     "emailCount": "{count}/{max} 个邮箱",
     "emailCountUnlimited": "{count}/∞ 个邮箱",
     "loading": "加载中...",

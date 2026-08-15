@@ -16,6 +16,8 @@
     "backToMessageList": "← メッセージ一覧に戻る"
   },
   "list": {
+    "quotaSummary": "現在 {current} · 作成可能 {remaining} · 合計 {totalLimit}",
+    "quotaHint": "現在のメール / 作成可能 / 合計",
     "emailCount": "{count}/{max} 個のメールボックス",
     "emailCountUnlimited": "{count}/∞ 個のメールボックス",
     "loading": "読み込み中...",

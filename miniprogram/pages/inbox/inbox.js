@@ -138,8 +138,42 @@ Page({
     } catch (error) {
       this.setData({ loading: false })
       if (reset) {
-        wx.showToast({ title: error.message, icon: "none" })
+        const message = error.message || ""
+        if (
+          message.includes("过期") ||
+          message.includes("无权限") ||
+          message.includes("不存在")
+        ) {
+          this.clearExpiredEmail(message)
+        } else {
+          wx.showToast({ title: message, icon: "none" })
+        }
       }
+    }
+  },
+
+  clearExpiredEmail(message) {
+    wx.removeStorageSync("selectedEmail")
+    this.stopPolling()
+    this.setData({
+      selectedEmail: null,
+      messages: [],
+      nextCursor: null,
+      total: 0
+    })
+    wx.showToast({ title: message || "邮箱已过期", icon: "none" })
+    this.loadEmailChoices()
+  },
+
+  async loadEmailChoices() {
+    try {
+      const res = await request({ url: "/api/emails" })
+      this.setData({
+        emailChoices: res.emails || [],
+        showEmailChoices: true
+      })
+    } catch (error) {
+      wx.showToast({ title: error.message, icon: "none" })
     }
   },
 

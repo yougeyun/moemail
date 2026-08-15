@@ -23,9 +23,18 @@ interface ActivationCodeItem {
   sendQuota: number
   emailExpiryDays: number
   emailExpiry: number
+  roleId: string | null
+  roleDurationDays: number
+  roleDisplayName: string | null
   usedAt: string | null
   expiresAt: string | null
   usedUsername: string | null
+}
+
+interface RoleOption {
+  id: string
+  name: string
+  displayName: string | null
 }
 
 export function ActivationCodeManagerPanel() {
@@ -42,6 +51,9 @@ export function ActivationCodeManagerPanel() {
   const [codes, setCodes] = useState<ActivationCodeItem[]>([])
   const [loading, setLoading] = useState(true)
   const [generating, setGenerating] = useState(false)
+  const [roles, setRoles] = useState<RoleOption[]>([])
+  const [roleId, setRoleId] = useState("none")
+  const [roleDurationDays, setRoleDurationDays] = useState("0")
 
   const fetchCodes = useCallback(async () => {
     setLoading(true)
@@ -61,6 +73,23 @@ export function ActivationCodeManagerPanel() {
     fetchCodes()
   }, [fetchCodes])
 
+  const fetchRoles = useCallback(async () => {
+    try {
+      const res = await fetch("/api/roles")
+      if (!res.ok) return
+      const data = await res.json() as { roles: RoleOption[] }
+      setRoles(
+        (data.roles || []).filter((role) => role.name !== "emperor")
+      )
+    } catch {
+      // Role selection is optional.
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchRoles()
+  }, [fetchRoles])
+
   const handleGenerate = async () => {
     setGenerating(true)
     try {
@@ -74,6 +103,8 @@ export function ActivationCodeManagerPanel() {
           emailExpiry: Number(emailExpiry),
           prefix: prefix.trim(),
           expiresInDays: Number(expiresInDays) || 0,
+          roleId: roleId === "none" ? undefined : roleId,
+          roleDurationDays: Number(roleDurationDays) || 0,
         }),
       })
       const data = await res.json() as {
@@ -115,7 +146,7 @@ export function ActivationCodeManagerPanel() {
         <h2 className="text-lg font-semibold">{t("title")}</h2>
       </div>
 
-      <div className="grid gap-3 rounded-lg border border-border/70 p-4 sm:grid-cols-2 lg:grid-cols-6">
+      <div className="grid gap-3 rounded-lg border border-border/70 p-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="grid gap-1.5">
           <Label>{t("count")}</Label>
           <Input type="number" min="1" max="500" value={count} onChange={(e) => setCount(e.target.value)} />
@@ -159,6 +190,36 @@ export function ActivationCodeManagerPanel() {
           <Label>{t("expiresInDays")}</Label>
           <Input type="number" min="0" value={expiresInDays} onChange={(e) => setExpiresInDays(e.target.value)} />
         </div>
+        <div className="grid gap-1.5">
+          <Label>{t("role")}</Label>
+          <Select value={roleId} onValueChange={setRoleId}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">{t("roleNone")}</SelectItem>
+              {roles.map((role) => (
+                <SelectItem key={role.id} value={role.id}>
+                  {role.displayName || role.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        {roleId && roleId !== "none" && (
+          <div className="grid gap-1.5">
+            <Label>{t("roleDurationDays")}</Label>
+            <Input
+              type="number"
+              min="0"
+              value={roleDurationDays}
+              onChange={(e) => setRoleDurationDays(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              {t("roleDurationHint")}
+            </p>
+          </div>
+        )}
       </div>
 
       <Button onClick={handleGenerate} disabled={generating} className="mt-4">
@@ -196,6 +257,11 @@ export function ActivationCodeManagerPanel() {
             {codes.map((item) => (
               <div key={item.id} className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card/60 px-3 py-2 text-sm">
                 <span className="font-mono">{item.code}</span>
+                {item.roleDisplayName && (
+                  <span className="rounded bg-primary/10 px-1.5 py-0.5 text-xs text-primary">
+                    {item.roleDisplayName}
+                  </span>
+                )}
                 <span className="text-xs text-muted-foreground">
                   {t("emailQuotaShort", { count: item.emailQuota })} · {t("sendQuotaShort", { count: item.sendQuota })}
                   {item.emailExpiry > 0 && (

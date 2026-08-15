@@ -5,8 +5,8 @@ import { checkPermission } from "@/lib/auth"
 import { isTemplateId } from "@/templates/configs"
 import { DEFAULT_SITE_NAME } from "@/lib/site-config"
 import { createDb } from "@/lib/db"
-import { roles, users } from "@/lib/schema"
-import { eq, lt } from "drizzle-orm"
+import { emails, roles, users } from "@/lib/schema"
+import { and, eq, gt, lt, sql } from "drizzle-orm"
 import { getUserId } from "@/lib/apiKey"
 import { getRoleEmailRules } from "@/lib/role-rules"
 import { getActiveUserRole } from "@/lib/role-access"
@@ -76,8 +76,10 @@ export async function GET() {
     | {
         total: number
         remaining: number
+        activeEmailCount: number
       }
     | undefined
+  let activeEmailCount = 0
 
   if (userId) {
     const db = createDb()
@@ -100,9 +102,20 @@ export async function GET() {
         userRole.role.name === ROLES.EMPEROR
           ? null
           : freeLimit + emailQuota.total
+      const activeCountResult = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(emails)
+        .where(
+          and(
+            eq(emails.userId, userId),
+            gt(emails.expiresAt, new Date())
+          )
+        )
+      activeEmailCount = Number(activeCountResult[0]?.count ?? 0)
       emailQuotaInfo = {
         total: emailQuota.total,
         remaining: emailQuota.remaining,
+        activeEmailCount,
       }
 
       const rules = getRoleEmailRules({
@@ -149,6 +162,7 @@ export async function GET() {
     emailRules,
     emailLimit,
     emailQuota: emailQuotaInfo,
+    activeEmailCount,
     siteName: siteName || DEFAULT_SITE_NAME,
     siteTitle: siteTitle || "",
     siteDescription: siteDescription || "",

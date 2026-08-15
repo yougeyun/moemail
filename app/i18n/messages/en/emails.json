@@ -16,6 +16,8 @@
     "backToMessageList": "← Back to Message List"
   },
   "list": {
+    "quotaSummary": "{current} active / {remaining} available / {totalLimit} total",
+    "quotaHint": "Active emails / remaining creatable / total quota",
     "emailCount": "{count}/{max} emails",
     "emailCountUnlimited": "{count}/∞ emails",
     "loading": "Loading...",

@@ -8,13 +8,19 @@ import { getUserId } from "@/lib/apiKey"
 export const runtime = "edge"
 
 const PAGE_SIZE = 20
+const MAX_PAGE_SIZE = 100
 
 export async function GET(request: Request) {
   const userId = await getUserId()
 
   const { searchParams } = new URL(request.url)
-  const cursor = searchParams.get('cursor')
-  
+  const cursor = searchParams.get("cursor")
+  const rawPageSize = Number(searchParams.get("pageSize"))
+  const pageSize =
+    Number.isFinite(rawPageSize) && rawPageSize > 0
+      ? Math.min(MAX_PAGE_SIZE, Math.floor(rawPageSize))
+      : PAGE_SIZE
+
   const db = createDb()
 
   try {
@@ -23,10 +29,13 @@ export async function GET(request: Request) {
       gt(emails.expiresAt, new Date())
     )
 
-    const totalResult = await db.select({ count: sql<number>`count(*)` })
-      .from(emails)
-      .where(baseConditions)
-    const totalCount = Number(totalResult[0].count)
+    const totalResult = cursor
+      ? null
+      : await db
+          .select({ count: sql<number>`count(*)` })
+          .from(emails)
+          .where(baseConditions)
+    const totalCount = totalResult ? Number(totalResult[0].count) : null
 
     const conditions = [baseConditions]
 
@@ -49,17 +58,23 @@ export async function GET(request: Request) {
         desc(emails.createdAt),
         desc(emails.id)
       ],
-      limit: PAGE_SIZE + 1
+      limit: pageSize + 1,
+      columns: {
+        id: true,
+        address: true,
+        createdAt: true,
+        expiresAt: true,
+      },
     })
     
-    const hasMore = results.length > PAGE_SIZE
+    const hasMore = results.length > pageSize
     const nextCursor = hasMore 
       ? encodeCursor(
-          results[PAGE_SIZE - 1].createdAt.getTime(),
-          results[PAGE_SIZE - 1].id
+          results[pageSize - 1].createdAt.getTime(),
+          results[pageSize - 1].id
         )
       : null
-    const emailList = hasMore ? results.slice(0, PAGE_SIZE) : results
+    const emailList = hasMore ? results.slice(0, pageSize) : results
 
     return NextResponse.json({ 
       emails: emailList,

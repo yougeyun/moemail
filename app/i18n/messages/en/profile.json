@@ -299,6 +299,8 @@
     "permanent": "Permanent"
   },
   "activationCode": {
+    "days": " days",
+    "permanentRole": " Permanent",
     "title": "Activation Code",
     "emailQuota": "Remaining email quota: {count}",
     "emailQuotaTotal": "Total email quota: {count}",
@@ -311,6 +313,10 @@
     "redeemFailed": "Failed to redeem"
   },
   "activationCodeManager": {
+    "role": "Member level (optional)",
+    "roleNone": "No level",
+    "roleDurationDays": "Level duration (days)",
+    "roleDurationHint": "0 means permanent",
     "title": "Activation Code Manager",
     "count": "Count",
     "emailQuota": "Email Quota",
@@ -414,6 +420,18 @@
     "saveSuccess": "Email bound successfully",
     "saveFailed": "Operation failed",
     "linkNotice": "Activation email sent. Click the link to verify."
+  },
+  "admin": {
+    "title": "Admin Center",
+    "subtitle": "Site settings and operations",
+    "back": "Back to Profile",
+    "website": "Website",
+    "members": "Member Levels",
+    "users": "Users",
+    "activation": "Activation Codes",
+    "email": "Email Service",
+    "wechat": "WeChat & Ads",
+    "developer": "Developer"
   },
   "settings": {
     "editProfile": "Edit Profile",

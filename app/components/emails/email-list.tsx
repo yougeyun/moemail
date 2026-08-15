@@ -40,7 +40,7 @@ interface EmailListProps {
 interface EmailResponse {
   emails: Email[]
   nextCursor: string | null
-  total: number
+  total: number | null
 }
 
 export function EmailList({ onEmailSelect, selectedEmailId }: EmailListProps) {
@@ -79,17 +79,17 @@ export function EmailList({ onEmailSelect, selectedEmailId }: EmailListProps) {
         if (lastDuplicateIndex === -1) {
           setEmails(newEmails)
           setNextCursor(data.nextCursor)
-          setTotal(data.total)
+          setTotal(data.total ?? newEmails.length)
           return
         }
         const uniqueNewEmails = newEmails.slice(0, lastDuplicateIndex)
         setEmails([...uniqueNewEmails, ...oldEmails])
-        setTotal(data.total)
+        setTotal(data.total ?? newEmails.length)
         return
       }
       setEmails(prev => [...prev, ...data.emails])
       setNextCursor(data.nextCursor)
-      setTotal(data.total)
+      setTotal(prev => data.total ?? prev)
     } catch (error) {
       console.error("Failed to fetch emails:", error)
     } finally {
@@ -215,12 +215,20 @@ export function EmailList({ onEmailSelect, selectedEmailId }: EmailListProps) {
               {role === ROLES.EMPEROR ? (
                 t("emailCountUnlimited", { count: total })
               ) : (
-                t("emailCount", {
-                  count: total,
-                  max:
-                    config?.emailLimit ??
-                    (config?.maxEmails || EMAIL_CONFIG.MAX_ACTIVE_EMAILS),
-                })
+                <span title={t("quotaHint")}>
+                  {t("quotaSummary", {
+                    current: total,
+                    remaining: Math.max(
+                      0,
+                      (config?.emailLimit ?? config?.maxEmails ?? EMAIL_CONFIG.MAX_ACTIVE_EMAILS) -
+                        total
+                    ),
+                    totalLimit:
+                      config?.emailLimit ??
+                      config?.maxEmails ??
+                      EMAIL_CONFIG.MAX_ACTIVE_EMAILS,
+                  })}
+                </span>
               )}
             </span>
             <Button

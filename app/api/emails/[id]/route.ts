@@ -85,6 +85,13 @@ export async function GET(
       )
     }
 
+    if (email.expiresAt.getTime() <= Date.now()) {
+      return NextResponse.json(
+        { error: "邮箱已过期" },
+        { status: 404 }
+      )
+    }
+
     const baseConditions = and(
       eq(messages.emailId, id),
       messageType === 'sent' 

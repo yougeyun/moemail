@@ -211,6 +211,13 @@
       "when": 1786710727655,
       "tag": "0029_calm_jubilee",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "6",
+      "when": 1786754774312,
+      "tag": "0030_gifted_valeria_richards",
+      "breakpoints": true
     }
   ]
 }

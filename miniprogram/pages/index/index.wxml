@@ -1,39 +1,52 @@
 <view class="page">
-  <view class="card quota-card">
-    <view class="quota-main">
-      <text class="quota-number">{{total}}</text>
-      <text class="quota-unit">/ {{emailLimit || '--'}}</text>
+  <view class="quota-card">
+    <view class="quota-grid">
+      <view class="quota-item">
+        <text class="quota-num">{{activeEmailCount}}</text>
+        <text class="quota-label">当前邮箱</text>
+      </view>
+      <view class="quota-divider"></view>
+      <view class="quota-item">
+        <text class="quota-num">{{remainingToCreate === null ? '不限' : remainingToCreate}}</text>
+        <text class="quota-label">可创建</text>
+      </view>
+      <view class="quota-divider"></view>
+      <view class="quota-item">
+        <text class="quota-num">{{totalLimit === null ? '不限' : totalLimit}}</text>
+        <text class="quota-label">总配额</text>
+      </view>
     </view>
-    <view class="muted">当前邮箱数</view>
   </view>
 
-  <view class="card">
+  <view class="card create-card">
     <view class="card-title">创建邮箱</view>
-    <view class="field">
-      <text class="label">前缀（可选）</text>
-      <input class="input" placeholder="留空将随机生成" value="{{name}}" bindinput="onNameInput" />
-    </view>
-    <view class="field">
-      <text class="label">域名</text>
-      <picker range="{{domains}}" value="{{domainIndex}}" bindchange="onDomainChange">
-        <view class="picker-value">{{selectedDomain}}</view>
-      </picker>
-    </view>
-    <view class="field">
-      <text class="label">有效期</text>
-      <picker range="{{expiryOptions}}" range-key="label" value="{{expiryIndex}}" bindchange="onExpiryChange">
-        <view class="picker-value">{{selectedExpiryLabel}}</view>
-      </picker>
-    </view>
-    <view class="field">
-      <text class="label">数量</text>
-      <input class="input" type="number" value="{{count}}" bindinput="onCountInput" />
+    <view class="form-grid">
+      <view class="field">
+        <text class="label">前缀</text>
+        <input class="input" placeholder="留空随机" value="{{name}}" bindinput="onNameInput" />
+      </view>
+      <view class="field">
+        <text class="label">域名</text>
+        <picker range="{{domains}}" value="{{domainIndex}}" bindchange="onDomainChange">
+          <view class="picker-value">{{selectedDomain}}</view>
+        </picker>
+      </view>
+      <view class="field">
+        <text class="label">有效期</text>
+        <picker range="{{expiryOptions}}" range-key="label" value="{{expiryIndex}}" bindchange="onExpiryChange">
+          <view class="picker-value">{{selectedExpiryLabel}}</view>
+        </picker>
+      </view>
+      <view class="field">
+        <text class="label">数量</text>
+        <input class="input" type="number" value="{{count}}" bindinput="onCountInput" />
+      </view>
     </view>
     <view class="reward-row" wx:if="{{showRewardButton}}">
       <text class="reward-tip">今日还可看 {{rewardRemaining}} 次视频，每次 +{{rewardEmailQuota}} 个邮箱额度</text>
       <button class="btn reward-btn" loading="{{rewarding}}" bindtap="watchRewardedVideo">看视频领额度</button>
     </view>
-    <button class="btn" bindtap="createEmail">创建</button>
+    <button class="btn create-btn" bindtap="createEmail">创建</button>
   </view>
 
   <view class="section-head">
@@ -45,7 +58,14 @@
     还没有邮箱，先在上方创建一个
   </view>
 
-  <view class="card email-item" wx:for="{{emails}}" wx:key="id" data-id="{{item.id}}" data-address="{{item.address}}" bindtap="selectEmail">
+  <view
+    class="card email-item"
+    wx:for="{{emails}}"
+    wx:key="id"
+    data-id="{{item.id}}"
+    data-address="{{item.address}}"
+    bindtap="selectEmail"
+  >
     <view class="email-main">
       <view class="email-address">{{item.address}}</view>
       <view class="muted">到期 {{item.expiresText}}</view>

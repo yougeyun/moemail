@@ -169,6 +169,8 @@ export const activationCodes = sqliteTable("activation_code", {
   sendQuota: integer("send_quota").notNull().default(0),
   emailExpiryDays: integer("email_expiry_days").notNull().default(30),
   emailExpiry: integer("email_expiry").notNull().default(86400000),
+  roleId: text("role_id").references(() => roles.id, { onDelete: "set null" }),
+  roleDurationDays: integer("role_duration_days").notNull().default(0),
   createdBy: text("created_by")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),

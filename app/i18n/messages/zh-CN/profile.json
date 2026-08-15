@@ -299,6 +299,8 @@
     "permanent": "永久"
   },
   "activationCode": {
+    "days": " 天",
+    "permanentRole": " 永久",
     "title": "激活码兑换",
     "emailQuota": "剩余邮箱额度：{count}",
     "emailQuotaTotal": "已兑换邮箱额度：{count}",
@@ -311,6 +313,10 @@
     "redeemFailed": "兑换失败"
   },
   "activationCodeManager": {
+    "role": "会员等级（可选）",
+    "roleNone": "不关联等级",
+    "roleDurationDays": "等级时长（天）",
+    "roleDurationHint": "0 表示永久",
     "title": "激活码管理",
     "count": "生成数量",
     "emailQuota": "可兑换邮箱数",
@@ -414,6 +420,18 @@
     "saveSuccess": "邮箱绑定成功",
     "saveFailed": "操作失败",
     "linkNotice": "激活邮件已发送，请点击邮件中的链接完成验证"
+  },
+  "admin": {
+    "title": "管理后台",
+    "subtitle": "网站设置与运营管理",
+    "back": "返回个人中心",
+    "website": "网站设置",
+    "members": "会员等级",
+    "users": "用户管理",
+    "activation": "激活码管理",
+    "email": "邮件服务",
+    "wechat": "微信与广告",
+    "developer": "开发者"
   },
   "settings": {
     "editProfile": "修改资料",

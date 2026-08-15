@@ -299,6 +299,8 @@
     "permanent": "永久"
   },
   "activationCode": {
+    "days": " 日",
+    "permanentRole": " 永久",
     "title": "アクティベーションコード",
     "emailQuota": "残りメール枠：{count}",
     "emailQuotaTotal": "メール枠（合計）：{count}",
@@ -311,6 +313,10 @@
     "redeemFailed": "交換に失敗しました"
   },
   "activationCodeManager": {
+    "role": "会員レベル（任意）",
+    "roleNone": "レベルなし",
+    "roleDurationDays": "レベル期間（日）",
+    "roleDurationHint": "0は永久を意味します",
     "title": "コード管理",
     "count": "生成数",
     "emailQuota": "メール数",
@@ -414,6 +420,18 @@
     "saveSuccess": "メールアドレスを連携しました",
     "saveFailed": "操作に失敗しました",
     "linkNotice": "アクティベーションメールを送信しました。リンクをクリックして認証してください"
+  },
+  "admin": {
+    "title": "管理画面",
+    "subtitle": "サイト設定と運営管理",
+    "back": "プロフィールに戻る",
+    "website": "サイト設定",
+    "members": "会員レベル",
+    "users": "ユーザー管理",
+    "activation": "アクティベーションコード",
+    "email": "メールサービス",
+    "wechat": "WeChatと広告",
+    "developer": "開発者"
   },
   "settings": {
     "editProfile": "プロフィール編集",

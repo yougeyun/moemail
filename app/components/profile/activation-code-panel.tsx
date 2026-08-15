@@ -54,6 +54,8 @@ export function ActivationCodePanel() {
         redeemedEmailQuota?: number
         redeemedEmailQuotaTotal?: number
         redeemedSendQuota?: number
+        redeemedRoleName?: string | null
+        redeemedRoleDurationDays?: number
       }
       if (!res.ok) {
         throw new Error(data.error || t("redeemFailed"))
@@ -63,7 +65,16 @@ export function ActivationCodePanel() {
       setSendQuota(data.redeemedSendQuota ?? sendQuota)
       setCode("")
       await fetchConfig()
-      toast({ title: t("redeemSuccess") })
+      toast({
+        title: t("redeemSuccess"),
+        description: data.redeemedRoleName
+          ? `${data.redeemedRoleName}${
+              (data.redeemedRoleDurationDays || 0) > 0
+                ? ` ${data.redeemedRoleDurationDays}${t("days")}`
+                : t("permanentRole")
+            }`
+          : undefined,
+      })
     } catch (error) {
       toast({
         title: t("redeemFailed"),
