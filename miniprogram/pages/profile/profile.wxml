@@ -1,4 +1,10 @@
 <view class="page">
+  <view class="card login-card" wx:if="{{!user && !unbound}}">
+    <view class="card-title">登录后使用完整功能</view>
+    <view class="muted login-tip">登录后可创建邮箱、接收邮件、兑换激活码和发送邮件。</view>
+    <button class="btn login-btn" bindtap="goLogin">登录</button>
+  </view>
+
   <view class="card profile-card" wx:if="{{user}}">
     <view class="avatar">
       <image wx:if="{{user.image}}" src="{{user.image}}" class="avatar-img" mode="aspectFill" />
@@ -80,5 +86,5 @@
     </view>
   </view>
 
-  <button class="btn logout-btn" bindtap="logout">退出登录</button>
+  <button class="btn logout-btn" wx:if="{{user}}" bindtap="logout">退出登录</button>
 </view>

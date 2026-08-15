@@ -1,4 +1,5 @@
 const { request } = require("../../utils/request")
+const { requireLogin } = require("../../utils/auth")
 
 Page({
   data: {
@@ -16,6 +17,7 @@ Page({
   },
 
   onLoad(options) {
+    if (!requireLogin()) return
     const forwardDraft = wx.getStorageSync("forwardDraft") || null
     if (forwardDraft) {
       wx.removeStorageSync("forwardDraft")

@@ -1,6 +1,7 @@
 const { request } = require("../../utils/request")
 const { formatTime } = require("../../utils/format")
 const { getAdsConfig, showBanner } = require("../../utils/ads")
+const { hasLogin, requireLogin } = require("../../utils/auth")
 
 Page({
   data: {
@@ -34,6 +35,7 @@ Page({
 
   startPolling() {
     this.stopPolling()
+    if (!hasLogin()) return
     this.pollTimer = setInterval(() => {
       if (!this.data.loading) {
         this.loadMessages(true)
@@ -51,7 +53,7 @@ Page({
   async checkSession() {
     const token = wx.getStorageSync("miniToken")
     if (!token) {
-      wx.redirectTo({ url: "/pages/login/login" })
+      this.setData({ loading: false })
       return
     }
     try {
@@ -70,7 +72,7 @@ Page({
         error.message.includes("未登录")
       ) {
         getApp().clearSession()
-        wx.redirectTo({ url: "/pages/login/login" })
+        this.setData({ loading: false })
       }
     }
   },
@@ -164,6 +166,10 @@ Page({
   },
 
   onPullDownRefresh() {
+    if (!hasLogin()) {
+      wx.stopPullDownRefresh()
+      return
+    }
     Promise.all([this.loadEmailFilters(), this.loadMessages(true)]).finally(
       () => wx.stopPullDownRefresh()
     )
@@ -218,6 +224,7 @@ Page({
   },
 
   openMessage(event) {
+    if (!requireLogin()) return
     const { id, emailid } = event.currentTarget.dataset
     this.setData({
       messages: this.data.messages.map((item) =>
@@ -230,6 +237,7 @@ Page({
   },
 
   goCompose() {
+    if (!requireLogin()) return
     const fallback = this.data.emailFilters[1]
     const emailId =
       this.data.activeEmailId || (fallback ? fallback.id : "")

@@ -1,6 +1,7 @@
 const { request } = require("../../utils/request")
 const { getAdsConfig, showRewardedVideo } = require("../../utils/ads")
 const { formatTime } = require("../../utils/format")
+const { hasLogin, requireLogin } = require("../../utils/auth")
 
 Page({
   data: {
@@ -31,9 +32,13 @@ Page({
   },
 
   onShow() {
-    const token = wx.getStorageSync("miniToken")
-    if (!token) {
-      wx.redirectTo({ url: "/pages/login/login" })
+    if (!hasLogin()) {
+      this.setData({
+        user: null,
+        unbound: false,
+        showRewardButton: false,
+        showSubscribeSwitch: false
+      })
       return
     }
     this.loadUser()
@@ -68,7 +73,7 @@ Page({
     } catch (error) {
       if (error.message.includes("登录状态已失效") || error.message.includes("未登录")) {
         getApp().clearSession()
-        wx.redirectTo({ url: "/pages/login/login" })
+        this.setData({ user: null, unbound: false })
         return
       }
       wx.showToast({ title: error.message, icon: "none" })
@@ -97,6 +102,7 @@ Page({
   },
 
   async watchRewardedVideo() {
+    if (!requireLogin()) return
     if (this.data.rewarding) return
     this.setData({ rewarding: true })
     try {
@@ -162,6 +168,7 @@ Page({
   },
 
   async onSubscribeChange(event) {
+    if (!requireLogin()) return
     const enabled = Boolean(event.detail.value)
     if (enabled && !this.data.subscribeTemplateId) {
       wx.showToast({ title: "新邮件提醒尚未配置", icon: "none" })
@@ -222,6 +229,7 @@ Page({
   },
 
   async sendCode() {
+    if (!requireLogin()) return
     if (this.data.sendingCode) return
     if (!this.data.email) {
       wx.showToast({ title: "请先填写邮箱", icon: "none" })
@@ -253,6 +261,7 @@ Page({
   },
 
   async submit() {
+    if (!requireLogin()) return
     if (this.data.submitting) return
     this.setData({ submitting: true, notice: "" })
     const isBind = this.data.mode === "bind"
@@ -295,6 +304,7 @@ Page({
   },
 
   async redeem() {
+    if (!requireLogin()) return
     if (!this.data.codeText.trim()) {
       wx.showToast({ title: "请输入激活码", icon: "none" })
       return
@@ -329,7 +339,12 @@ Page({
   },
 
   logout() {
+    if (!hasLogin()) return
     getApp().clearSession()
     wx.redirectTo({ url: "/pages/login/login" })
+  },
+
+  goLogin() {
+    wx.navigateTo({ url: "/pages/login/login" })
   }
 })

@@ -1,3 +1,17 @@
+.login-card {
+  padding: 28rpx 24rpx;
+}
+
+.login-tip {
+  margin: 10rpx 0 20rpx;
+}
+
+.login-btn {
+  background: #0f9d7c;
+  font-size: 28rpx;
+  line-height: 76rpx;
+}
+
 .profile-card {
   display: flex;
   align-items: center;

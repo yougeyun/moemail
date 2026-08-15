@@ -1,5 +1,6 @@
 const { request } = require("../../utils/request")
 const { formatTime } = require("../../utils/format")
+const { hasLogin, requireLogin } = require("../../utils/auth")
 
 Page({
   data: {
@@ -25,6 +26,7 @@ Page({
 
   startPolling() {
     this.stopPolling()
+    if (!hasLogin()) return
     this.pollTimer = setInterval(() => {
       if (!this.data.loading) {
         this.loadMessages(true)
@@ -42,7 +44,7 @@ Page({
   async checkSession() {
     const token = wx.getStorageSync("miniToken")
     if (!token) {
-      wx.redirectTo({ url: "/pages/login/login" })
+      this.setData({ loading: false })
       return
     }
     try {
@@ -59,12 +61,16 @@ Page({
         error.message.includes("未登录")
       ) {
         getApp().clearSession()
-        wx.redirectTo({ url: "/pages/login/login" })
+        this.setData({ loading: false })
       }
     }
   },
 
   onPullDownRefresh() {
+    if (!hasLogin()) {
+      wx.stopPullDownRefresh()
+      return
+    }
     this.loadMessages(true).finally(() => wx.stopPullDownRefresh())
   },
 
@@ -105,6 +111,7 @@ Page({
   },
 
   openMessage(event) {
+    if (!requireLogin()) return
     const { id, emailid } = event.currentTarget.dataset
     wx.navigateTo({
       url: `/pages/message/message?id=${id}&emailId=${emailid}`
@@ -112,6 +119,7 @@ Page({
   },
 
   goCompose() {
+    if (!requireLogin()) return
     wx.navigateTo({ url: "/pages/compose/compose" })
   }
 })

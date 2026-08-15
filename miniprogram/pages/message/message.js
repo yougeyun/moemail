@@ -1,5 +1,6 @@
 const { request } = require("../../utils/request")
 const { formatTime } = require("../../utils/format")
+const { requireLogin } = require("../../utils/auth")
 
 Page({
   data: {
@@ -11,6 +12,7 @@ Page({
   },
 
   onLoad(options) {
+    if (!requireLogin()) return
     this.setData({
       id: options.id,
       emailId: options.emailId

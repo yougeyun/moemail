@@ -1,10 +1,10 @@
 const { request } = require("../../utils/request")
 const { formatTime, expiryLabel } = require("../../utils/format")
 const { getAdsConfig, showBanner, showRewardedVideo } = require("../../utils/ads")
+const { hasLogin, requireLogin } = require("../../utils/auth")
 
 Page({
   data: {
-    guestMode: false,
     loading: false,
     emails: [],
     domains: [],
@@ -51,7 +51,7 @@ Page({
   },
 
   onPullDownRefresh() {
-    if (this.data.guestMode) {
+    if (!hasLogin()) {
       wx.stopPullDownRefresh()
       return
     }
@@ -63,7 +63,7 @@ Page({
   async checkLogin() {
     const token = wx.getStorageSync("miniToken")
     if (!token) {
-      this.setData({ guestMode: true, loading: false })
+      this.setData({ loading: false })
       return
     }
     try {
@@ -73,7 +73,6 @@ Page({
         wx.switchTab({ url: "/pages/profile/profile" })
         return
       }
-      this.setData({ guestMode: false })
       this.loadConfig()
       this.loadEmails()
       this.loadAds()
@@ -83,7 +82,7 @@ Page({
         error.message.includes("未登录")
       ) {
         getApp().clearSession()
-        this.setData({ guestMode: true, loading: false })
+        this.setData({ loading: false })
       }
     }
   },
@@ -134,6 +133,7 @@ Page({
   },
 
   async watchRewardedVideo() {
+    if (!requireLogin()) return
     if (this.data.rewarding) return
     if (this.data.rewardRemaining <= 0) {
       wx.showToast({ title: "今日奖励次数已用完", icon: "none" })
@@ -266,11 +266,7 @@ Page({
   },
 
   async createEmail() {
-    if (this.data.guestMode) {
-      wx.showToast({ title: "请先登录后创建邮箱", icon: "none" })
-      this.goLogin()
-      return
-    }
+    if (!requireLogin()) return
     const count = Math.max(1, Math.floor(Number(this.data.count) || 1))
     const payload = {
       name: this.data.name.trim(),
@@ -314,10 +310,6 @@ Page({
         })
       }
     }
-  },
-
-  goLogin() {
-    wx.navigateTo({ url: "/pages/login/login" })
   },
 
   copyEmail(event) {
