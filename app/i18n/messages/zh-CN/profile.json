@@ -55,15 +55,13 @@
     }
   },
   "emailService": {
-    "title": "Resend 发件服务配置",
+    "title": "发件服务配置",
     "configRoleLabel": "可配置的角色权限",
     "enable": "启用邮件服务",
     "fixedRoleLimits": "固定权限规则",
     "emperorLimit": "皇帝可以无限发件，不受任何限制",
     "civilianLimit": "永远不能发件",
-    "enableDescription": "开启后将使用 Resend 发送邮件",
-    "apiKey": "Resend API Key",
-    "apiKeyPlaceholder": "输入 Resend API Key",
+    "enableDescription": "开启后，临时邮箱发件将使用「系统邮件」中配置的 SMTP 中转发送",
     "dailyLimit": "每日限额",
     "roleLimits": "允许使用发件功能的角色",
     "save": "保存配置",
@@ -72,7 +70,8 @@
     "saveFailed": "保存配置失败",
     "unlimited": "无限制",
     "disabled": "未启用发件权限",
-    "enabled": "已启用发件权限"
+    "enabled": "已启用发件权限",
+    "relayHint": "发件统一走「系统邮件」里的 SMTP 中转，不再依赖第三方发件 API。"
   },
   "webhook": {
     "title": "Webhook 配置",
@@ -464,6 +463,9 @@
     "unbindWechat": "解绑微信",
     "unbindConfirm": "确定要解绑当前微信吗？解绑后需要重新扫码绑定。",
     "unbindSuccess": "微信已解绑",
-    "unbindFailed": "解绑失败"
+    "unbindFailed": "解绑失败",
+    "emailUnboundTitle": "还未绑定邮箱",
+    "emailUnboundHint": "绑定邮箱后可接收系统通知、找回密码，并用于微信小程序登录。",
+    "bindEmail": "去绑定邮箱"
   }
 }

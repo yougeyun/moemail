@@ -6,18 +6,18 @@ mail.59pk.net provides disposable email addresses. Install the CLI for programma
 
 ## CLI Tool
 
-Install: npm i -g @moemail/cli
+Install: npm i -g @mail59pk/cli
 
-Setup: moemail config set api-url https://mail.59pk.net && moemail config set api-key YOUR_KEY
+Setup: mail59pk config set api-url https://mail.59pk.net && mail59pk config set api-key YOUR_KEY
 
 Commands:
-- moemail create --domain <domain> --expiry <1h|24h|3d|permanent> --json
-- moemail list --json
-- moemail list --email-id <id> --json
-- moemail wait --email-id <id> --timeout <seconds> --json
-- moemail read --email-id <id> --message-id <id> --json
-- moemail send --email-id <id> --to <addr> --subject <subj> --content <body> --json
-- moemail delete --email-id <id> --json
+- mail59pk create --domain <domain> --expiry <1h|24h|3d|permanent> --json
+- mail59pk list --json
+- mail59pk list --email-id <id> --json
+- mail59pk wait --email-id <id> --timeout <seconds> --json
+- mail59pk read --email-id <id> --message-id <id> --json
+- mail59pk send --email-id <id> --to <addr> --subject <subj> --content <body> --json
+- mail59pk delete --email-id <id> --json
 
 Typical workflow: create email → use address for signup → wait for verification → read content → extract code → delete
 

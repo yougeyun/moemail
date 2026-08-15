@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { api } from "@moemail/core";
+import { api } from "@mail59pk/core";
 import { fail, printJson, printText } from "../output.js";
 
 export function registerSendCommand(program: Command) {

@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { api, msToIso } from "@moemail/core";
+import { api, msToIso } from "@mail59pk/core";
 import { fail, log, printJson, printText } from "../output.js";
 
 const EXPIRY_MAP: Record<string, number> = {

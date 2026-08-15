@@ -1,8 +1,8 @@
-# MoeMail 模板系统与品牌设置设计
+# mail.59pk.net 模板系统与品牌设置设计
 
 ## 背景与目标
 
-在 MoeMail 现有架构上做二次开发，实现两个能力：
+在 mail.59pk.net 现有架构上做二次开发，实现两个能力：
 
 1. 皇帝可以在“网站配置”中自定义全站 TDK、网站名称、Logo 和网站图标。
 2. 建立“完整模板模式”，多个前端模板代码内置、共存，管理员在后台一键切换启用，并支持发布前预览。
@@ -84,7 +84,7 @@ interface TemplateConfig {
 ### KV 键
 
 ```text
-SITE_NAME        网站名称，默认 MoeMail
+SITE_NAME        网站名称，默认 mail.59pk.net
 SITE_TITLE       全站 SEO 标题
 SITE_DESCRIPTION 全站 SEO 描述
 SITE_KEYWORDS    全站 SEO 关键词
@@ -92,7 +92,7 @@ SITE_LOGO        上传的 Logo，data URL 格式
 SITE_ICONS       上传图标 JSON：{ 16, 32, 192, 512 }
 ```
 
-品牌键未设置时，SEO 元数据回落到现有各语言默认值，网站名称回落到 `MoeMail`。
+品牌键未设置时，SEO 元数据回落到现有各语言默认值，网站名称回落到 `mail.59pk.net`。
 
 ### 元数据生成
 
@@ -147,7 +147,7 @@ SITE_ICONS       上传图标 JSON：{ 16, 32, 192, 512 }
 ## 错误处理与回退
 
 - `ACTIVE_TEMPLATE` 非法或缺失：回退 `east-paper`。
-- 品牌 KV 缺失：回退各语言默认元数据与默认 MoeMail 名称。
+- 品牌 KV 缺失：回退各语言默认元数据与默认 mail.59pk.net 名称。
 - 上传内容无法解码：前端校验失败并提示，不写入 KV。
 - 图片路由读取异常：返回 404，页面继续使用默认图标。
 

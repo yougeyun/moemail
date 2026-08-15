@@ -15,11 +15,87 @@ const API_PERMISSIONS: Record<string, Permission> = {
   '/api/api-keys': PERMISSIONS.MANAGE_API_KEY,
 }
 
+const RATE_LIMIT_RULES: Record<string, { windowMs: number; max: number }> = {
+  "/api/auth/register": { windowMs: 60_000, max: 8 },
+  "/api/auth/verification": { windowMs: 60_000, max: 10 },
+  "/api/auth/bind": { windowMs: 60_000, max: 10 },
+  "/api/auth/wechat": { windowMs: 60_000, max: 12 },
+  "/api/user/email/send-code": { windowMs: 60_000, max: 6 },
+  "/api/activation-codes/redeem": { windowMs: 60_000, max: 12 },
+  "/api/emails/generate": { windowMs: 60_000, max: 30 },
+  "/api/emails/batch": { windowMs: 60_000, max: 10 },
+  "/api/emails/": { windowMs: 60_000, max: 60 },
+  "/api/ads/reward": { windowMs: 60_000, max: 12 },
+  "/api/webhook/test": { windowMs: 60_000, max: 10 },
+}
+
+const rateBuckets = new Map<string, number[]>()
+const RATE_LIMIT_MAX_BUCKETS = 5000
+
+function isRateLimited(
+  request: Request,
+  pathname: string
+): { limited: boolean; retryAfter: number } {
+  const ruleKey = Object.keys(RATE_LIMIT_RULES).find((prefix) =>
+    pathname.startsWith(prefix)
+  )
+  if (!ruleKey) {
+    return { limited: false, retryAfter: 0 }
+  }
+
+  const rule = RATE_LIMIT_RULES[ruleKey]
+  const forwarded = request.headers.get("X-Forwarded-For")
+  const ip =
+    request.headers.get("CF-Connecting-IP") ||
+    forwarded?.split(",")[0]?.trim() ||
+    "unknown"
+  const bucketKey = `${ip}:${ruleKey}`
+  const now = Date.now()
+  let timestamps = rateBuckets.get(bucketKey) || []
+  timestamps = timestamps.filter((ts) => now - ts < rule.windowMs)
+
+  if (timestamps.length >= rule.max) {
+    rateBuckets.set(bucketKey, timestamps)
+    return {
+      limited: true,
+      retryAfter: Math.max(
+        1,
+        Math.ceil((timestamps[0] + rule.windowMs - now) / 1000)
+      ),
+    }
+  }
+
+  timestamps.push(now)
+  rateBuckets.set(bucketKey, timestamps)
+  if (rateBuckets.size > RATE_LIMIT_MAX_BUCKETS) {
+    const cutoff = now - 10 * 60_000
+    for (const [key, list] of rateBuckets) {
+      if (list.length === 0 || list[list.length - 1] < cutoff) {
+        rateBuckets.delete(key)
+      }
+    }
+  }
+  return { limited: false, retryAfter: 0 }
+}
+
 export async function middleware(request: Request) {
   const url = new URL(request.url)
   const pathname = url.pathname
 
   if (pathname.startsWith('/api')) {
+    if (request.method === "POST") {
+      const rate = isRateLimited(request, pathname)
+      if (rate.limited) {
+        return NextResponse.json(
+          { error: "请求过于频繁，请稍后再试" },
+          {
+            status: 429,
+            headers: { "Retry-After": String(rate.retryAfter) },
+          }
+        )
+      }
+    }
+
     if (
       pathname.startsWith('/api/auth') ||
       pathname.startsWith('/api/shared') ||

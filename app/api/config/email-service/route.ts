@@ -8,7 +8,6 @@ export const runtime = "edge"
 
 interface EmailServiceConfig {
   enabled: boolean
-  apiKey: string
   roleLimits: {
     duke?: number
     knight?: number
@@ -26,9 +25,8 @@ export async function GET() {
 
   try {
     const env = getRequestContext().env
-    const [enabled, apiKey, roleLimits] = await Promise.all([
+    const [enabled, roleLimits] = await Promise.all([
       env.SITE_CONFIG.get("EMAIL_SERVICE_ENABLED"),
-      env.SITE_CONFIG.get("RESEND_API_KEY"),
       env.SITE_CONFIG.get("EMAIL_ROLE_LIMITS")
     ])
 
@@ -41,13 +39,12 @@ export async function GET() {
 
     return NextResponse.json({
       enabled: enabled === "true",
-      apiKey: apiKey || "",
       roleLimits: finalLimits
     })
   } catch (error) {
     console.error("Failed to get email service config:", error)
     return NextResponse.json(
-      { error: "获取 Resend 发件服务配置失败" },
+      { error: "获取发件服务配置失败" },
       { status: 500 }
     )
   }
@@ -65,13 +62,6 @@ export async function POST(request: Request) {
   try {
     const config = await request.json() as EmailServiceConfig
 
-    if (config.enabled && !config.apiKey) {
-      return NextResponse.json(
-        { error: "启用 Resend 时，API Key 为必填项" },
-        { status: 400 }
-      )
-    }
-
     const env = getRequestContext().env
     
     const customLimits: { duke?: number; knight?: number } = {}
@@ -84,7 +74,6 @@ export async function POST(request: Request) {
 
     await Promise.all([
       env.SITE_CONFIG.put("EMAIL_SERVICE_ENABLED", config.enabled.toString()),
-      env.SITE_CONFIG.put("RESEND_API_KEY", config.apiKey),
       env.SITE_CONFIG.put("EMAIL_ROLE_LIMITS", JSON.stringify(customLimits))
     ])
 
@@ -92,8 +81,8 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Failed to save email service config:", error)
     return NextResponse.json(
-      { error: "保存 Resend 发件服务配置失败" },
+      { error: "保存发件服务配置失败" },
       { status: 500 }
     )
   }
-} 
+}

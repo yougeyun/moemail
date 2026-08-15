@@ -1,53 +1,53 @@
 ---
-name: moemail
-description: Use when an AI agent needs a temporary/disposable email address — for receiving verification emails, testing email integrations, or any task requiring a temporary inbox via the moemail CLI
+name: mail59pk
+description: Use when an AI agent needs a temporary/disposable email address — for receiving verification emails, testing email integrations, or any task requiring a temporary inbox via the mail59pk CLI
 ---
 
 # mail.59pk.net — Temporary Email for AI Agents
 
 ## Overview
-mail.59pk.net provides disposable email addresses with an agent-first CLI (`moemail`). Create inboxes, wait for messages, read content, and send emails programmatically.
+mail.59pk.net provides disposable email addresses with an agent-first CLI (`mail59pk`). Create inboxes, wait for messages, read content, and send emails programmatically.
 
 ## Install
 
 Install the mail.59pk.net CLI globally when it is not already available:
 
 ```bash
-npm i -g @moemail/cli
+npm i -g @mail59pk/cli
 ```
 
 Then confirm the binary is available:
 
 ```bash
-moemail --help
+mail59pk --help
 ```
 
 ## Setup
 
 Configure once per environment:
 ```bash
-moemail config set api-url https://mail.59pk.net
-moemail config set api-key YOUR_API_KEY
+mail59pk config set api-url https://mail.59pk.net
+mail59pk config set api-key YOUR_API_KEY
 ```
 
-Or via environment variables: `MOEMAIL_API_URL`, `MOEMAIL_API_KEY`.
+Or via environment variables: `MAIL59PK_API_URL`, `MAIL59PK_API_KEY`.
 
 ## Core Workflow: Receive an Email
 
 ```bash
 # 1. Create inbox — capture ONCE, parse both fields
-RESULT=$(moemail --json create --expiry 1h)
+RESULT=$(mail59pk --json create --expiry 1h)
 ID=$(echo "$RESULT" | jq -r '.id')
 EMAIL=$(echo "$RESULT" | jq -r '.address')
 
 # 2. Use $EMAIL wherever needed (registration, forms, etc.)
 
 # 3. Wait for message (exits when message arrives or times out)
-MSG=$(moemail --json wait --email-id "$ID" --timeout 120)
+MSG=$(mail59pk --json wait --email-id "$ID" --timeout 120)
 MSG_ID=$(echo "$MSG" | jq -r '.messageId')
 
 # 4. Read full message content
-moemail --json read --email-id "$ID" --message-id "$MSG_ID"
+mail59pk --json read --email-id "$ID" --message-id "$MSG_ID"
 ```
 
 ## Command Reference
@@ -64,8 +64,8 @@ moemail --json read --email-id "$ID" --message-id "$MSG_ID"
 
 **`--json` is a global flag — it works before or after the subcommand:**
 ```bash
-moemail --json create --expiry 24h   # both work
-moemail create --expiry 24h --json
+mail59pk --json create --expiry 24h   # both work
+mail59pk create --expiry 24h --json
 ```
 
 ## JSON Output Shapes

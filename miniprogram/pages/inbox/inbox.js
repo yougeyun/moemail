@@ -109,8 +109,18 @@ Page({
 
   async loadEmailFilters() {
     try {
-      const res = await request({ url: "/api/emails" })
-      const emails = res.emails || []
+      let emails = []
+      let cursor = ""
+      do {
+        const query = cursor
+          ? `pageSize=100&cursor=${encodeURIComponent(cursor)}`
+          : "pageSize=100"
+        const res = await request({ url: `/api/emails?${query}` })
+        const page = res.emails || []
+        const seen = new Set(emails.map((item) => item.id))
+        emails = emails.concat(page.filter((item) => !seen.has(item.id)))
+        cursor = res.nextCursor || ""
+      } while (cursor)
       const filters = [{ id: "", address: "全部邮箱" }].concat(
         emails.map((item) => ({
           id: item.id,
@@ -174,6 +184,7 @@ Page({
     try {
       const cursor = reset ? "" : this.data.nextCursor || ""
       const params = []
+      params.push("pageSize=50")
       if (this.data.activeEmailId) {
         params.push(`emailId=${encodeURIComponent(this.data.activeEmailId)}`)
       }

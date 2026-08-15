@@ -1,10 +1,10 @@
 {
-  "name": "@moemail/mcp",
+  "name": "@mail59pk/mcp",
   "version": "1.0.0",
   "description": "MCP server for mail.59pk.net temporary email service",
   "type": "module",
   "bin": {
-    "moemail-mcp": "dist/index.js"
+    "mail59pk-mcp": "dist/index.js"
   },
   "scripts": {
     "build": "bun build ./src/index.ts --outdir ./dist --target=node",
@@ -18,7 +18,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@moemail/core": "file:../core",
+    "@mail59pk/core": "file:../core",
     "@types/node": "^20.0.0"
   }
 }

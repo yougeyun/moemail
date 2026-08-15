@@ -1,10 +1,10 @@
 {
-  "name": "@moemail/cli",
+  "name": "@mail59pk/cli",
   "version": "1.0.0",
   "description": "Agent-first CLI for mail.59pk.net temporary email service",
   "type": "module",
   "bin": {
-    "moemail": "dist/index.js"
+    "mail59pk": "dist/index.js"
   },
   "scripts": {
     "build": "bun build ./src/index.ts --outdir ./dist --target=node",
@@ -17,7 +17,7 @@
     "commander": "^12.0.0"
   },
   "devDependencies": {
-    "@moemail/core": "file:../core",
+    "@mail59pk/core": "file:../core",
     "@types/node": "^20.0.0"
   }
 }

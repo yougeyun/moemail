@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { msToIso, pollForNewMessage } from "@moemail/core";
+import { msToIso, pollForNewMessage } from "@mail59pk/core";
 import { fail, log, printJson, printText } from "../output.js";
 
 export function registerWaitCommand(program: Command) {

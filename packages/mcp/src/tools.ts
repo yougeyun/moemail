@@ -9,7 +9,7 @@ import {
   PermissionError,
   pollForNewMessage,
   QuotaError,
-} from "@moemail/core";
+} from "@mail59pk/core";
 
 const EXPIRY_MAP: Record<string, number> = {
   "1h": 3600000,

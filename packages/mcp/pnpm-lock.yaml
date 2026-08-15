@@ -15,7 +15,7 @@ importers:
         specifier: ^3.25.76
         version: 3.25.76
     devDependencies:
-      '@moemail/core':
+      '@mail59pk/core':
         specifier: file:../core
         version: file:../core
       '@types/node':
@@ -40,7 +40,7 @@ packages:
       '@cfworker/json-schema':
         optional: true
 
-  '@moemail/core@file:../core':
+  '@mail59pk/core@file:../core':
     resolution: {directory: ../core, type: directory}
 
   '@types/node@20.19.43':
@@ -431,7 +431,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@moemail/core@file:../core': {}
+  '@mail59pk/core@file:../core': {}
 
   '@types/node@20.19.43':
     dependencies:

@@ -6,7 +6,8 @@ Page({
     id: "",
     emailId: "",
     message: null,
-    loading: true
+    loading: true,
+    expired: false
   },
 
   onLoad(options) {
@@ -48,8 +49,11 @@ Page({
         loading: false
       })
     } catch (error) {
-      this.setData({ loading: false })
-      wx.showToast({ title: error.message, icon: "none" })
+      const expired = (error.message || "").includes("已过期")
+      this.setData({ loading: false, expired })
+      if (!expired) {
+        wx.showToast({ title: error.message, icon: "none" })
+      }
     }
   },
 

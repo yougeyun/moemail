@@ -5,7 +5,7 @@ import { useTranslations, useLocale } from "next-intl"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { signOut } from "next-auth/react"
-import { Crown, Gem, Mail, Settings, Sword, User2, UserCog } from "lucide-react"
+import { AlertCircle, Crown, Gem, Mail, Settings, Sword, User2, UserCog } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useRolePermission } from "@/hooks/use-role-permission"
 import { PERMISSIONS, getRoleIcon } from "@/lib/permissions"
@@ -40,6 +40,27 @@ export function ProfileCard({ user }: ProfileCardProps) {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
+      {!user.email && (
+        <div className="panel-card flex flex-col gap-3 border-amber-500/40 bg-amber-50 sm:flex-row sm:items-center">
+          <div className="flex flex-1 items-start gap-2.5">
+            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+            <div>
+              <p className="font-semibold">{tSettings("emailUnboundTitle")}</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {tSettings("emailUnboundHint")}
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            className="shrink-0"
+            onClick={() => router.push(`/${locale}/profile/settings`)}
+          >
+            {tSettings("bindEmail")}
+          </Button>
+        </div>
+      )}
+
       <div className="panel-card">
         <div className="flex items-center gap-6">
           <div className="relative">

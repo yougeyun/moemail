@@ -28,6 +28,13 @@ export async function DELETE(
       )
     }
 
+    if (email.expiresAt.getTime() <= Date.now()) {
+      return NextResponse.json(
+        { error: "邮箱已过期，邮件已不可查看" },
+        { status: 410 }
+      )
+    }
+
     const message = await db.query.messages.findFirst({
       where: and(
           eq(messages.emailId, id),
@@ -75,6 +82,13 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       )
     }
 
+    if (email.expiresAt.getTime() <= Date.now()) {
+      return NextResponse.json(
+        { error: "邮箱已过期，邮件已不可查看" },
+        { status: 410 }
+      )
+    }
+
     const message = await db.query.messages.findFirst({
       where: and(
         eq(messages.id, messageId),
@@ -98,7 +112,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
         content: message.content,
         html: message.html,
         received_at: message.receivedAt.getTime(),
-        sent_at: message.receivedAt.getTime(),
+        sent_at: message.sentAt?.getTime() ?? message.receivedAt.getTime(),
         type: message.type as 'received' | 'sent'
       }
     })
@@ -109,4 +123,4 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       { status: 500 }
     )
   }
-} 
+}

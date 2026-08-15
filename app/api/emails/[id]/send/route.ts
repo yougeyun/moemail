@@ -3,8 +3,8 @@ import { getUserId } from "@/lib/apiKey"
 import { createDb } from "@/lib/db"
 import { emails, messages } from "@/lib/schema"
 import { eq } from "drizzle-orm"
-import { getRequestContext } from "@cloudflare/next-on-pages"
 import { checkSendPermission } from "@/lib/send-permissions"
+import { getSystemMailConfig, sendSystemMail } from "@/lib/system-mail"
 
 export const runtime = "edge"
 
@@ -12,36 +12,6 @@ interface SendEmailRequest {
   to: string
   subject: string
   content: string
-}
-
-async function sendWithResend(
-  to: string,
-  subject: string,
-  content: string,
-  fromEmail: string,
-  config: { apiKey: string }
-) {
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${config.apiKey}`,
-    },
-    body: JSON.stringify({
-      from: fromEmail,
-      to: [to],
-      subject: subject,
-      html: content,
-    }),
-  })
-
-  if (!response.ok) {
-    const errorData = await response.json() as { message?: string }
-    console.error('Resend API error:', errorData)
-    throw new Error(errorData.message || "Resend发送失败，请稍后重试")
-  }
-
-  return { success: true }
 }
 
 export async function POST(
@@ -97,17 +67,22 @@ export async function POST(
       )
     }
 
-    const env = getRequestContext().env
-    const apiKey = await env.SITE_CONFIG.get("RESEND_API_KEY")
+    const mailConfig = await getSystemMailConfig()
 
-    if (!apiKey) {
+    if (!mailConfig.enabled || !mailConfig.relayUrl) {
       return NextResponse.json(
-        { error: "Resend 发件服务未配置，请联系管理员" },
+        { error: "发件服务未配置，请联系管理员" },
         { status: 500 }
       )
     }
 
-    await sendWithResend(to, subject, content, email.address, { apiKey })
+    await sendSystemMail({
+      to,
+      subject,
+      html: content,
+      fromEmail: email.address,
+      fromName: email.address,
+    })
 
     await db.insert(messages).values({
       emailId: email.id,
@@ -131,4 +106,4 @@ export async function POST(
       { status: 500 }
     )
   }
-} 
+}

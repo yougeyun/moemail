@@ -1,4 +1,4 @@
-import { AuthError, ConfigError } from "@moemail/core";
+import { AuthError, ConfigError } from "@mail59pk/core";
 
 /**
  * Print JSON to stdout (for --json mode).

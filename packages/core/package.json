@@ -1,5 +1,5 @@
 {
-  "name": "@moemail/core",
+  "name": "@mail59pk/core",
   "version": "0.1.0",
   "description": "Shared HTTP client and config for mail.59pk.net CLI and MCP server",
   "type": "module",

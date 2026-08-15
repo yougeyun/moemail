@@ -37,6 +37,8 @@ export async function sendSystemMail(input: {
   to: string
   subject: string
   html: string
+  fromEmail?: string
+  fromName?: string
 }) {
   const config = await getSystemMailConfig()
 
@@ -60,8 +62,8 @@ export async function sendSystemMail(input: {
       to: input.to,
       subject: input.subject,
       html: input.html,
-      fromEmail: config.fromEmail,
-      fromName: config.fromName,
+      fromEmail: input.fromEmail || config.fromEmail,
+      fromName: input.fromName || config.fromName,
     }),
   })
 

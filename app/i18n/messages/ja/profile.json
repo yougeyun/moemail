@@ -55,15 +55,13 @@
     }
   },
   "emailService": {
-    "title": "Resend 送信サービス設定",
+    "title": "メール送信設定",
     "configRoleLabel": "設定可能なロール権限",
     "enable": "メール送信を有効にする",
     "fixedRoleLimits": "固定権限ルール",
     "emperorLimit": "皇帝は制限なく無制限に送信できます",
     "civilianLimit": "市民は送信できません",
-    "enableDescription": "有効にすると Resend を利用してメールを送信します",
-    "apiKey": "Resend API Key",
-    "apiKeyPlaceholder": "Resend API Key を入力",
+    "enableDescription": "有効にすると、一時メールボックスの送信は「システムメール」で設定したSMTP中継経由になります",
     "dailyLimit": "1日の上限",
     "roleLimits": "送信機能を許可するロール",
     "save": "設定を保存",
@@ -72,7 +70,8 @@
     "saveFailed": "設定の保存に失敗しました",
     "unlimited": "無制限",
     "disabled": "送信権限は無効です",
-    "enabled": "送信権限が有効です"
+    "enabled": "送信権限が有効です",
+    "relayHint": "送信は「システムメール」のSMTP中継を使用します。外部の送信APIは不要です。"
   },
   "webhook": {
     "title": "Webhook 設定",
@@ -464,6 +463,9 @@
     "unbindWechat": "WeChat連携解除",
     "unbindConfirm": "現在のWeChat連携を解除しますか？解除後は再度スキャンして連携する必要があります。",
     "unbindSuccess": "WeChat連携を解除しました",
-    "unbindFailed": "解除に失敗しました"
+    "unbindFailed": "解除に失敗しました",
+    "emailUnboundTitle": "メール未連携",
+    "emailUnboundHint": "メールを連携すると、システム通知の受信、パスワード再設定、微信ミニプログラムでのログインが可能になります。",
+    "bindEmail": "メールを連携する"
   }
 }

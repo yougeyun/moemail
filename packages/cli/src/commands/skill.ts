@@ -27,13 +27,13 @@ function getPlatforms(): Platform[] {
       id: "claude",
       name: "Claude Code",
       dir: join(home, ".claude"),
-      skillPath: join(home, ".claude", "skills", "moemail", "SKILL.md"),
+      skillPath: join(home, ".claude", "skills", "mail59pk", "SKILL.md"),
     },
     {
       id: "codex",
       name: "Codex",
       dir: codexHome,
-      skillPath: join(codexHome, "skills", "moemail", "SKILL.md"),
+      skillPath: join(codexHome, "skills", "mail59pk", "SKILL.md"),
     },
   ];
 }

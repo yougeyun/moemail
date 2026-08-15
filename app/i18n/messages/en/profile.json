@@ -55,15 +55,13 @@
     }
   },
   "emailService": {
-    "title": "Resend Email Service Configuration",
+    "title": "Email Sending Configuration",
     "configRoleLabel": "Configurable Role Permissions",
     "enable": "Enable Email Service",
     "fixedRoleLimits": "Fixed Role Limits",
     "emperorLimit": "Emperor can send unlimited emails without any restrictions",
     "civilianLimit": "Cannot send emails",
-    "enableDescription": "When enabled, emails will be sent using Resend",
-    "apiKey": "Resend API Key",
-    "apiKeyPlaceholder": "Enter Resend API Key",
+    "enableDescription": "When enabled, temporary mailbox emails are sent through the SMTP relay configured in System Mail",
     "dailyLimit": "Daily Limit",
     "roleLimits": "Roles allowed to use sending feature",
     "save": "Save Configuration",
@@ -72,7 +70,8 @@
     "saveFailed": "Failed to save configuration",
     "unlimited": "Unlimited",
     "disabled": "Sending permission not enabled",
-    "enabled": "Sending permission enabled"
+    "enabled": "Sending permission enabled",
+    "relayHint": "Sending goes through the SMTP relay configured in System Mail; no third-party email API is required."
   },
   "webhook": {
     "title": "Webhook Configuration",
@@ -464,6 +463,9 @@
     "unbindWechat": "Unbind WeChat",
     "unbindConfirm": "Unbind the current WeChat account? You will need to scan again to bind.",
     "unbindSuccess": "WeChat unbound",
-    "unbindFailed": "Failed to unbind"
+    "unbindFailed": "Failed to unbind",
+    "emailUnboundTitle": "Email Not Bound",
+    "emailUnboundHint": "Binding an email lets you receive system notices, recover your password, and sign in with the WeChat Mini Program.",
+    "bindEmail": "Bind Email"
   }
 }

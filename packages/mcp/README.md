@@ -1,10 +1,10 @@
-# @moemail/mcp
+# @mail59pk/mcp
 
 MCP (Model Context Protocol) server for [mail.59pk.net](https://mail.59pk.net) — gives any
 MCP-capable agent (Claude Desktop, Cursor, Cline, …) native tools for temporary
 email: create a mailbox, wait for a verification email, read it, send, and clean up.
 
-It shares the same HTTP client and config as `@moemail/cli` via `@moemail/core`, so
+It shares the same HTTP client and config as `@mail59pk/cli` via `@mail59pk/core`, so
 it talks to the exact same mail.59pk.net API (authenticated with an `X-API-Key`).
 
 ## Tools
@@ -24,8 +24,8 @@ it talks to the exact same mail.59pk.net API (authenticated with an `X-API-Key`)
 
 The server reads credentials from environment variables:
 
-- `MOEMAIL_API_KEY` (required) — your mail.59pk.net API key
-- `MOEMAIL_API_URL` (optional) — defaults to `https://mail.59pk.net`
+- `MAIL59PK_API_KEY` (required) — your mail.59pk.net API key
+- `MAIL59PK_API_URL` (optional) — defaults to `https://mail.59pk.net`
 
 ## Usage
 
@@ -34,12 +34,12 @@ Add to your MCP client config (e.g. Claude Desktop `claude_desktop_config.json`)
 ```json
 {
   "mcpServers": {
-    "moemail": {
+    "mail59pk": {
       "command": "npx",
-      "args": ["-y", "@moemail/mcp"],
+      "args": ["-y", "@mail59pk/mcp"],
       "env": {
-        "MOEMAIL_API_KEY": "mk_xxx",
-        "MOEMAIL_API_URL": "https://mail.59pk.net"
+        "MAIL59PK_API_KEY": "mk_xxx",
+        "MAIL59PK_API_URL": "https://mail.59pk.net"
       }
     }
   }

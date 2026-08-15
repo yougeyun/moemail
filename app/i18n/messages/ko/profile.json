@@ -55,15 +55,13 @@
     }
   },
   "emailService": {
-    "title": "Resend 이메일 서비스 설정",
+    "title": "메일 발송 설정",
     "configRoleLabel": "설정 가능한 역할 권한",
     "enable": "이메일 서비스 활성화",
     "fixedRoleLimits": "고정 역할 제한",
     "emperorLimit": "황제는 제한 없이 무제한 이메일을 보낼 수 있습니다",
     "civilianLimit": "이메일을 보낼 수 없습니다",
-    "enableDescription": "활성화되면 Resend를 사용하여 이메일을 보냅니다",
-    "apiKey": "Resend API Key",
-    "apiKeyPlaceholder": "Resend API Key 입력",
+    "enableDescription": "활성화하면 임시 메일함 발송이「시스템 메일」에 설정된 SMTP 릴레이로 전송됩니다",
     "dailyLimit": "일일 제한",
     "roleLimits": "전송 기능을 사용할 수 있는 역할",
     "save": "설정 저장",
@@ -72,7 +70,8 @@
     "saveFailed": "설정 저장에 실패했습니다",
     "unlimited": "무제한",
     "disabled": "전송 권한이 활성화되지 않음",
-    "enabled": "전송 권한 활성화됨"
+    "enabled": "전송 권한 활성화됨",
+    "relayHint": "발송은「시스템 메일」의 SMTP 릴레이를 사용하며 외부 발송 API가 필요하지 않습니다."
   },
   "webhook": {
     "title": "Webhook 설정",
@@ -464,6 +463,9 @@
     "unbindWechat": "위챗 연동 해제",
     "unbindConfirm": "현재 위챗 연동을 해제하시겠습니까? 해제 후 다시 스캔하여 연동해야 합니다.",
     "unbindSuccess": "위챗 연동이 해제되었습니다",
-    "unbindFailed": "해제에 실패했습니다"
+    "unbindFailed": "해제에 실패했습니다",
+    "emailUnboundTitle": "이메일 미연동",
+    "emailUnboundHint": "이메일을 연동하면 시스템 알림 수신, 비밀번호 찾기, 위챗 미니프로그램 로그인을 사용할 수 있습니다.",
+    "bindEmail": "이메일 연동하기"
   }
 }

@@ -1,6 +1,6 @@
 # 系统邮件 SMTP 中转
 
-Cloudflare Pages 的 Edge 运行时不能直接使用 Node SMTP 库，因此验证码和激活邮件通过一个 HTTPS 中转接口发送。
+Cloudflare Pages 的 Edge 运行时不能直接使用 Node SMTP 库，因此验证码、激活邮件以及用户从临时邮箱发出的邮件，都通过这个 HTTPS 中转接口发送。
 
 ## 部署步骤
 
@@ -9,6 +9,7 @@ Cloudflare Pages 的 Edge 运行时不能直接使用 Node SMTP 库，因此验�
 3. 填写 QQ 邮箱或网易邮箱的 SMTP 配置。
 4. 确保该目录通过 HTTPS 可访问。
 5. 在 `mail.59pk.net` 后台“系统邮件”中填写中转地址和密钥。
+6. 后台“发件服务”开启后，临时邮箱发件也会调用同一中转接口。
 
 ## 配置示例
 

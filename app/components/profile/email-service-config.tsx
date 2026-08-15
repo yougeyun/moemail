@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
-import { Zap, Eye, EyeOff, Gem, Sword } from "lucide-react"
+import { Zap, Gem, Sword } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
@@ -12,7 +12,6 @@ import { Checkbox } from "@/components/ui/checkbox"
 
 interface EmailServiceConfig {
   enabled: boolean
-  apiKey: string
   roleLimits: {
     duke: number
     knight: number
@@ -25,14 +24,12 @@ export function EmailServiceConfig() {
   const tSend = useTranslations("emails.send")
   const [config, setConfig] = useState<EmailServiceConfig>({
     enabled: false,
-    apiKey: "",
     roleLimits: {
       duke: -1,
       knight: -1,
     }
   })
   const [loading, setLoading] = useState(false)
-  const [showToken, setShowToken] = useState(false)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -56,7 +53,6 @@ export function EmailServiceConfig() {
     try {
       const saveData = {
         enabled: config.enabled,
-        apiKey: config.apiKey,
         roleLimits: config.roleLimits
       }
 
@@ -114,32 +110,8 @@ export function EmailServiceConfig() {
 
         {config.enabled && (
           <>
-            <div className="space-y-2">
-              <Label htmlFor="apiKey" className="text-sm font-medium">
-                {t("apiKey")}
-              </Label>
-              <div className="relative">
-                <Input
-                  id="apiKey"
-                  type={showToken ? "text" : "password"}
-                  value={config.apiKey}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig((prev: EmailServiceConfig) => ({ ...prev, apiKey: e.target.value }))}
-                  placeholder={t("apiKeyPlaceholder")}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowToken(!showToken)}
-                >
-                  {showToken ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
+            <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm text-muted-foreground">
+              {t("relayHint")}
             </div>
 
             <div className="space-y-2">

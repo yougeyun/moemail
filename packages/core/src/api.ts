@@ -10,12 +10,12 @@ async function request(
 
   if (!config.apiUrl) {
     throw new ConfigError(
-      "API URL not configured. Run `moemail config set api-url <url>` or set MOEMAIL_API_URL.",
+      "API URL not configured. Run `mail59pk config set api-url <url>` or set MAIL59PK_API_URL.",
     );
   }
   if (!config.apiKey) {
     throw new ConfigError(
-      "API Key not configured. Run `moemail config set api-key <key>` or set MOEMAIL_API_KEY.",
+      "API Key not configured. Run `mail59pk config set api-key <key>` or set MAIL59PK_API_KEY.",
     );
   }
 

@@ -20,7 +20,13 @@ export async function GET(request: Request) {
   const cursor = searchParams.get("cursor")
   const emailId = searchParams.get("emailId") || undefined
   const unread = searchParams.get("unread") === "1"
-  const messageType = searchParams.get("type") === "sent" ? "sent" : "received"
+  const typeParam = searchParams.get("type")
+  const messageType =
+    typeParam === "sent"
+      ? "sent"
+      : typeParam === "received"
+        ? "received"
+        : "received"
   const rawPageSize = Number(searchParams.get("pageSize"))
   const pageSize =
     Number.isFinite(rawPageSize) && rawPageSize > 0
@@ -34,15 +40,22 @@ export async function GET(request: Request) {
       eq(emails.userId, userId),
       gt(emails.expiresAt, new Date()),
       eq(messages.emailId, emails.id),
-      messageType === "sent"
-        ? eq(messages.type, "sent")
-        : or(ne(messages.type, "sent"), isNull(messages.type)),
     ]
+    if (messageType === "sent") {
+      conditions.push(eq(messages.type, "sent"))
+    } else if (messageType === "received") {
+      conditions.push(or(ne(messages.type, "sent"), isNull(messages.type)))
+    }
     if (emailId) {
       conditions.push(eq(messages.emailId, emailId))
     }
-    if (unread && messageType === "received") {
-      conditions.push(eq(messages.isRead, false))
+    if (unread && messageType !== "sent") {
+      conditions.push(
+        and(
+          or(ne(messages.type, "sent"), isNull(messages.type)),
+          eq(messages.isRead, false)
+        )
+      )
     }
 
     const where = and(...conditions.filter(Boolean))

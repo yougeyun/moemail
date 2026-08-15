@@ -12,7 +12,7 @@ importers:
         specifier: ^12.0.0
         version: 12.1.0
     devDependencies:
-      '@moemail/core':
+      '@mail59pk/core':
         specifier: file:../core
         version: file:../core
       '@types/node':
@@ -21,7 +21,7 @@ importers:
 
 packages:
 
-  '@moemail/core@file:../core':
+  '@mail59pk/core@file:../core':
     resolution: {directory: ../core, type: directory}
 
   '@types/node@20.19.43':
@@ -36,7 +36,7 @@ packages:
 
 snapshots:
 
-  '@moemail/core@file:../core': {}
+  '@mail59pk/core@file:../core': {}
 
   '@types/node@20.19.43':
     dependencies:

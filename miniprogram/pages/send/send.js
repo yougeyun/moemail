@@ -79,7 +79,7 @@ Page({
     this.setData({ loading: true, loadingMore: !reset })
     try {
       const cursor = reset ? "" : this.data.nextCursor || ""
-      const url = `/api/messages?type=sent&cursor=${cursor}`
+      const url = `/api/messages?type=sent&pageSize=50&cursor=${cursor}`
       const res = await request({ url })
       const mapped = (res.messages || []).map((item) => ({
         id: item.id,

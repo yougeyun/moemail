@@ -12,7 +12,7 @@ import { registerSkillCommand } from "./commands/skill.js";
 const program = new Command();
 
 program
-  .name("moemail")
+  .name("mail59pk")
   .description("mail.59pk.net CLI — Agent-friendly temporary email tool")
   .version("1.0.0")
   .option("--json", "output as JSON");

@@ -5,7 +5,7 @@ import { registerTools } from "./tools.js";
 
 async function main() {
   const server = new McpServer({
-    name: "moemail",
+    name: "mail59pk",
     version: "1.0.0",
   });
 

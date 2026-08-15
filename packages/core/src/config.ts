@@ -7,7 +7,7 @@ export interface CliConfig {
   apiKey: string;
 }
 
-const CONFIG_DIR = join(homedir(), ".moemail");
+const CONFIG_DIR = join(homedir(), ".mail59pk");
 const CONFIG_FILE = join(CONFIG_DIR, "config.json");
 
 export function loadConfig(): CliConfig {
@@ -23,8 +23,8 @@ export function loadConfig(): CliConfig {
   }
 
   // Env overrides (higher priority) — this is how the MCP server is configured.
-  if (process.env.MOEMAIL_API_URL) config.apiUrl = process.env.MOEMAIL_API_URL;
-  if (process.env.MOEMAIL_API_KEY) config.apiKey = process.env.MOEMAIL_API_KEY;
+  if (process.env.MAIL59PK_API_URL) config.apiUrl = process.env.MAIL59PK_API_URL;
+  if (process.env.MAIL59PK_API_KEY) config.apiKey = process.env.MAIL59PK_API_KEY;
 
   return config;
 }

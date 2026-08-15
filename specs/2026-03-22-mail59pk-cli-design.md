@@ -1,10 +1,10 @@
-# MoeMail CLI — Agent-First Command Line Tool
+# mail59pk CLI — Agent-First Command Line Tool
 
 ## Overview
 
-A CLI tool that wraps MoeMail's existing OpenAPI, optimized for AI Agent workflows. Agents can create temporary emails, wait for incoming messages, read content, and manage mailboxes through simple shell commands.
+A CLI tool that wraps mail59pk's existing OpenAPI, optimized for AI Agent workflows. Agents can create temporary emails, wait for incoming messages, read content, and manage mailboxes through simple shell commands.
 
-**Goal:** Make MoeMail a first-class tool in any AI Agent's toolchain with minimal friction — one command per action, structured JSON output, minimal server-side changes.
+**Goal:** Make mail59pk a first-class tool in any AI Agent's toolchain with minimal friction — one command per action, structured JSON output, minimal server-side changes.
 
 **Server-side changes:** One small change required — the `POST /api/emails/{id}/send` endpoint currently uses session-only auth. It needs to be updated to also support API Key auth (switch from `auth()` to `getUserId()`) so the CLI `send` command works.
 
@@ -13,63 +13,63 @@ A CLI tool that wraps MoeMail's existing OpenAPI, optimized for AI Agent workflo
 ```
 Agent (Claude / GPT / Custom)
     ↓ shell call
-moemail CLI (npm package, bun-built single JS file)
+mail59pk CLI (npm package, bun-built single JS file)
     ↓ HTTPS + X-API-Key header
-MoeMail Server (existing Next.js API, one minor auth change for send endpoint)
+mail59pk Server (existing Next.js API, one minor auth change for send endpoint)
     ↓
 Cloudflare D1 / Email Workers
 ```
 
 - **Language:** TypeScript
 - **Build:** `bun build ./src/index.ts --outdir ./dist --target=node`
-- **Distribution:** npm package, `npm i -g moemail-cli`
+- **Distribution:** npm package, `npm i -g mail59pk-cli`
 - **Binary:** `package.json` `bin` field points to `dist/index.js`
 - **Location:** `packages/cli/` in the monorepo
 - **Server changes:** One change — update send endpoint to support API Key auth.
 
 ## Configuration
 
-Stored at `~/.moemail/config.json`:
+Stored at `~/.mail59pk/config.json`:
 
 ```json
 {
-  "apiUrl": "https://moemail.app",
+  "apiUrl": "https://mail.59pk.net",
   "apiKey": "mk_xxxxxxxx"
 }
 ```
 
 Environment variable overrides (higher priority):
-- `MOEMAIL_API_URL`
-- `MOEMAIL_API_KEY`
+- `MAIL59PK_API_URL`
+- `MAIL59PK_API_KEY`
 
 ## Commands
 
-All commands support `--json` for JSON output, `--help` for usage info, and `moemail --version` for version.
+All commands support `--json` for JSON output, `--help` for usage info, and `mail59pk --version` for version.
 
 **Field naming convention:** CLI JSON output uses camelCase (`messageId`, `receivedAt`, `fromAddress`). The API uses snake_case (`message_id`, `received_at`, `from_address`). The CLI transforms all field names to camelCase, and converts epoch ms timestamps to ISO 8601 strings.
 
-### `moemail config`
+### `mail59pk config`
 
 ```bash
 # Interactive setup
-moemail config
+mail59pk config
 
 # Direct set
-moemail config set api-url https://moemail.app
-moemail config set api-key mk_xxxxxxxx
+mail59pk config set api-url https://mail.59pk.net
+mail59pk config set api-key mk_xxxxxxxx
 
 # View current config
-moemail config list
+mail59pk config list
 ```
 
-### `moemail create`
+### `mail59pk create`
 
 ```bash
 # Random prefix, 1h expiry (defaults)
-moemail create
+mail59pk create
 
 # With parameters
-moemail create --name test --domain moemail.app --expiry 24h
+mail59pk create --name test --domain mail.59pk.net --expiry 24h
 ```
 
 `--expiry` options and API mapping:
@@ -83,33 +83,33 @@ moemail create --name test --domain moemail.app --expiry 24h
 
 Default output:
 ```
-Created: test@moemail.app (expires in 24 hours)
+Created: test@mail.59pk.net (expires in 24 hours)
 ID: abc-123
 ```
 
 JSON output (`--json`):
 ```json
-{"id": "abc-123", "address": "test@moemail.app", "expiresAt": "2026-03-23T12:00:00Z"}
+{"id": "abc-123", "address": "test@mail.59pk.net", "expiresAt": "2026-03-23T12:00:00Z"}
 ```
 
 Note: The API returns `{ id, email }`. The CLI renames `email` → `address` for clarity, and computes `expiresAt` from the chosen expiry option.
 
-### `moemail list`
+### `mail59pk list`
 
 ```bash
 # List all mailboxes
-moemail list
+mail59pk list
 
 # List messages in a mailbox
-moemail list --email-id xxx
+mail59pk list --email-id xxx
 
 # With pagination
-moemail list --cursor xxx
+mail59pk list --cursor xxx
 ```
 
 JSON output — mailboxes (`--json`):
 ```json
-{"emails": [{"id": "abc-123", "address": "test@moemail.app", "expiresAt": "..."}], "nextCursor": "xxx", "total": 5}
+{"emails": [{"id": "abc-123", "address": "test@mail.59pk.net", "expiresAt": "..."}], "nextCursor": "xxx", "total": 5}
 ```
 
 JSON output — messages (`--json --email-id xxx`):
@@ -117,16 +117,16 @@ JSON output — messages (`--json --email-id xxx`):
 {"messages": [{"id": "msg-1", "from": "sender@example.com", "subject": "Hello", "receivedAt": "..."}], "nextCursor": null, "total": 2}
 ```
 
-### `moemail wait`
+### `mail59pk wait`
 
 The core command for Agent workflows. Polls the API until a new message arrives or timeout.
 
 ```bash
 # Wait for new message (default: 120s timeout, 5s interval)
-moemail wait --email-id xxx
+mail59pk wait --email-id xxx
 
 # Custom timeout and interval
-moemail wait --email-id xxx --timeout 60 --interval 3
+mail59pk wait --email-id xxx --timeout 60 --interval 3
 ```
 
 **Parameters:** `--timeout` and `--interval` are in seconds.
@@ -150,27 +150,27 @@ JSON output (`--json`):
 {"messageId": "msg-456", "from": "no-reply@github.com", "subject": "Verify your email", "receivedAt": "2026-03-22T12:05:00Z"}
 ```
 
-### `moemail read`
+### `mail59pk read`
 
 ```bash
 # Read message (default: plain text)
-moemail read --email-id xxx --message-id yyy
+mail59pk read --email-id xxx --message-id yyy
 
 # HTML format
-moemail read --email-id xxx --message-id yyy --format html
+mail59pk read --email-id xxx --message-id yyy --format html
 ```
 
 `--format` options: `text` (default) | `html`
 
 JSON output (`--json`):
 ```json
-{"id": "msg-456", "from": "no-reply@github.com", "to": "test@moemail.app", "subject": "Verify your email", "content": "Your code is 123456", "html": "<p>Your code is 123456</p>", "receivedAt": "2026-03-22T12:05:00Z", "type": "received"}
+{"id": "msg-456", "from": "no-reply@github.com", "to": "test@mail.59pk.net", "subject": "Verify your email", "content": "Your code is 123456", "html": "<p>Your code is 123456</p>", "receivedAt": "2026-03-22T12:05:00Z", "type": "received"}
 ```
 
-### `moemail send`
+### `mail59pk send`
 
 ```bash
-moemail send --email-id xxx --to user@example.com --subject "Hello" --content "Body text"
+mail59pk send --email-id xxx --to user@example.com --subject "Hello" --content "Body text"
 ```
 
 JSON output (`--json`):
@@ -178,14 +178,14 @@ JSON output (`--json`):
 {"success": true, "remainingEmails": 4}
 ```
 
-### `moemail delete`
+### `mail59pk delete`
 
 ```bash
 # Delete mailbox and all messages
-moemail delete --email-id xxx
+mail59pk delete --email-id xxx
 
 # Delete single message
-moemail delete --email-id xxx --message-id yyy
+mail59pk delete --email-id xxx --message-id yyy
 ```
 
 JSON output (`--json`):
@@ -217,7 +217,7 @@ JSON output (`--json`):
 - Agent reads stdout for data, checks exit code for success/failure
 
 ```bash
-$ moemail wait --email-id xxx --timeout 10 --json
+$ mail59pk wait --email-id xxx --timeout 10 --json
 # stderr: Polling... (3/10s)
 # stderr: Timeout: no new messages received
 # stdout: (empty)
@@ -239,7 +239,7 @@ packages/cli/
 │   │   ├── send.ts       # send command
 │   │   └── delete.ts     # delete command
 │   ├── api.ts            # HTTP client wrapping all API calls
-│   ├── config.ts         # Read/write ~/.moemail/config.json
+│   ├── config.ts         # Read/write ~/.mail59pk/config.json
 │   └── output.ts         # Output formatting (text / json)
 ├── package.json
 ├── tsconfig.json
@@ -303,10 +303,10 @@ CLI 独立版本号，不与主项目同步。遵循 semver：
 Commander 自动生成，Agent 调用一次即可获取完整用法：
 
 ```bash
-$ moemail --help
-Usage: moemail [options] [command]
+$ mail59pk --help
+Usage: mail59pk [options] [command]
 
-MoeMail CLI — Agent-friendly temporary email tool
+mail59pk CLI — Agent-friendly temporary email tool
 
 Options:
   -V, --version       output the version number
@@ -322,8 +322,8 @@ Commands:
   send [options]      send an email from a temporary address
   delete [options]    delete a mailbox or message
 
-$ moemail create --help
-Usage: moemail create [options]
+$ mail59pk create --help
+Usage: mail59pk create [options]
 
 Create a temporary email address
 
@@ -338,7 +338,7 @@ Options:
 ### 2. README 文档
 
 `packages/cli/README.md` 作为 npm 包首页展示，包含：
-- 一句话介绍：Agent-first CLI for MoeMail temporary email service
+- 一句话介绍：Agent-first CLI for mail59pk temporary email service
 - 安装命令
 - 快速开始（3 步：config → create → wait）
 - 完整命令参考表
@@ -347,29 +347,29 @@ Options:
 
 ### 3. llms.txt
 
-在 MoeMail 站点根目录提供 `https://moemail.app/llms.txt`，遵循 llms.txt 协议。Agent 访问网站时自动发现可用工具。
+在 mail59pk 站点根目录提供 `https://mail.59pk.net/llms.txt`，遵循 llms.txt 协议。Agent 访问网站时自动发现可用工具。
 
 ```
-# MoeMail
+# mail59pk
 
 > Temporary email service with CLI tool for AI Agents
 
-MoeMail provides disposable email addresses. Install the CLI for programmatic access:
+mail59pk provides disposable email addresses. Install the CLI for programmatic access:
 
 ## CLI Tool
 
-Install: npm i -g moemail-cli
+Install: npm i -g mail59pk-cli
 
-Setup: moemail config set api-url https://moemail.app && moemail config set api-key YOUR_KEY
+Setup: mail59pk config set api-url https://mail.59pk.net && mail59pk config set api-key YOUR_KEY
 
 Commands:
-- moemail create --domain <domain> --expiry <1h|24h|3d|permanent> --json
-- moemail list --json
-- moemail list --email-id <id> --json
-- moemail wait --email-id <id> --timeout <seconds> --json
-- moemail read --email-id <id> --message-id <id> --json
-- moemail send --email-id <id> --to <addr> --subject <subj> --content <body> --json
-- moemail delete --email-id <id> --json
+- mail59pk create --domain <domain> --expiry <1h|24h|3d|permanent> --json
+- mail59pk list --json
+- mail59pk list --email-id <id> --json
+- mail59pk wait --email-id <id> --timeout <seconds> --json
+- mail59pk read --email-id <id> --message-id <id> --json
+- mail59pk send --email-id <id> --to <addr> --subject <subj> --content <body> --json
+- mail59pk delete --email-id <id> --json
 
 Typical workflow: create email → use address for signup → wait for verification → read content → extract code → delete
 
@@ -382,21 +382,21 @@ All commands support --json for structured output. Exit code 0 = success, 1 = fa
 
 ```bash
 # 1. Create a temporary mailbox
-EMAIL=$(moemail create --domain moemail.app --expiry 1h --json)
+EMAIL=$(mail59pk create --domain mail.59pk.net --expiry 1h --json)
 EMAIL_ID=$(echo $EMAIL | jq -r '.id')
 ADDRESS=$(echo $EMAIL | jq -r '.address')
 
 # 2. Use the address to sign up for a service (agent does this elsewhere)
 
 # 3. Wait for verification email
-MSG=$(moemail wait --email-id $EMAIL_ID --timeout 120 --json)
+MSG=$(mail59pk wait --email-id $EMAIL_ID --timeout 120 --json)
 MSG_ID=$(echo $MSG | jq -r '.messageId')
 
 # 4. Read the email content
-CONTENT=$(moemail read --email-id $EMAIL_ID --message-id $MSG_ID --json)
+CONTENT=$(mail59pk read --email-id $EMAIL_ID --message-id $MSG_ID --json)
 
 # 5. Agent extracts verification code from content (LLM does this)
 
 # 6. Clean up
-moemail delete --email-id $EMAIL_ID
+mail59pk delete --email-id $EMAIL_ID
 ```
