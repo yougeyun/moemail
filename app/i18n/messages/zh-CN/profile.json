@@ -71,7 +71,9 @@
     "unlimited": "无限制",
     "disabled": "未启用发件权限",
     "enabled": "已启用发件权限",
-    "relayHint": "发件统一走「系统邮件」里的 SMTP 中转，不再依赖第三方发件 API。"
+    "relayHint": "发件统一走「系统邮件」里的 SMTP 中转，不再依赖第三方发件 API。",
+    "loading": "加载中...",
+    "noRoles": "暂无可配置的会员等级"
   },
   "webhook": {
     "title": "Webhook 配置",
@@ -303,7 +305,8 @@
     "title": "激活码兑换",
     "emailQuota": "剩余邮箱额度：{count}",
     "emailQuotaTotal": "已兑换邮箱额度：{count}",
-    "sendQuota": "已兑换发件次数：{count}",
+    "sendQuota": "剩余发信次数：{count}",
+    "sendQuotaTotal": "已兑换发信次数：{count}",
     "code": "激活码",
     "codePlaceholder": "请输入激活码",
     "redeem": "兑换",

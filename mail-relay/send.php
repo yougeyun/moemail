@@ -26,6 +26,7 @@ $subject = trim((string)($input['subject'] ?? ''));
 $html = (string)($input['html'] ?? '');
 $fromEmail = filter_var($input['fromEmail'] ?? FROM_EMAIL, FILTER_VALIDATE_EMAIL);
 $fromName = trim((string)($input['fromName'] ?? FROM_NAME));
+$replyTo = filter_var($input['replyTo'] ?? '', FILTER_VALIDATE_EMAIL);
 
 if (!$to || !$subject || !$html || !$fromEmail) {
     respond(400, ['error' => 'Invalid payload']);
@@ -40,11 +41,6 @@ $connection = @stream_socket_client(
 
 if (!$connection) {
     respond(502, ['error' => 'SMTP connect failed: ' . $errstr]);
-}
-
-$greeting = smtpRead($connection);
-if (substr($greeting, 0, 3) !== '220') {
-    throw new RuntimeException('SMTP greeting error: ' . trim($greeting));
 }
 
 function smtpRead($connection): string
@@ -71,6 +67,11 @@ function smtpCommand($connection, string $command, int $expected): void
 }
 
 try {
+    $greeting = smtpRead($connection);
+    if (substr($greeting, 0, 3) !== '220') {
+        throw new RuntimeException('SMTP greeting error: ' . trim($greeting));
+    }
+
     smtpCommand($connection, 'EHLO mail.59pk.net', 250);
     smtpCommand($connection, 'AUTH LOGIN', 334);
     smtpCommand($connection, base64_encode(SMTP_USER), 334);
@@ -84,6 +85,9 @@ try {
     $headers .= 'Subject: =?UTF-8?B?' . base64_encode($subject) . '?=' . "\r\n";
     $headers .= 'MIME-Version: 1.0' . "\r\n";
     $headers .= 'Content-Type: text/html; charset=UTF-8' . "\r\n";
+    if ($replyTo) {
+        $headers .= 'Reply-To: <' . $replyTo . '>' . "\r\n";
+    }
 
     $body = preg_replace('/\r\n|\r|\n/', "\r\n", $html);
     $body = preg_replace('/^\./m', '..', $body);

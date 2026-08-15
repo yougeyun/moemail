@@ -39,6 +39,7 @@ export async function sendSystemMail(input: {
   html: string
   fromEmail?: string
   fromName?: string
+  replyTo?: string
 }) {
   const config = await getSystemMailConfig()
 
@@ -64,6 +65,7 @@ export async function sendSystemMail(input: {
       html: input.html,
       fromEmail: input.fromEmail || config.fromEmail,
       fromName: input.fromName || config.fromName,
+      replyTo: input.replyTo,
     }),
   })
 
@@ -71,6 +73,8 @@ export async function sendSystemMail(input: {
     const errorData = (await response.json().catch(() => null)) as {
       error?: string
     } | null
-    throw new Error(errorData?.error || "系统邮件发送失败")
+    throw new Error(
+      errorData?.error || `系统邮件发送失败 (HTTP ${response.status})`
+    )
   }
 }

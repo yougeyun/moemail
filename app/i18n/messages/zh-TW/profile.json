@@ -71,7 +71,9 @@
     "unlimited": "無限制",
     "disabled": "未啟用發件權限",
     "enabled": "已啟用發件權限",
-    "relayHint": "發件統一走「系統郵件」裡的 SMTP 轉發，不再依賴第三方發件 API。"
+    "relayHint": "發件統一走「系統郵件」裡的 SMTP 轉發，不再依賴第三方發件 API。",
+    "loading": "載入中...",
+    "noRoles": "暫無可設定的會員等級"
   },
   "webhook": {
     "title": "Webhook 設定",
@@ -303,7 +305,8 @@
     "title": "激活碼兌換",
     "emailQuota": "剩餘郵箱額度：{count}",
     "emailQuotaTotal": "已兌換郵箱額度：{count}",
-    "sendQuota": "已兌換發件次數：{count}",
+    "sendQuota": "剩餘發件次數：{count}",
+    "sendQuotaTotal": "已兌換發件次數：{count}",
     "code": "激活碼",
     "codePlaceholder": "請輸入激活碼",
     "redeem": "兌換",

@@ -80,8 +80,9 @@ export async function POST(
       to,
       subject,
       html: content,
-      fromEmail: email.address,
+      fromEmail: mailConfig.fromEmail,
       fromName: email.address,
+      replyTo: email.address,
     })
 
     await db.insert(messages).values({

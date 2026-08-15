@@ -71,7 +71,9 @@
     "unlimited": "Unlimited",
     "disabled": "Sending permission not enabled",
     "enabled": "Sending permission enabled",
-    "relayHint": "Sending goes through the SMTP relay configured in System Mail; no third-party email API is required."
+    "relayHint": "Sending goes through the SMTP relay configured in System Mail; no third-party email API is required.",
+    "loading": "Loading...",
+    "noRoles": "No configurable member levels"
   },
   "webhook": {
     "title": "Webhook Configuration",
@@ -303,7 +305,8 @@
     "title": "Activation Code",
     "emailQuota": "Remaining email quota: {count}",
     "emailQuotaTotal": "Total email quota: {count}",
-    "sendQuota": "Send quota: {count}",
+    "sendQuota": "Remaining send quota: {count}",
+    "sendQuotaTotal": "Redeemed send quota: {count}",
     "code": "Code",
     "codePlaceholder": "Enter activation code",
     "redeem": "Redeem",

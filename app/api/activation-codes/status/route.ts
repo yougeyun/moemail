@@ -1,6 +1,6 @@
 import { createDb } from "@/lib/db"
-import { users } from "@/lib/schema"
-import { eq } from "drizzle-orm"
+import { emails, messages, users } from "@/lib/schema"
+import { and, eq, sql } from "drizzle-orm"
 import { getUserId } from "@/lib/apiKey"
 import { getEmailQuotaSummary } from "@/lib/email-quota"
 
@@ -18,11 +18,24 @@ export async function GET() {
       where: eq(users.id, userId),
     })
     const emailQuota = await getEmailQuotaSummary(userId, user)
+    const sentRows = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(messages)
+      .innerJoin(emails, eq(messages.emailId, emails.id))
+      .where(
+        and(
+          eq(emails.userId, userId),
+          eq(messages.type, "sent")
+        )
+      )
+    const sentSendQuota = Number(sentRows[0]?.count ?? 0)
+    const redeemedSendQuota = user?.redeemedSendQuota ?? 0
 
     return Response.json({
       redeemedEmailQuota: emailQuota.remaining,
       redeemedEmailQuotaTotal: emailQuota.total,
-      redeemedSendQuota: user?.redeemedSendQuota ?? 0,
+      redeemedSendQuota,
+      redeemedSendQuotaRemaining: Math.max(0, redeemedSendQuota - sentSendQuota),
     })
   } catch (error) {
     console.error("Failed to load activation quota:", error)

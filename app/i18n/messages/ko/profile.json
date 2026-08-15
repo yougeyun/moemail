@@ -71,7 +71,9 @@
     "unlimited": "무제한",
     "disabled": "전송 권한이 활성화되지 않음",
     "enabled": "전송 권한 활성화됨",
-    "relayHint": "발송은「시스템 메일」의 SMTP 릴레이를 사용하며 외부 발송 API가 필요하지 않습니다."
+    "relayHint": "발송은「시스템 메일」의 SMTP 릴레이를 사용하며 외부 발송 API가 필요하지 않습니다.",
+    "loading": "불러오는 중...",
+    "noRoles": "설정 가능한 역할이 없습니다"
   },
   "webhook": {
     "title": "Webhook 설정",
@@ -303,7 +305,8 @@
     "title": "활성 코드 교환",
     "emailQuota": "남은 메일 할당량: {count}",
     "emailQuotaTotal": "메일 할당량(총): {count}",
-    "sendQuota": "교환 발송 횟수: {count}",
+    "sendQuota": "남은 발송 횟수: {count}",
+    "sendQuotaTotal": "교환 발송 횟수: {count}",
     "code": "활성 코드",
     "codePlaceholder": "활성 코드 입력",
     "redeem": "교환",

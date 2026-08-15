@@ -1,5 +1,5 @@
 .page {
-  padding: 24rpx;
+  padding: 24rpx 24rpx calc(180rpx + env(safe-area-inset-bottom));
 }
 
 .quota-card {

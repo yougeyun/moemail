@@ -1,6 +1,6 @@
 const { request } = require("../../utils/request")
 const { formatTime, expiryLabel } = require("../../utils/format")
-const { getAdsConfig, createBanner, showRewardedVideo } = require("../../utils/ads")
+const { getAdsConfig, showBanner, showRewardedVideo } = require("../../utils/ads")
 
 Page({
   data: {
@@ -104,8 +104,7 @@ Page({
       rewardRemaining,
       showRewardButton:
         Boolean(adsConfig.rewardedEnabled) &&
-        Boolean(adsConfig.rewardedAdUnitId) &&
-        rewardRemaining > 0
+        Boolean(adsConfig.rewardedAdUnitId)
     })
     this.ensureBanner(adsConfig)
   },
@@ -113,10 +112,7 @@ Page({
   ensureBanner(config) {
     this.destroyBanner()
     if (config && config.enabled && config.bannerAdUnitId) {
-      this.bannerAd = createBanner(config)
-      if (this.bannerAd) {
-        this.bannerAd.show().catch(() => {})
-      }
+      this.bannerAd = showBanner(config)
     }
   },
 
@@ -133,6 +129,10 @@ Page({
 
   async watchRewardedVideo() {
     if (this.data.rewarding) return
+    if (this.data.rewardRemaining <= 0) {
+      wx.showToast({ title: "今日奖励次数已用完", icon: "none" })
+      return
+    }
     this.setData({ rewarding: true })
     try {
       const ended = await showRewardedVideo(this.data.rewardedAdUnitId)

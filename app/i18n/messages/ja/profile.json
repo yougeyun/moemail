@@ -71,7 +71,9 @@
     "unlimited": "無制限",
     "disabled": "送信権限は無効です",
     "enabled": "送信権限が有効です",
-    "relayHint": "送信は「システムメール」のSMTP中継を使用します。外部の送信APIは不要です。"
+    "relayHint": "送信は「システムメール」のSMTP中継を使用します。外部の送信APIは不要です。",
+    "loading": "読み込み中...",
+    "noRoles": "設定可能なロールがありません"
   },
   "webhook": {
     "title": "Webhook 設定",
@@ -303,7 +305,8 @@
     "title": "アクティベーションコード",
     "emailQuota": "残りメール枠：{count}",
     "emailQuotaTotal": "メール枠（合計）：{count}",
-    "sendQuota": "送信回数：{count}",
+    "sendQuota": "残り送信回数：{count}",
+    "sendQuotaTotal": "交換済み送信回数：{count}",
     "code": "コード",
     "codePlaceholder": "コードを入力",
     "redeem": "交換",

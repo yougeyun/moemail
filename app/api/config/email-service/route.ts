@@ -8,10 +8,7 @@ export const runtime = "edge"
 
 interface EmailServiceConfig {
   enabled: boolean
-  roleLimits: {
-    duke?: number
-    knight?: number
-  }
+  roleLimits: Record<string, number>
 }
 
 export async function GET() {
@@ -31,15 +28,14 @@ export async function GET() {
     ])
 
     const customLimits = roleLimits ? JSON.parse(roleLimits) : {}
-    
     const finalLimits = {
-      duke: customLimits.duke !== undefined ? customLimits.duke : EMAIL_CONFIG.DEFAULT_DAILY_SEND_LIMITS.duke,
-      knight: customLimits.knight !== undefined ? customLimits.knight : EMAIL_CONFIG.DEFAULT_DAILY_SEND_LIMITS.knight,
+      ...EMAIL_CONFIG.DEFAULT_DAILY_SEND_LIMITS,
+      ...customLimits,
     }
 
     return NextResponse.json({
       enabled: enabled === "true",
-      roleLimits: finalLimits
+      roleLimits: finalLimits,
     })
   } catch (error) {
     console.error("Failed to get email service config:", error)
@@ -64,17 +60,17 @@ export async function POST(request: Request) {
 
     const env = getRequestContext().env
     
-    const customLimits: { duke?: number; knight?: number } = {}
-    if (config.roleLimits?.duke !== undefined) {
-      customLimits.duke = config.roleLimits.duke
-    }
-    if (config.roleLimits?.knight !== undefined) {
-      customLimits.knight = config.roleLimits.knight
+    const customLimits: Record<string, number> = {}
+    for (const [roleName, limit] of Object.entries(config.roleLimits || {})) {
+      const normalized = Number(limit)
+      if (Number.isInteger(normalized) && normalized >= -1) {
+        customLimits[roleName] = normalized
+      }
     }
 
     await Promise.all([
       env.SITE_CONFIG.put("EMAIL_SERVICE_ENABLED", config.enabled.toString()),
-      env.SITE_CONFIG.put("EMAIL_ROLE_LIMITS", JSON.stringify(customLimits))
+      env.SITE_CONFIG.put("EMAIL_ROLE_LIMITS", JSON.stringify(customLimits)),
     ])
 
     return NextResponse.json({ success: true })

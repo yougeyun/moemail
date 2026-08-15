@@ -1,10 +1,17 @@
 const { API_BASE_URL } = require("./config")
 
 let cachedConfig = null
+let cachedAt = 0
 let fetching = null
 
 function fetchConfig(force) {
-  if (cachedConfig && !force) return Promise.resolve(cachedConfig)
+  if (
+    cachedConfig &&
+    !force &&
+    Date.now() - cachedAt < 60 * 1000
+  ) {
+    return Promise.resolve(cachedConfig)
+  }
   if (fetching) return fetching
 
   fetching = new Promise((resolve) => {
@@ -14,6 +21,7 @@ function fetchConfig(force) {
       success(res) {
         if (res.statusCode >= 200 && res.statusCode < 300) {
           cachedConfig = res.data || null
+          cachedAt = Date.now()
           resolve(cachedConfig)
         } else {
           resolve(null)
@@ -32,6 +40,10 @@ function fetchConfig(force) {
 
 function getAdsConfig() {
   return fetchConfig()
+}
+
+function refreshAdsConfig() {
+  return fetchConfig(true)
 }
 
 function showSplashAd(config) {
@@ -77,6 +89,24 @@ function createBanner(config) {
   return ad
 }
 
+function showBanner(config) {
+  const ad = createBanner(config)
+  if (!ad) return null
+
+  let retried = false
+  const retryShow = () => {
+    if (retried) return
+    retried = true
+    ad.load()
+      .then(() => ad.show())
+      .catch(() => {})
+  }
+
+  ad.onError(retryShow)
+  ad.show().catch(retryShow)
+  return ad
+}
+
 function showRewardedVideo(adUnitId) {
   return new Promise((resolve) => {
     if (!adUnitId || !wx.createRewardedVideoAd) {
@@ -112,7 +142,8 @@ function showRewardedVideo(adUnitId) {
 
 module.exports = {
   getAdsConfig,
+  refreshAdsConfig,
   showSplashAd,
-  createBanner,
+  showBanner,
   showRewardedVideo
 }

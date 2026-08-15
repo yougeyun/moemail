@@ -1,6 +1,6 @@
 const { request } = require("../../utils/request")
 const { formatTime } = require("../../utils/format")
-const { getAdsConfig, createBanner } = require("../../utils/ads")
+const { getAdsConfig, showBanner } = require("../../utils/ads")
 
 Page({
   data: {
@@ -89,10 +89,7 @@ Page({
   ensureBanner(config) {
     this.destroyBanner()
     if (config && config.enabled && config.bannerAdUnitId) {
-      this.bannerAd = createBanner(config)
-      if (this.bannerAd) {
-        this.bannerAd.show().catch(() => {})
-      }
+      this.bannerAd = showBanner(config)
     }
   },
 
